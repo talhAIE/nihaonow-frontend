@@ -7,9 +7,17 @@ import type {
   DashboardOverview,
   TopicProgressResponse,
   ChapterProgressResponse,
+  ConsolidatedDashboardResponse,
 } from '@/lib/types';
 
 export const dashboardApi = {
+  // Single consolidated endpoint - use this instead of multiple calls
+  getDashboard: async (config: any = {}): Promise<ConsolidatedDashboardResponse> => {
+    const url = apiEndpoints.dashboard.overview; // /dashboard endpoint
+    return apiClient.get<ConsolidatedDashboardResponse>(url, undefined, config);
+  },
+
+  // Legacy individual endpoints (kept for backward compatibility)
   getDaily: async (date?: string, config: any = {}): Promise<DailyMetricsResponse> => {
     const url = apiEndpoints.dashboard.daily(date);
     return apiClient.get<DailyMetricsResponse>(url, undefined, config);
