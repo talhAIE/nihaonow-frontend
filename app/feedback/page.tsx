@@ -262,7 +262,7 @@ export default function FeedbackPage() {
     localStorage.clear();
 
     // Navigate to home page
-    router.push('/');
+    router.push('/units');
   };
 
   if (loading) {
