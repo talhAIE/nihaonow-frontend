@@ -42,8 +42,8 @@ export default function RegisterPage() {
       if (field === 'username' && value.length < 3) {
         error = 'Username must be at least 3 characters long';
       }
-      if (field === 'password' && value.length < 6) {
-        error = 'Password must be at least 6 characters long';
+      if (field === 'password' && value.length < 4) {
+        error = 'Password must be at least 4 characters long';
       }
       if (field === 'email') {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
