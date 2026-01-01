@@ -17,24 +17,24 @@ export default function ForgetPasswordPage() {
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
-      toast({ title: 'Validation Error', description: 'Please enter your email', variant: 'destructive' });
+      toast({ title: 'خطأ في التحقق', description: 'يرجى إدخال بريدك الإلكتروني', variant: 'destructive' });
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      toast({ title: 'Validation Error', description: 'Please enter a valid email address', variant: 'destructive' });
+      toast({ title: 'خطأ في التحقق', description: 'يرجى إدخال عنوان بريد إلكتروني صالح', variant: 'destructive' });
       return;
     }
 
     setIsLoading(true);
     try {
       const res = await authApi.forgetPassword({ email });
-      toast({ title: 'Success', description: res?.message || 'If that email exists, a reset link was sent.' });
+      toast({ title: 'تم بنجاح', description: res?.message || 'إذا كان هذا البريد الإلكتروني موجوداً، فقد تم إرسال رابط إعادة التعيين.' });
       router.push('/login');
     } catch (err: any) {
       console.error('Forget password error:', err);
-      toast({ title: 'Error', description: err?.message ?? 'An error occurred while requesting password reset', variant: 'destructive' });
+      toast({ title: 'خطأ', description: err?.message ?? 'حدث خطأ أثناء طلب إعادة تعيين كلمة المرور', variant: 'destructive' });
     } finally {
       setIsLoading(false);
     }
