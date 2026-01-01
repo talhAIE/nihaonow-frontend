@@ -75,7 +75,7 @@ export default function LoginPage() {
         if (token && userData) {
           setAuthToken(token);
           login({ id: String(userData.id ?? ''), email: userData.email ?? '', username: userData.username ?? '' });
-          toast({ title: 'تم بنجاح', description: 'مرحبًا بعودتك!' });
+          toast({ title: 'تم بنجاح', description: 'مرحبًا بعودتك' });
           router.push('/student/dashboard');
         } else {
           toast({ title: 'خطأ', description: response?.message ?? 'فشل تسجيل الدخول', variant: 'destructive' });
