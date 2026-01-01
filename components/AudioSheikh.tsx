@@ -264,7 +264,7 @@ export default function LanguageLearningInterface({
             style={{
               height: 'auto',
               width: '100%',
-              maxWidth: imageWidth,
+              maxWidth: !showDiv ? 300 : imageWidth,
               aspectRatio: '1/1',
               display: 'flex',
               flexDirection: 'column',
@@ -277,7 +277,7 @@ export default function LanguageLearningInterface({
               overflow: 'hidden'
             }}
           >
-            <div className="relative w-full aspect-square">
+            <div className="relative w-full aspect-square" style={{ minHeight: !showDiv ? 300 : 'auto' }}>
               <Image
                 src={scenarioImageUrl}
                 alt="Scenario Context"
