@@ -8,15 +8,11 @@ import ArabicStatsChart from "@/components/dashboard/charts"
 import { dashboardApi } from "@/lib/services/dashboard"
 import { sessionsApi } from "@/lib/api"
 import { sessionUtils } from "@/lib/sessionUtils"
-import type { DashboardOverview, TopicProgress, DailyMetricsResponse, WeeklyMetricsResponse, MonthlyMetricsResponse } from "@/lib/types"
+import type { ConsolidatedDashboardResponse, TopicProgress } from "@/lib/types"
 
 export default function Page() {
     const router = useRouter()
-    const [overview, setOverview] = useState<DashboardOverview | null>(null)
-    const [topicProgress, setTopicProgress] = useState<TopicProgress[]>([])
-    const [dailyMetrics, setDailyMetrics] = useState<DailyMetricsResponse | null>(null)
-    const [weeklyMetrics, setWeeklyMetrics] = useState<WeeklyMetricsResponse | null>(null)
-    const [monthlyMetrics, setMonthlyMetrics] = useState<MonthlyMetricsResponse | null>(null)
+    const [dashboardData, setDashboardData] = useState<ConsolidatedDashboardResponse | null>(null)
     const [loading, setLoading] = useState(false)
     const [initialLoad, setInitialLoad] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -48,23 +44,13 @@ export default function Page() {
                 if (initialLoad) setLoading(true)
                 setError(null)
 
-                const [overviewData, progressData, dailyData, weeklyData, monthlyData] = await Promise.all([
-                    dashboardApi.getOverview(),
-                    dashboardApi.getTopicProgress(),
-                    dashboardApi.getDaily(),
-                    dashboardApi.getWeekly(),
-                    dashboardApi.getMonthly(),
-                ])
-
-                setOverview(overviewData)
-                setTopicProgress(progressData.topics)
-                setDailyMetrics(dailyData)
-                setWeeklyMetrics(weeklyData)
-                setMonthlyMetrics(monthlyData)
+                // Single API call instead of multiple
+                const data = await dashboardApi.getDashboard()
+                setDashboardData(data)
 
                 // Sync username to localStorage so other pages have the latest
-                if (overviewData.userName) {
-                    localStorage.setItem('userName', overviewData.userName)
+                if (data.overview?.userName) {
+                    localStorage.setItem('userName', data.overview.userName)
                 }
             } catch (err) {
                 console.error('Failed to fetch dashboard data:', err)
@@ -106,6 +92,9 @@ export default function Page() {
     }
 
     // Use real data or fallback to cached/defaults
+    const overview = dashboardData?.overview
+    const topicProgress = dashboardData?.progress?.topics || []
+    const metrics = dashboardData?.metrics
     const userName = overview?.userName || (typeof window !== 'undefined' ? localStorage.getItem('userName') : null) || 'الطالب'
     const currentStreak = overview?.currentStreak || 0
     const longestStreak = overview?.longestStreak || 0
@@ -137,28 +126,28 @@ export default function Page() {
                         </div>
                         {(() => {
                             const currentMetrics =
-                                active === 'monthly' ? monthlyMetrics :
-                                    active === 'weekly' ? weeklyMetrics :
-                                        dailyMetrics;
+                                active === 'monthly' ? metrics?.monthly :
+                                    active === 'weekly' ? metrics?.weekly :
+                                        metrics?.daily;
 
                             const chartData = [
                                 {
                                     name: 'النطق',
-                                    value: currentMetrics?.averages?.pronunciationScore || 0,
+                                    value: currentMetrics?.averageScore || 0,
                                     color: '#FF9800',
-                                    label: `${Math.round(currentMetrics?.averages?.pronunciationScore || 0)}%`
+                                    label: `${Math.round(currentMetrics?.averageScore || 0)}%`
                                 },
                                 {
                                     name: 'الطلاقة',
-                                    value: currentMetrics?.averages?.fluencyScore || 0,
+                                    value: currentMetrics?.averageScore || 0,
                                     color: '#D05872',
-                                    label: `${Math.round(currentMetrics?.averages?.fluencyScore || 0)}%`
+                                    label: `${Math.round(currentMetrics?.averageScore || 0)}%`
                                 },
                                 {
                                     name: 'الدقة',
-                                    value: currentMetrics?.averages?.accuracyScore || 0,
+                                    value: currentMetrics?.averageScore || 0,
                                     color: '#8BD9B7',
-                                    label: `${Math.round(currentMetrics?.averages?.accuracyScore || 0)}%`
+                                    label: `${Math.round(currentMetrics?.averageScore || 0)}%`
                                 }
                             ];
                             return <ArabicStatsChart data={chartData} />;

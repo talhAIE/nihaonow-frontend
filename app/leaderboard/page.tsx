@@ -12,9 +12,27 @@ export default function LeaderboardPage() {
     const { dir } = useAppContext()
     const isRtl = dir == 'rtl'
 
-    const [entries, setEntries] = useState<UnifiedLeaderboardEntry[]>([])
+    // Initialize state with cached data if available (instant load)
+    const [entries, setEntries] = useState<UnifiedLeaderboardEntry[]>(() => {
+        const cached = leaderboardApi.getCachedLeaderboard(100, 0)
+        return cached?.leaderboard ?? []
+    })
     const [loading, setLoading] = useState(false)
-    const [student, setStudent] = useState<UnifiedLeaderboardEntry | null>(null)
+    const [student, setStudent] = useState<UnifiedLeaderboardEntry | null>(() => {
+        const cached = leaderboardApi.getCachedLeaderboard(100, 0)
+        if (cached?.userRank) return cached.userRank
+        // Only use getCachedStudentLevel if it matches UnifiedLeaderboardEntry shape
+        const studentLevel = leaderboardApi.getCachedStudentLevel()
+        if (
+            studentLevel &&
+            typeof studentLevel === 'object' &&
+            'score' in studentLevel &&
+            'metrics' in studentLevel
+        ) {
+            return studentLevel as UnifiedLeaderboardEntry
+        }
+        return null
+    })
     const [error, setError] = useState<string | null>(null)
     const [selectedTab, setSelectedTab] = useState<'weekly' | 'monthly' | 'all'>('weekly')
 
@@ -23,7 +41,11 @@ export default function LeaderboardPage() {
         const controller = new AbortController()
 
         const loadAll = async () => {
-            setLoading(true)
+            // If we already have cached data, don't show loading
+            const hasCachedData = entries.length > 0
+            if (!hasCachedData) {
+                setLoading(true)
+            }
             setError(null)
 
             const leaderboardPromise = leaderboardApi.getLeaderboard(100, 0, undefined, { signal: controller.signal })
@@ -39,8 +61,11 @@ export default function LeaderboardPage() {
                     setEntries(resp.leaderboard ?? [])
                     if (resp.userRank) setStudent(resp.userRank)
                 } else {
-                    console.error('Failed loading leaderboard', lbResult.reason)
-                    setError((lbResult.reason as Error)?.message ?? 'Failed to load leaderboard')
+                    // Only show error if we don't have cached data
+                    if (!hasCachedData) {
+                        console.error('Failed loading leaderboard', lbResult.reason)
+                        setError((lbResult.reason as Error)?.message ?? 'Failed to load leaderboard')
+                    }
                 }
 
                 if (studentResult.status === 'fulfilled') {
@@ -51,8 +76,11 @@ export default function LeaderboardPage() {
                 }
             } catch (err) {
                 if (!mounted) return
-                console.error('Unexpected error loading leaderboard', err)
-                setError((err as Error)?.message ?? 'An unexpected error occurred')
+                // Only show error if we don't have cached data
+                if (!hasCachedData) {
+                    console.error('Unexpected error loading leaderboard', err)
+                    setError((err as Error)?.message ?? 'An unexpected error occurred')
+                }
             } finally {
                 if (mounted) setLoading(false)
             }
@@ -73,7 +101,8 @@ export default function LeaderboardPage() {
 
             ; (async () => {
                 try {
-                    const resp = await leaderboardApi.getLeaderboard(100, 0, undefined, { signal: controller.signal })
+                    // Force refresh to bypass cache on manual retry
+                    const resp = await leaderboardApi.refreshLeaderboard(100, 0, undefined, { signal: controller.signal })
                     setEntries(resp.leaderboard ?? [])
                     if (resp.userRank) setStudent(resp.userRank)
                 } catch (err) {
@@ -195,7 +224,7 @@ export default function LeaderboardPage() {
                         <h2 className="text-base sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6 text-right">جميع الطلاب</h2>
 
                         <div className="space-y-3">
-                            {loading && (
+                            {loading && entries.length === 0 && (
                                 <div className="p-8 text-center text-sm text-gray-500">جاري التحميل...</div>
                             )}
                             {error && (

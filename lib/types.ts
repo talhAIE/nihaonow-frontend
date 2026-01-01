@@ -300,3 +300,44 @@ export interface StudentLevelInfo {
   totalStudents: number;
   percentile: number;
 }
+
+// Consolidated Dashboard API Response
+export interface DashboardMetrics {
+  daily: {
+    date: string;
+    sessionsCompleted: number;
+    timeSpent: number;
+    averageScore: number | null;
+  };
+  weekly: {
+    week: string;
+    sessionsCompleted: number;
+    timeSpent: number;
+    averageScore: number | null;
+  };
+  monthly: {
+    month: string;
+    sessionsCompleted: number;
+    timeSpent: number;
+    averageScore: number | null;
+  };
+}
+
+export interface DashboardCalendar {
+  year: number;
+  month: number;
+  loginDays: number[];
+  currentStreak: number;
+  longestStreak: number;
+  calendarDays: CalendarDay[];
+}
+
+export interface ConsolidatedDashboardResponse {
+  overview: DashboardOverview;
+  progress: {
+    topics: TopicProgress[];
+    chapters: ChapterProgress[];
+  };
+  metrics: DashboardMetrics;
+  calendar: DashboardCalendar;
+}
