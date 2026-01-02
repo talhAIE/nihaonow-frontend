@@ -58,7 +58,7 @@ export default function ForgetPasswordPage() {
         style={{ transform: 'rotate(0deg)', opacity: 1 }}
       />
 
-      <div className="w-[92%] max-w-[520px] relative z-10 mx-auto">
+      <div className="w-[98%] md:w-[92%] max-w-[100%] md:max-w-[520px] relative z-10 mx-auto">
         <div className="bg-white p-6 sm:p-8 backdrop-blur-sm rounded-lg">
           <div className="mb-6 flex justify-center items-center">
             <h2 className="text-center" style={{ fontFamily: 'Nunito', fontWeight: 700, fontSize: '24px', lineHeight: '100%', letterSpacing: '0%', textAlign: 'center', color: '#282828' }}>

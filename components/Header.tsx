@@ -157,10 +157,11 @@ export default function Header() {
                   handleLogout();
                   setMobileMenuOpen(false);
                 }}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-[10px] bg-[#FBD4D3] text-[#8D1716] font-semibold"
+                className="w-full flex items-center justify-center gap-4 px-4 py-3 rounded-[10px] bg-[#FBD4D3] text-[#8D1716] font-semibold"
               >
-                <LogOut size={18} />
+               
                 <span>تسجيل الخروج</span>
+                 <LogOut size={18} />
               </button>
             </div>
           </div>

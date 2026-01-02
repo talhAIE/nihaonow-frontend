@@ -160,58 +160,64 @@ export default function LeaderboardPage() {
                         <h2 className="text-base sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6 text-right">أفضل 3 طلاب</h2>
 
                         <div className="flex items-end justify-center gap-3 sm:gap-8 max-w-3xl mx-auto">
-                            {topThree.length >= 3 && (
+                            {topThree.length >= 1 && (
                                 <>
                                     {/* 2nd Place */}
-                                    <div className="flex flex-col items-center flex-1">
-                                        <div className="relative mb-2 sm:mb-3">
-                                            <Avatar className="h-14 w-14 sm:h-20 sm:w-20 bg-gradient-to-br from-gray-100 to-gray-200 border-2 sm:border-4 border-gray-300">
-                                                <AvatarFallback className="text-xl sm:text-3xl font-bold text-gray-700">
-                                                    {topThree[1]?.username?.charAt(0).toUpperCase() || 'ف'}
-                                                </AvatarFallback>
-                                            </Avatar>
-                                            <div className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 flex h-5 w-5 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-gray-400 text-xs sm:text-sm font-bold text-white shadow-md">
-                                                2
+                                    {topThree[1] && (
+                                        <div className="flex flex-col items-center flex-1">
+                                            <div className="relative mb-2 sm:mb-3">
+                                                <Avatar className="h-16 w-16 sm:h-24 sm:w-24 bg-gradient-to-br from-gray-100 to-gray-200 border-2 sm:border-4 border-gray-300">
+                                                    <AvatarFallback className="text-xl sm:text-3xl font-bold text-gray-700">
+                                                        {topThree[1].username?.charAt(0).toUpperCase() || '?'}
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                                <div className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 flex h-5 w-5 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-gray-400 text-xs sm:text-sm font-bold text-white shadow-md">
+                                                    2
+                                                </div>
                                             </div>
+                                            <h4 className="text-xs sm:text-base font-bold text-gray-800 mb-0.5 sm:mb-1 truncate max-w-full text-center">{topThree[1].username || '-'}</h4>
+                                            <p className="text-[10px] sm:text-xs text-[#35AB4E] font-semibold mb-0.5 sm:mb-1">{topThree[1].score?.toFixed(1) || 0} نقطة</p>
+                                            <p className="text-xs sm:text-sm font-medium text-gray-700">{topThree[1].metrics?.topicsCompleted || 0} موضوع</p>
                                         </div>
-                                        <h4 className="text-xs sm:text-base font-bold text-gray-800 mb-0.5 sm:mb-1 truncate max-w-full text-center">{topThree[1]?.username || 'فاطمة علي'}</h4>
-                                        <p className="text-[10px] sm:text-xs text-gray-500 mb-0.5 sm:mb-1">متوسط</p>
-                                        <p className="text-xs sm:text-sm font-medium text-gray-700">{topThree[1]?.metrics?.topicsCompleted || 24} موضوع</p>
-                                    </div>
+                                    )}
 
                                     {/* 1st Place */}
-                                    <div className="flex flex-col items-center flex-1 -mt-2 sm:-mt-4">
-                                        <div className="relative mb-2 sm:mb-3">
-                                            <Avatar className="h-16 w-16 sm:h-24 sm:w-24 bg-gradient-to-br from-yellow-100 to-yellow-200 border-2 sm:border-4 border-yellow-400">
-                                                <AvatarFallback className="text-2xl sm:text-4xl font-bold text-yellow-700">
-                                                    {topThree[0]?.username?.charAt(0).toUpperCase() || 'م'}
-                                                </AvatarFallback>
-                                            </Avatar>
-                                            <div className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-yellow-500 text-xs sm:text-base font-bold text-white shadow-md">
-                                                1
+                                    {topThree[0] && (
+                                        <div className="flex flex-col items-center flex-1 -mt-2 sm:-mt-4">
+                                            <div className="relative mb-2 sm:mb-3">
+                                                <Avatar className="h-16 w-16 sm:h-24 sm:w-24 bg-gradient-to-br from-yellow-100 to-yellow-200 border-2 sm:border-4 border-yellow-400">
+                                                    <AvatarFallback className="text-2xl sm:text-4xl font-bold text-yellow-700">
+                                                        {topThree[0].username?.charAt(0).toUpperCase() || '?'}
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                                <div className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-yellow-500 text-xs sm:text-base font-bold text-white shadow-md">
+                                                    1
+                                                </div>
                                             </div>
+                                            <h4 className="text-sm sm:text-lg font-bold text-gray-800 mb-0.5 sm:mb-1 truncate max-w-full text-center">{topThree[0].username || '-'}</h4>
+                                            <p className="text-[10px] sm:text-xs text-yellow-600 font-semibold mb-0.5 sm:mb-1">{topThree[0].score?.toFixed(1) || 0} نقطة</p>
+                                            <p className="text-xs sm:text-base font-semibold text-gray-800">{topThree[0].metrics?.topicsCompleted || 0} موضوع</p>
                                         </div>
-                                        <h4 className="text-sm sm:text-lg font-bold text-gray-800 mb-0.5 sm:mb-1 truncate max-w-full text-center">{topThree[0]?.username || 'محمد حسين'}</h4>
-                                        <p className="text-[10px] sm:text-xs text-yellow-600 mb-0.5 sm:mb-1">متقدم</p>
-                                        <p className="text-xs sm:text-base font-semibold text-gray-800">{topThree[0]?.metrics?.topicsCompleted || 22} موضوع</p>
-                                    </div>
+                                    )}
 
                                     {/* 3rd Place */}
-                                    <div className="flex flex-col items-center flex-1">
-                                        <div className="relative mb-2 sm:mb-3">
-                                            <Avatar className="h-14 w-14 sm:h-20 sm:w-20 bg-gradient-to-br from-orange-100 to-orange-200 border-2 sm:border-4 border-orange-300">
-                                                <AvatarFallback className="text-xl sm:text-3xl font-bold text-orange-700">
-                                                    {topThree[2]?.username?.charAt(0).toUpperCase() || 'أ'}
-                                                </AvatarFallback>
-                                            </Avatar>
-                                            <div className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 flex h-5 w-5 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-orange-500 text-xs sm:text-sm font-bold text-white shadow-md">
-                                                3
+                                    {topThree[2] && (
+                                        <div className="flex flex-col items-center flex-1">
+                                            <div className="relative mb-2 sm:mb-3">
+                                                <Avatar className="h-16 w-16 sm:h-24 sm:w-24 bg-gradient-to-br from-orange-100 to-orange-200 border-2 sm:border-4 border-orange-300">
+                                                    <AvatarFallback className="text-xl sm:text-3xl font-bold text-orange-700">
+                                                        {topThree[2].username?.charAt(0).toUpperCase() || '?'}
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                                <div className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 flex h-5 w-5 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-orange-500 text-xs sm:text-sm font-bold text-white shadow-md">
+                                                    3
+                                                </div>
                                             </div>
+                                            <h4 className="text-xs sm:text-base font-bold text-gray-800 mb-0.5 sm:mb-1 truncate max-w-full text-center">{topThree[2].username || '-'}</h4>
+                                            <p className="text-[10px] sm:text-xs text-orange-600 font-semibold mb-0.5 sm:mb-1">{topThree[2].score?.toFixed(1) || 0} نقطة</p>
+                                            <p className="text-xs sm:text-sm font-medium text-gray-700">{topThree[2].metrics?.topicsCompleted || 0} موضوع</p>
                                         </div>
-                                        <h4 className="text-xs sm:text-base font-bold text-gray-800 mb-0.5 sm:mb-1 truncate max-w-full text-center">{topThree[2]?.username || 'أحمد محمد'}</h4>
-                                        <p className="text-[10px] sm:text-xs text-gray-500 mb-0.5 sm:mb-1">مبتدئ</p>
-                                        <p className="text-xs sm:text-sm font-medium text-gray-700">{topThree[2]?.metrics?.topicsCompleted || 28} موضوع</p>
-                                    </div>
+                                    )}
                                 </>
                             )}
                         </div>
@@ -241,42 +247,52 @@ export default function LeaderboardPage() {
                             {!loading && !error && rest.map((entry, idx) => {
                                 const isCurrentUser = entry.userId === student?.userId
                                 const displayRank = entry.rank || (idx + 4)
+                                
+                                // Determine level based on score
+                                const getLevel = (score: number) => {
+                                    if (score >= 100) return { label: 'متقدم', color: 'text-blue-500' }
+                                    if (score >= 50) return { label: 'متوسط', color: 'text-blue-500' }
+                                    return { label: 'مبتدئ', color: 'text-blue-500' }
+                                }
+                                const level = getLevel(entry.score || 0)
 
                                 return (
                                     <div
-                                        key={entry.rank || idx}
-                                        className={`flex items-center justify-between py-3 px-4 rounded-lg ${isCurrentUser ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50'
+                                        key={entry.userId || entry.rank || idx}
+                                        className={`flex items-center justify-between py-3 sm:py-4 px-3 sm:px-4 rounded-xl gap-3 sm:gap-4 ${isCurrentUser ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50'
                                             }`}
                                     >
-                                        <div className="flex items-center gap-4 flex-1">
-                                           <div className="flex flex-col items-end">
-                                            <span className="text-base font-bold text-gray-800">
+                                        {/* Left side - Stats */}
+                                        <div className="flex flex-col items-start flex-shrink-0">
+                                            <span className="text-sm sm:text-base font-bold text-gray-800">
+                                                {Math.round(entry.metrics?.avgCompletionTime || 0)} ساعة
+                                            </span>
+                                            <span className="text-xs sm:text-sm text-gray-500">
                                                 {entry.metrics?.topicsCompleted || 0} موضوع
                                             </span>
-                                            <span className="text-xs text-gray-500">
-                                                {entry.metrics?.totalSessions || 20} جلسة
+                                        </div>
+
+                                        {/* Middle - Name and Level */}
+                                        <div className="flex flex-col items-center text-center flex-1 min-w-0">
+                                            <div className="flex items-center gap-1 sm:gap-2">
+                                                <span className="text-sm sm:text-base font-bold text-gray-800 truncate max-w-[120px] sm:max-w-none">
+                                                    {entry.username || '-'}
+                                                </span>
+                                                {isCurrentUser && (
+                                                    <span className="text-[10px] sm:text-xs text-blue-600 bg-blue-100 px-1 sm:px-2 py-0.5 rounded-md font-medium whitespace-nowrap flex-shrink-0">
+                                                        أنت
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <span className={`text-xs sm:text-sm ${level.color}`}>
+                                                {level.label}
                                             </span>
                                         </div>
-                                            <div className="flex flex-col text-right">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-base font-bold text-gray-800">
-                                                        {entry.username || '-'}
-                                                    </span>
-                                                    {isCurrentUser && (
-                                                        <span className="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded-md font-medium">
-                                                            أنت
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                <span className="text-xs text-blue-500">
-                                                    {entry.metrics?.avgCompletionTime ? `${entry.metrics.avgCompletionTime} دقيقة` : 'متوسط'}
-                                                </span>
-                                            </div>
+
+                                        {/* Right side - Rank */}
+                                        <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-white border-2 border-gray-200 text-base sm:text-lg font-bold text-gray-700 flex-shrink-0">
+                                            {displayRank}
                                         </div>
-                                           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white border-2 border-gray-200 text-sm font-bold text-gray-700">
-                                                {displayRank}
-                                            </div>
-                                      
                                     </div>
                                 )
                             })}
