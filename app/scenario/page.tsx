@@ -492,13 +492,13 @@ export default function ScenarioPage() {
                     {recordedAudio ? (
                       <>
                         {/* Playback Controls with Waveform */}
-                        <div className="flex flex-row gap-2 md:gap-3 flex-row-reverse items-center w-full max-w-full justify-center px-2">
+                        <div className="flex flex-row gap-3 md:gap-3 flex-row-reverse items-center justify-center px-2">
                           <Image 
                             src="/images/audioWave.png" 
                             alt="Waveform" 
                             width={310}
                             height={27}
-                            className="max-w-[150px] xs:max-w-[150px] sm:max-w-[200px] md:max-w-[310px] w-full h-10 sm:h-10 md:h-12 flex-1 min-w-0"
+                            className="max-w-[150px] xs:max-w-[150px] sm:max-w-[200px] md:max-w-[310px] h-10 sm:h-10 md:h-12"
                           />
                           <button
                             onClick={handlePlayClick}
@@ -511,7 +511,7 @@ export default function ScenarioPage() {
                                 alt="Pause" 
                                 width={48} 
                                 height={48}
-                                className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12"
+                                className="w-12 h-12 sm:w-12 sm:h-12 md:w-12 md:h-12"
                               />
                             ) : (
                               <Image 
@@ -519,7 +519,7 @@ export default function ScenarioPage() {
                                 alt="Play" 
                                 width={48} 
                                 height={48}
-                                className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12"
+                                className="w-12 h-12 sm:w-12 sm:h-12 md:w-12 md:h-12"
                               />
                             )}
                           </button>
@@ -533,7 +533,7 @@ export default function ScenarioPage() {
                               alt="Discard" 
                               width={48} 
                               height={48}
-                              className="w-10 h-10 sm:w-10 sm:h-10 md:w-12 md:h-12"
+                              className="w-12 h-12 sm:w-12 sm:h-12 md:w-12 md:h-12"
                             />
                           </button>
                         </div>
@@ -570,7 +570,7 @@ export default function ScenarioPage() {
                                   alt="Record" 
                                   width={48} 
                                   height={48}
-                                  className="w-10 h-10 sm:w-10 sm:h-10 md:w-12 md:h-12 flex-shrink-0"
+                                  className="w-14 h-14 sm:w-10 sm:h-10 md:w-12 md:h-12 flex-shrink-0"
                                 />
                               </div>
                             ) : (
@@ -587,7 +587,7 @@ export default function ScenarioPage() {
                                   alt="Record" 
                                   width={48} 
                                   height={48}
-                                  className="w-10 h-10 sm:w-10 sm:h-10 md:w-12 md:h-12 flex-shrink-0"
+                                  className="w-14 h-14 sm:w-10 sm:h-10 md:w-12 md:h-12 flex-shrink-0"
                                 />
                               </div>
                             )}
