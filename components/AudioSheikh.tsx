@@ -54,9 +54,6 @@ export default function LanguageLearningInterface({
 
   console.log("arabicAudioUrl", targetPhraseChinese, targetPhrasePinyin);
 
-  // pauseAllOtherAudios is defined below where we also reset progress so the top bar stays in sync
-
-  // Stop all audio when forceStopAudio becomes true
   useEffect(() => {
     if (forceStopAudio) {
       if (arabicAudioRef.current) {
@@ -277,7 +274,7 @@ export default function LanguageLearningInterface({
               overflow: 'hidden'
             }}
           >
-            <div className="relative w-full aspect-square" style={{ minHeight: !showDiv ? 300 : 'auto' }}>
+            <div className="relative w-full aspect-square md:min-h-auto" style={{ minHeight: !showDiv ? 300 : 300, minWidth: !showDiv ? 300 : 300 }}>
               <Image
                 src={scenarioImageUrl}
                 alt="Scenario Context"
@@ -298,7 +295,9 @@ export default function LanguageLearningInterface({
           </h1> */}
 
           {/* Audio Row: Icon + Pinyin + Play Button */}
-          <div className="flex items-center justify-center gap-3 text-gray-500">
+          {
+            showDiv && (
+ <div className="flex items-center justify-center gap-3 text-gray-500">
             <button
               onClick={handlePronunciationPlay}
               className="w-8 h-8 rounded-full bg-[#35AB4E] flex items-center justify-center shadow-md active:scale-95 transition-transform"
@@ -313,6 +312,9 @@ export default function LanguageLearningInterface({
                <Volume2 className="w-5 h-5 opacity-60" />
 
           </div>
+            )
+          }
+         
         </div>
 
       </div>

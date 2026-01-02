@@ -35,14 +35,14 @@ export default function ProgressBar({
     return (
         <div className="" dir={effectiveDir}>
             <div className="mx-auto">
-                <div className={`flex gap-4 items-center mb-6 ${effectiveDir === 'rtl' ? 'flex-row' : ''}`}>
+                <div className={`flex gap-2 sm:gap-4 items-center mb-6 flex-wrap sm:flex-nowrap ${effectiveDir === 'rtl' ? 'flex-row' : ''}`}>
                     <button
                     onClick={onClick}
-                        className="inline-flex items-center gap-[4px] h-[33px] py-[6px] px-[16px] opacity-100 rounded-[32px] bg-[#E5E5E5] border-b-2 border-b-[#636363] text-gray-600 transition-colors"
+                        className="inline-flex items-center gap-[4px] h-[33px] py-[6px] px-[10px] sm:px-[16px] opacity-100 rounded-[32px] bg-[#E5E5E5] border-b-2 border-b-[#636363] text-gray-600 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base"
                     >
                         {title} ←
                     </button>
-                    <h2 className="font-inter-semibold-20 align-middle">{`${unit} ${lesson}`}</h2>
+                    <div className="font-inter-semibold-20 align-middle text-xs sm:text-sm md:text-base break-words">{`${unit} ${lesson}`}</div>
                 </div>
 
                 <div className="bg-white rounded-lg shadow-sm p-1">
