@@ -12,6 +12,9 @@ import {
   Loader2,
   X,
   Pause,
+  Sparkles,
+  Lightbulb,
+  Target,
 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { sessionsApi, Scenario } from "@/lib/api";
@@ -478,6 +481,7 @@ export default function ScenarioPage() {
                   imageWidth={360}
                   imageHeight={360}
                   forceStopAudio={isVideoModalOpen}
+                  hasSubmittedSuccessfully={hasSubmittedSuccessfully}
                 />
               )}
             </>
@@ -488,14 +492,14 @@ export default function ScenarioPage() {
               {!currentScenario?.isIntroduction && (
                 <div className="w-full flex justify-center items-center py-4 sm:py-6 md:py-8">
                   <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 w-full max-w-full overflow-hidden">
-                    
+
                     {recordedAudio ? (
                       <>
                         {/* Playback Controls with Waveform */}
                         <div className="flex flex-row gap-3 md:gap-3 flex-row-reverse items-center justify-center px-2">
-                          <Image 
-                            src="/images/audioWave.png" 
-                            alt="Waveform" 
+                          <Image
+                            src="/images/audioWave.png"
+                            alt="Waveform"
                             width={310}
                             height={27}
                             className="max-w-[150px] xs:max-w-[150px] sm:max-w-[200px] md:max-w-[310px] h-10 sm:h-10 md:h-12"
@@ -506,18 +510,18 @@ export default function ScenarioPage() {
                             title={isPlaying ? "إيقاف" : "تشغيل"}
                           >
                             {isPlaying ? (
-                              <Image 
+                              <Image
                                 src="/images/pause.svg"
-                                alt="Pause" 
-                                width={48} 
+                                alt="Pause"
+                                width={48}
                                 height={48}
                                 className="w-12 h-12 sm:w-12 sm:h-12 md:w-12 md:h-12"
                               />
                             ) : (
-                              <Image 
+                              <Image
                                 src="/images/play.svg"
-                                alt="Play" 
-                                width={48} 
+                                alt="Play"
+                                width={48}
                                 height={48}
                                 className="w-12 h-12 sm:w-12 sm:h-12 md:w-12 md:h-12"
                               />
@@ -528,10 +532,10 @@ export default function ScenarioPage() {
                             className="rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 flex-shrink-0"
                             title="حذف التسجيل"
                           >
-                            <Image 
+                            <Image
                               src="/images/cross.svg"
-                              alt="Discard" 
-                              width={48} 
+                              alt="Discard"
+                              width={48}
                               height={48}
                               className="w-12 h-12 sm:w-12 sm:h-12 md:w-12 md:h-12"
                             />
@@ -540,61 +544,63 @@ export default function ScenarioPage() {
                       </>
                     ) : (
                       <>
-                      <div className="w-full max-w-full px-2">
-                        <div className="w-full">
-                        {
-                          <button
-                            onClick={handleRecordClick}
-                            disabled={!arabicCompleted}
-                            className={`relative rounded-full flex items-center justify-center transition-all duration-300 w-full ${!arabicCompleted
-                              ? " cursor-not-allowed"
-                              : isRecording
-                                ? ""
-                                : "active:scale-95 active:border-b-0 active:translate-y-[2px]"
-                              }`}
-                            title={
-                              !arabicCompleted
-                                ? "الرجاء الاستماع للصوت أولاً"
-                                : isRecording
-                                  ? "انقر لإيقاف التسجيل"
-                                  : "انقر للتسجيل"
+                        <div className="w-full max-w-full px-2">
+                          <div className="w-full">
+                            {
+                              <button
+                                onClick={handleRecordClick}
+                                disabled={!arabicCompleted}
+                                className={`relative rounded-full flex items-center justify-center transition-all duration-300 w-full ${!arabicCompleted
+                                  ? " cursor-not-allowed"
+                                  : isRecording
+                                    ? ""
+                                    : arabicCompleted && chineseCompleted && !recordedAudio && !hasSubmittedSuccessfully
+                                      ? "animate-guide-glow"
+                                      : "active:scale-95 active:border-b-0 active:translate-y-[2px]"
+                                  }`}
+                                title={
+                                  !arabicCompleted
+                                    ? "الرجاء الاستماع للصوت أولاً"
+                                    : isRecording
+                                      ? "انقر لإيقاف التسجيل"
+                                      : "انقر للتسجيل"
+                                }
+                              >
+                                {isRecording ? (
+                                  <div className="flex flex-row gap-2 md:gap-3 flex-row-reverse items-center justify-center w-full">
+                                    <div className="flex-1 min-w-0 max-w-[150px] xs:max-w-[150px] sm:max-w-[200px] md:max-w-[310px] h-10 sm:h-10 md:h-12 flex items-center">
+                                      <AnimatedWaveform />
+                                    </div>
+                                    <Image
+                                      src="/images/audio.svg"
+                                      alt="Record"
+                                      width={48}
+                                      height={48}
+                                      className="w-14 h-14 sm:w-10 sm:h-10 md:w-12 md:h-12 flex-shrink-0"
+                                    />
+                                  </div>
+                                ) : (
+                                  <div className="flex flex-row gap-2 md:gap-3 flex-row-reverse items-center justify-center w-full">
+                                    <Image
+                                      src="/images/audioWave.png"
+                                      alt="Record"
+                                      width={310}
+                                      height={67}
+                                      className="max-w-[150px] xs:max-w-[150px] sm:max-w-[200px] md:max-w-[310px] w-full h-10 sm:h-10 md:h-12 flex-1 min-w-0"
+                                    />
+                                    <Image
+                                      src="/images/audio.svg"
+                                      alt="Record"
+                                      width={48}
+                                      height={48}
+                                      className="w-14 h-14 sm:w-10 sm:h-10 md:w-12 md:h-12 flex-shrink-0"
+                                    />
+                                  </div>
+                                )}
+                              </button>
                             }
-                          >
-                            {isRecording ? (
-                              <div className="flex flex-row gap-2 md:gap-3 flex-row-reverse items-center justify-center w-full">
-                                <div className="flex-1 min-w-0 max-w-[150px] xs:max-w-[150px] sm:max-w-[200px] md:max-w-[310px] h-10 sm:h-10 md:h-12 flex items-center">
-                                  <AnimatedWaveform />
-                                </div>
-                                <Image 
-                                  src="/images/audio.svg"
-                                  alt="Record" 
-                                  width={48} 
-                                  height={48}
-                                  className="w-14 h-14 sm:w-10 sm:h-10 md:w-12 md:h-12 flex-shrink-0"
-                                />
-                              </div>
-                            ) : (
-                              <div className="flex flex-row gap-2 md:gap-3 flex-row-reverse items-center justify-center w-full">
-                                <Image 
-                                  src="/images/audioWave.png" 
-                                  alt="Record" 
-                                  width={310}
-                                  height={67}
-                                  className="max-w-[150px] xs:max-w-[150px] sm:max-w-[200px] md:max-w-[310px] w-full h-10 sm:h-10 md:h-12 flex-1 min-w-0"
-                                />
-                                <Image 
-                                  src="/images/audio.svg"
-                                  alt="Record" 
-                                  width={48} 
-                                  height={48}
-                                  className="w-14 h-14 sm:w-10 sm:h-10 md:w-12 md:h-12 flex-shrink-0"
-                                />
-                              </div>
-                            )}
-                          </button>
-                        }
+                          </div>
                         </div>
-                      </div>
                       </>
                     )}
                   </div>
@@ -605,15 +611,37 @@ export default function ScenarioPage() {
         </div>
         {showFeedbackWidget && (
           <div className="w-full max-w-4xl mx-auto px-4 mb-6">
-            <div className="flex items-center gap-4 py-4 px-6 bg-gradient-to-r from-[#FFF9E6] to-[#FFF5CE] rounded-2xl shadow-sm border-l-4 border-[#FFCB08]">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#FFCB08] to-[#E5B607] flex items-center justify-center flex-shrink-0 shadow-md">
-                <span className="text-2xl">💡</span>
-              </div>
-              <div className="flex-1 text-right">
-                <p className="text-sm font-bold text-[#8B6914] mb-1">تعليق</p>
-                <p className="text-base text-gray-800 leading-relaxed">{feedback}</p>
-              </div>
-            </div>
+            {(() => {
+              const score = feedbackScore || 0;
+              const config = score >= 80 ? {
+                container: "from-[#DCFCE7] to-[#F0FDF4] border-[#22C55E]",
+                iconBg: "from-[#22C55E] to-[#16A34A]",
+                label: "text-[#166534]",
+                icon: <Sparkles className="w-6 h-6 text-white" />
+              } : score >= 50 ? {
+                container: "from-[#FFF9E6] to-[#FFF5CE] border-[#FFCB08]",
+                iconBg: "from-[#FFCB08] to-[#E5B607]",
+                label: "text-[#8B6914]",
+                icon: <Lightbulb className="w-6 h-6 text-white" />
+              } : {
+                container: "from-[#FEE2E2] to-[#FEF2F2] border-[#EF4444]",
+                iconBg: "from-[#EF4444] to-[#DC2626]",
+                label: "text-[#991B1B]",
+                icon: <Target className="w-6 h-6 text-white" />
+              };
+
+              return (
+                <div className={`flex items-center gap-4 py-4 px-6 bg-gradient-to-r ${config.container} rounded-2xl shadow-sm border-l-4`}>
+                  <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${config.iconBg} flex items-center justify-center flex-shrink-0 shadow-md`}>
+                    {config.icon}
+                  </div>
+                  <div className="flex-1 text-right">
+                    <p className={`text-sm font-bold ${config.label} mb-1`}>تعليق</p>
+                    <p className="text-base text-gray-800 leading-relaxed">{feedback}</p>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         )}
         <div

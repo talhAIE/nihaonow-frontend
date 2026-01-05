@@ -16,13 +16,15 @@ export default function ProgressBar({
     progress = 0,
     dir,
     onClick,
-    title="تخطي"
+    title = "تخطي"
 }: ProgressBarProps) {
     const [effectiveDir, setEffectiveDir] = useState<'ltr' | 'rtl'>(dir ?? 'rtl');
-      const router = useRouter();
+    const [mounted, setMounted] = useState(false);
+    const router = useRouter();
 
 
     useEffect(() => {
+        setMounted(true);
         if (!dir && typeof document !== 'undefined') {
             const d = (document.documentElement?.dir as 'ltr' | 'rtl') || 'rtl';
             setEffectiveDir(d);
@@ -37,12 +39,14 @@ export default function ProgressBar({
             <div className="mx-auto">
                 <div className={`flex gap-2 sm:gap-4 items-center mb-6 flex-wrap sm:flex-nowrap ${effectiveDir === 'rtl' ? 'flex-row' : ''}`}>
                     <button
-                    onClick={onClick}
+                        onClick={onClick}
                         className="inline-flex items-center gap-[4px] h-[33px] py-[6px] px-[10px] sm:px-[16px] opacity-100 rounded-[32px] bg-[#E5E5E5] border-b-2 border-b-[#636363] text-gray-600 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base"
                     >
                         {title} ←
                     </button>
-                    <div className="font-inter-semibold-20 align-middle text-xs sm:text-sm md:text-base break-words">{`${unit} ${lesson}`}</div>
+                    <div className="font-inter-semibold-20 align-middle text-xs sm:text-sm md:text-base break-words">
+                        {mounted ? `${unit} ${lesson}` : "\u00A0"}
+                    </div>
                 </div>
 
                 <div className="bg-white rounded-lg shadow-sm p-1">
