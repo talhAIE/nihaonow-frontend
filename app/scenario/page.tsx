@@ -15,6 +15,7 @@ import {
   Sparkles,
   Lightbulb,
   Target,
+  Square,
 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { sessionsApi, Scenario } from "@/lib/api";
@@ -571,13 +572,9 @@ export default function ScenarioPage() {
                                     <div className="flex-1 min-w-0 max-w-[150px] xs:max-w-[150px] sm:max-w-[200px] md:max-w-[310px] h-10 sm:h-10 md:h-12 flex items-center">
                                       <AnimatedWaveform />
                                     </div>
-                                    <Image
-                                      src="/images/audio.svg"
-                                      alt="Record"
-                                      width={48}
-                                      height={48}
-                                      className="w-14 h-14 sm:w-10 sm:h-10 md:w-12 md:h-12 flex-shrink-0"
-                                    />
+                                    <div className="w-12 h-12 md:w-12 md:h-12 rounded-full bg-white border-[3px] border-[#FFCB08] flex items-center justify-center shadow-lg animate-pulse flex-shrink-0">
+                                      <Square className="w-6 h-6 text-red-500" />
+                                    </div>
                                   </div>
                                 ) : (
                                   <div className="flex flex-row gap-2 md:gap-3 flex-row-reverse items-center justify-center w-full">
