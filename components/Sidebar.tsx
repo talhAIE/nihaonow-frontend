@@ -95,38 +95,42 @@ export default function Sidebar() {
       />
 
       <aside
-        className={`fixed top-0 h-screen z-50 transform transition-transform duration-300 ease-in-out ${offscreenClass} ${posClasses} md:translate-x-0 w-[200px] md:top-4 md:bottom-4 md:h-auto bg-[#35AB4E] rounded-[20px] shadow-lg overflow-hidden flex flex-col`}
+        className={`fixed top-4 z-50 transform transition-transform duration-300 ease-in-out ${offscreenClass} ${posClasses} md:translate-x-0 w-[280px] md:w-[260px] lg:w-[280px] bg-[#35AB4E] rounded-[20px] shadow-lg overflow-hidden flex flex-col`}
+        style={{ height: 'fit-content' }}
       >
           <div className="flex flex-col items-center pt-6 pb-4 px-4">
-          <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center mb-3 shadow-md">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center">
-              <User size={28} className="text-white" />
+          <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mb-4 shadow-md">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center">
+              <User size={32} className="text-white" />
             </div>
           </div>
-          <div className="text-white font-bold text-lg truncate">{displayName}</div>
+          <div className="text-white font-bold text-xl mb-2 truncate">{displayName}</div>
         </div>
 
-        <nav className="flex-1 px-3 pb-4">
+        <nav className="px-4 py-3">
           <ul className="flex flex-col gap-1">
             {navItems.map((item) => {
-              const isActive = pathname === item.href;
+              const isActive = pathname === item.href || 
+                             (item.href === '/student/dashboard' && pathname === '/') ||
+                             (item.href === '/leaderboard' && pathname.startsWith('/leaderboard'));
               return (
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className={`flex items-center ${isRtl ? 'flex-row-reverse' : 'flex-row'} px-4 py-2 h-[40px] gap-[10px] rounded-[12px] transition-colors ${isActive
-                      ? 'bg-[#2A893E] text-white'
-                      : 'text-white/90 hover:bg-white/10'
-                      }`}
+                    className={`flex items-center ${isRtl ? 'flex-row-reverse' : 'flex-row'} px-6 py-4 h-[70px] gap-4 rounded-xl transition-all ${isActive
+                      ? 'bg-white/10 text-white shadow-md scale-[1.02]'
+                      : 'text-white/80 hover:bg-white/5 hover:text-white'}`}
                     onClick={() => {
                       if (typeof window !== 'undefined' && window.innerWidth < 768) {
                         setSidebarOpen(false);
                       }
                     }}
                   >
-                    <span className={`${isRtl ? 'text-sm font-medium text-right truncate flex-1' : 'text-sm font-medium text-left truncate flex-1'}`}>{item.label}</span>
-                    <span className="w-[24px] flex items-center justify-center shrink-0">
-                      <item.Icon size={18} />
+                    <span className={`${isRtl ? 'text-right' : 'text-left'} text-lg font-medium truncate flex-1`}>
+                      {item.label}
+                    </span>
+                    <span className="w-8 h-8 flex items-center justify-center shrink-0">
+                      <item.Icon size={24} className={isActive ? 'text-white' : 'text-white/80'} />
                     </span>
                   </Link>
                 </li>
@@ -135,15 +139,15 @@ export default function Sidebar() {
           </ul>
         </nav>
 
-        <div className="p-3 mt-auto">
+        <div className="p-3">
           <button
             onClick={() => handleLogout()}
             aria-label="Logout"
-            className={`w-[90%] mx-auto h-[40px] flex items-center ${isRtl ? 'flex-row' : 'flex-row-reverse'} px-[12px] py-[8px] gap-[10px] rounded-[12px] bg-[#FBD4D3] text-[#8D1716] transition-colors`}
+            className={`w-[90%] mx-auto min-h-[56px] flex items-center ${isRtl ? 'flex-row' : 'flex-row-reverse'} px-4 py-2 rounded-[12px] bg-[#FBD4D3] text-[#8D1716] transition-colors`}
           >
-            <span className="text-[16px] font-semibold leading-[100%] tracking-[0%] leading-trim-none truncate flex-1">تسجيل الخروج</span>
-            <span className="w-[24px] flex items-center justify-center shrink-0">
-              <LogOut size={18} className="text-[#8D1716]" />
+            <span className="text-[18px] font-semibold leading-normal tracking-[0%] flex-1 text-ellipsis overflow-hidden">تسجيل الخروج</span>
+            <span className="w-[28px] flex items-center justify-center shrink-0 whitespace-nowrap">
+              <LogOut size={20} className="text-[#8D1716]" />
             </span>
           </button>
         </div>

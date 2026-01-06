@@ -264,6 +264,9 @@ export interface UnifiedLeaderboardEntry {
   username: string;
   score: number;
   metrics: LeaderboardMetrics;
+  positionChange?: number;
+  school?: string;
+  avatarUrl?: string;
 }
 
 export interface UnifiedLeaderboardResponse {

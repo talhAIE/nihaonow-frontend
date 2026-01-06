@@ -22,13 +22,15 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     return (
         <div className="flex min-h-screen">
             {shouldShowSidebar && !state.isLoggingOut && (
-                <div className="hidden min-w-2 md:block">
+                <div className="hidden md:block w-[24px] flex-shrink-0">
                     <AuthSidebar />
                 </div>
             )}
-            <main className="flex-1 w-full transition-all bg-white duration-200 md:pt-6 pt-0 md:pt-8" >
+            <main className="flex-1 w-full transition-all bg-white duration-200 pt-0 px-4 md:pl-6 md:pr-8 overflow-x-hidden" >
                 {!state.isLoggingOut && <ConditionalHeader />}
-                {!state.isLoggingOut && children}
+                <div className="max-w-full">
+                    {!state.isLoggingOut && children}
+                </div>
             </main>
         </div>
     )

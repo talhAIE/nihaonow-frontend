@@ -1,9 +1,9 @@
 "use client"
 
-import { useEffect, useState, useMemo, useCallback } from 'react'
+import { useEffect, useState, useMemo, useCallback, useRef } from 'react'
+import Image from 'next/image';
 
 import { Card, CardContent } from "@/components/ui/card"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { leaderboardApi } from '@/lib/api'
 import type { UnifiedLeaderboardEntry, UnifiedLeaderboardResponse } from '@/lib/types'
 import { useAppContext } from '@/context/AppContext'
@@ -12,10 +12,15 @@ export default function LeaderboardPage() {
     const { dir } = useAppContext()
     const isRtl = dir == 'rtl'
 
+    // Track if we had initial cached data to avoid dependency on entries.length
+    const hadInitialCachedData = useRef(false)
+
     // Initialize state with cached data if available (instant load)
     const [entries, setEntries] = useState<UnifiedLeaderboardEntry[]>(() => {
         const cached = leaderboardApi.getCachedLeaderboard(100, 0)
-        return cached?.leaderboard ?? []
+        const cachedEntries = cached?.leaderboard ?? []
+        hadInitialCachedData.current = cachedEntries.length > 0
+        return cachedEntries
     })
     const [loading, setLoading] = useState(false)
     const [student, setStudent] = useState<UnifiedLeaderboardEntry | null>(() => {
@@ -34,7 +39,7 @@ export default function LeaderboardPage() {
         return null
     })
     const [error, setError] = useState<string | null>(null)
-    const [selectedTab, setSelectedTab] = useState<'weekly' | 'monthly' | 'all'>('weekly')
+    const [selectedTab, setSelectedTab] = useState<'weekly' | 'monthly' | 'all'>('all')
 
     useEffect(() => {
         let mounted = true
@@ -42,7 +47,7 @@ export default function LeaderboardPage() {
 
         const loadAll = async () => {
             // If we already have cached data, don't show loading
-            const hasCachedData = entries.length > 0
+            const hasCachedData = hadInitialCachedData.current
             if (!hasCachedData) {
                 setLoading(true)
             }
@@ -118,16 +123,16 @@ export default function LeaderboardPage() {
     const rest = useMemo(() => entries.slice(3), [entries])
 
     return (
-        <div className="min-h-screen bg-white" dir='rtl'>
-            <div className="mx-auto w-full max-w-full px-3 sm:px-6 py-4 sm:py-6">
+        <div className="min-h-screen bg-white pt-4 sm:pt-6 pb-16" dir='rtl'>
+            <div className="mx-auto w-full max-w-4xl">
                 {/* Tabs */}
-                <div className="flex gap-2 justify-start mb-4 sm:mb-6">
+                <div className="flex gap-3 justify-start mb-6 px-4 sm:px-0">
                     <button
                         type="button"
                         onClick={() => setSelectedTab('all')}
-                        className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-medium transition-all ${selectedTab === 'all'
-                                ? 'bg-[#35AB4E] text-white border-b-2 border-[#20672F]'
-                                : 'bg-[#E5E5E5] text-gray-700'
+                        className={`px-6 py-2.5 rounded-full text-sm sm:text-base font-medium transition-all ${selectedTab === 'all'
+                                ? 'bg-[#35AB4E] text-white shadow-md'
+                                : 'bg-[#F5F5F5] text-gray-700 hover:bg-gray-100'
                             }`}
                     >
                         شهري
@@ -135,9 +140,9 @@ export default function LeaderboardPage() {
                     <button
                         type="button"
                         onClick={() => setSelectedTab('monthly')}
-                        className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-medium transition-all ${selectedTab === 'monthly'
-                                ? 'bg-[#35AB4E] text-white border-b-2 border-[#20672F]'
-                                : 'bg-[#E5E5E5] text-gray-700'
+                        className={`px-6 py-2.5 rounded-full text-sm sm:text-base font-medium transition-all ${selectedTab === 'monthly'
+                                ? 'bg-[#35AB4E] text-white shadow-md'
+                                : 'bg-[#F5F5F5] text-gray-700 hover:bg-gray-100'
                             }`}
                     >
                         سنوي
@@ -145,9 +150,9 @@ export default function LeaderboardPage() {
                     <button
                         type="button"
                         onClick={() => setSelectedTab('weekly')}
-                        className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-medium transition-all ${selectedTab === 'weekly'
-                                ? 'bg-[#35AB4E] text-white border-b-2 border-[#20672F]'
-                                : 'bg-[#E5E5E5] text-gray-700'
+                        className={`px-6 py-2.5 rounded-full text-sm sm:text-base font-medium transition-all ${selectedTab === 'weekly'
+                                ? 'bg-[#35AB4E] text-white shadow-md'
+                                : 'bg-[#F5F5F5] text-gray-700 hover:bg-gray-100'
                             }`}
                     >
                         أسبوعي
@@ -155,69 +160,125 @@ export default function LeaderboardPage() {
                 </div>
 
                 {/* Top 3 Students Card */}
-                <Card className="mb-4 sm:mb-6 border-2 border-slate-200 rounded-2xl shadow-sm">
-                    <CardContent className="p-4 sm:p-8">
-                        <h2 className="text-base sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6 text-right">أفضل 3 طلاب</h2>
+                <Card className="mb-6 border-0 rounded-2xl shadow-sm relative overflow-hidden">
+                    {/* Background gradient */}
+                    <div 
+                        className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-yellow-100"
+                        style={{
+                            backgroundImage: 'linear-gradient(135deg, #FDE68A 0%, #FFFFFF 100%)'
+                        }}
+                    >
+                        <div className="hidden xl:block">
+                            {/* Decorative elements */}
+                            <div className="absolute top-0 left-0 bottom-0 w-80 -translate-x-20">
+                                <Image 
+                                    src="/images/Road Vector - 2.png" 
+                                    alt=""
+                                    width={320}
+                                    height={500}
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                            <div className="absolute top-0 left-0 bottom-0 w-48 translate-x-3">
+                                <Image 
+                                    src="/images/cup.png" 
+                                    alt=""
+                                    width={65}
+                                    height={65}
+                                    className="w-full h-full object-contain"
+                                />
+                            </div>
+                            <div className="absolute bottom-0 right-0 translate-y-52 translate-x-16">
+                                <Image 
+                                    src="/images/Road Vector -1.png" 
+                                    alt=""
+                                    width={320}
+                                    height={500}
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <CardContent className="p-6 sm:p-8 relative z-10">
+                        <div className="flex items-center gap-2 mb-6">
+                            <div className="w-6 h-6">
+                                <Image 
+                                    src="/images/cup.png" 
+                                    alt="Leaderboard"
+                                    width={24}
+                                    height={24}
+                                    className="w-full h-full object-contain"
+                                />
+                            </div>
+                            <h3 className="text-lg font-bold text-gray-800">أفضل 3 طلاب</h3>
+                        </div>
 
-                        <div className="flex items-end justify-center gap-3 sm:gap-8 max-w-3xl mx-auto">
+                        <div className="flex flex-row justify-center gap-3 sm:gap-14">
                             {topThree.length >= 1 && (
                                 <>
+                                    {/* 3rd Place */}
+                                    {topThree[2] && (
+                                        <div className="flex flex-col items-center">
+                                            <div className="relative mb-2">
+                                                <div className="h-20 w-20 rounded-full bg-white border-4 border-amber-300 flex items-center justify-center">
+                                                    <div className="h-16 w-16 rounded-full bg-amber-100 flex items-center justify-center">
+                                                        <span className="text-2xl font-bold text-amber-700">
+                                                            {topThree[2].username?.charAt(0).toUpperCase() || '?'}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div className="absolute -top-1.5 -right-1.5 h-6 w-6 flex items-center justify-center rounded-full bg-amber-500 text-sm font-bold text-white shadow-md">
+                                                    3
+                                                </div>
+                                            </div>
+                                            <h4 className="text-sm font-bold text-gray-800 mb-1 truncate w-full text-center">{topThree[2].username || '-'}</h4>
+                                            <p className="text-xs text-amber-600 font-semibold mb-1">{topThree[2].score?.toFixed(1) || 0} نقطة</p>
+                                            <p className="text-xs text-gray-700">{topThree[2].metrics?.topicsCompleted || 0} موضوع</p>
+                                        </div>
+                                    )}
+
                                     {/* 2nd Place */}
                                     {topThree[1] && (
-                                        <div className="flex flex-col items-center flex-1">
-                                            <div className="relative mb-2 sm:mb-3">
-                                                <Avatar className="h-16 w-16 sm:h-24 sm:w-24 bg-gradient-to-br from-gray-100 to-gray-200 border-2 sm:border-4 border-gray-300">
-                                                    <AvatarFallback className="text-xl sm:text-3xl font-bold text-gray-700">
-                                                        {topThree[1].username?.charAt(0).toUpperCase() || '?'}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                                <div className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 flex h-5 w-5 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-gray-400 text-xs sm:text-sm font-bold text-white shadow-md">
+                                        <div className="flex flex-col items-center">
+                                            <div className="relative mb-2">
+                                                <div className="h-20 w-20 rounded-full bg-white border-4 border-[#35AB4E] flex items-center justify-center">
+                                                    <div className="h-16 w-16 rounded-full bg-gray-100 flex items-center justify-center">
+                                                        <span className="text-2xl font-bold text-gray-700">
+                                                            {topThree[1].username?.charAt(0).toUpperCase() || '?'}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div className="absolute -top-1.5 -right-1.5 h-6 w-6 flex items-center justify-center rounded-full bg-[#35AB4E] text-sm font-bold text-white shadow-md">
                                                     2
                                                 </div>
                                             </div>
-                                            <h4 className="text-xs sm:text-base font-bold text-gray-800 mb-0.5 sm:mb-1 truncate max-w-full text-center">{topThree[1].username || '-'}</h4>
-                                            <p className="text-[10px] sm:text-xs text-[#35AB4E] font-semibold mb-0.5 sm:mb-1">{topThree[1].score?.toFixed(1) || 0} نقطة</p>
-                                            <p className="text-xs sm:text-sm font-medium text-gray-700">{topThree[1].metrics?.topicsCompleted || 0} موضوع</p>
+                                            <h4 className="text-sm font-bold text-gray-800 mb-1 truncate w-full text-center">{topThree[1].username || '-'}</h4>
+                                            <p className="text-xs text-[#35AB4E] font-semibold mb-1">{topThree[1].score?.toFixed(1) || 0} نقطة</p>
+                                            <p className="text-xs text-gray-700">{topThree[1].metrics?.topicsCompleted || 0} موضوع</p>
                                         </div>
                                     )}
 
                                     {/* 1st Place */}
                                     {topThree[0] && (
-                                        <div className="flex flex-col items-center flex-1 -mt-2 sm:-mt-4">
-                                            <div className="relative mb-2 sm:mb-3">
-                                                <Avatar className="h-16 w-16 sm:h-24 sm:w-24 bg-gradient-to-br from-yellow-100 to-yellow-200 border-2 sm:border-4 border-yellow-400">
-                                                    <AvatarFallback className="text-2xl sm:text-4xl font-bold text-yellow-700">
-                                                        {topThree[0].username?.charAt(0).toUpperCase() || '?'}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                                <div className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-yellow-500 text-xs sm:text-base font-bold text-white shadow-md">
+                                        <div className="flex flex-col items-center">
+                                            <div className="relative mb-2">
+                                                <div className="h-20 w-20 rounded-full bg-white border-4 border-yellow-400 flex items-center justify-center">
+                                                    <div className="h-16 w-16 rounded-full bg-yellow-100 flex items-center justify-center">
+                                                        <span className="text-2xl font-bold text-yellow-700">
+                                                            {topThree[0].username?.charAt(0).toUpperCase() || '?'}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div className="absolute -top-1.5 -right-1.5 h-6 w-6 flex items-center justify-center rounded-full bg-yellow-500 text-sm font-bold text-white shadow-md">
                                                     1
                                                 </div>
                                             </div>
-                                            <h4 className="text-sm sm:text-lg font-bold text-gray-800 mb-0.5 sm:mb-1 truncate max-w-full text-center">{topThree[0].username || '-'}</h4>
-                                            <p className="text-[10px] sm:text-xs text-yellow-600 font-semibold mb-0.5 sm:mb-1">{topThree[0].score?.toFixed(1) || 0} نقطة</p>
-                                            <p className="text-xs sm:text-base font-semibold text-gray-800">{topThree[0].metrics?.topicsCompleted || 0} موضوع</p>
+                                            <h4 className="text-sm font-bold text-gray-800 mb-1 truncate w-full text-center">{topThree[0].username || '-'}</h4>
+                                            <p className="text-xs text-yellow-600 font-semibold mb-1">{topThree[0].score?.toFixed(1) || 0} نقطة</p>
+                                            <p className="text-xs text-gray-700">{topThree[0].metrics?.topicsCompleted || 0} موضوع</p>
                                         </div>
                                     )}
 
-                                    {/* 3rd Place */}
-                                    {topThree[2] && (
-                                        <div className="flex flex-col items-center flex-1">
-                                            <div className="relative mb-2 sm:mb-3">
-                                                <Avatar className="h-16 w-16 sm:h-24 sm:w-24 bg-gradient-to-br from-orange-100 to-orange-200 border-2 sm:border-4 border-orange-300">
-                                                    <AvatarFallback className="text-xl sm:text-3xl font-bold text-orange-700">
-                                                        {topThree[2].username?.charAt(0).toUpperCase() || '?'}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                                <div className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 flex h-5 w-5 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-orange-500 text-xs sm:text-sm font-bold text-white shadow-md">
-                                                    3
-                                                </div>
-                                            </div>
-                                            <h4 className="text-xs sm:text-base font-bold text-gray-800 mb-0.5 sm:mb-1 truncate max-w-full text-center">{topThree[2].username || '-'}</h4>
-                                            <p className="text-[10px] sm:text-xs text-orange-600 font-semibold mb-0.5 sm:mb-1">{topThree[2].score?.toFixed(1) || 0} نقطة</p>
-                                            <p className="text-xs sm:text-sm font-medium text-gray-700">{topThree[2].metrics?.topicsCompleted || 0} موضوع</p>
-                                        </div>
-                                    )}
                                 </>
                             )}
                         </div>
@@ -227,7 +288,17 @@ export default function LeaderboardPage() {
                 {/* All Students Card */}
                 <Card className="border-2 border-slate-200 rounded-2xl shadow-sm">
                     <CardContent className="p-4 sm:p-8">
-                        <h2 className="text-base sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6 text-right">جميع الطلاب</h2>
+                        <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-800">قائمة المتصدرين</h2>
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <span>ترتيبك: {student?.rank || '-'}</span>
+                        {student?.positionChange && student.positionChange !== 0 && (
+                            <span className={`flex items-center ${student.positionChange > 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                {student.positionChange > 0 ? '↑' : '↓'} {Math.abs(student.positionChange)}
+                            </span>
+                        )}
+                    </div>
+                </div>
 
                         <div className="space-y-3">
                             {loading && entries.length === 0 && (
@@ -259,39 +330,38 @@ export default function LeaderboardPage() {
                                 return (
                                     <div
                                         key={entry.userId || entry.rank || idx}
-                                        className={`flex items-center justify-between py-3 sm:py-4 px-3 sm:px-4 rounded-xl gap-3 sm:gap-4 ${isCurrentUser ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50'
-                                            }`}
+                                        className={`flex justify-between items-center p-4 rounded-2xl ${isCurrentUser ? 'bg-green-50' : 'bg-white'}`}
                                     >
-                                        {/* Left side - Stats */}
-                                        <div className="flex flex-col items-start flex-shrink-0">
-                                            <span className="text-sm sm:text-base font-bold text-gray-800">
-                                                {Math.round(entry.metrics?.avgCompletionTime || 0)} ساعة
-                                            </span>
-                                            <span className="text-xs sm:text-sm text-gray-500">
-                                                {entry.metrics?.topicsCompleted || 0} موضوع
-                                            </span>
-                                        </div>
-
-                                        {/* Middle - Name and Level */}
-                                        <div className="flex flex-col items-center text-center flex-1 min-w-0">
-                                            <div className="flex items-center gap-1 sm:gap-2">
-                                                <span className="text-sm sm:text-base font-bold text-gray-800 truncate max-w-[120px] sm:max-w-none">
-                                                    {entry.username || '-'}
-                                                </span>
-                                                {isCurrentUser && (
-                                                    <span className="text-[10px] sm:text-xs text-blue-600 bg-blue-100 px-1 sm:px-2 py-0.5 rounded-md font-medium whitespace-nowrap flex-shrink-0">
-                                                        أنت
-                                                    </span>
-                                                )}
+                                        {/* Right side - Name, Level, and Avatar */}
+                                        <div className="flex items-center gap-3">
+                                            
+                                            <div className="relative">
+                                                <div className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-xl font-bold">
+                                                    {entry.username?.charAt(0).toUpperCase() || '?'}
+                                                </div>
+                                                <div className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-700 border-2 border-white">
+                                                    {displayRank}
+                                                </div>
                                             </div>
-                                            <span className={`text-xs sm:text-sm ${level.color}`}>
-                                                {level.label}
-                                            </span>
+                                            <div className="text-right">
+                                                <div className="text-base font-medium text-gray-800">
+                                                    {entry.username || '-'}
+                                                </div>
+                                                <div className={`text-sm text-blue-500 font-medium`}>
+                                                    {level.label}
+                                                </div>
+                                            </div>
                                         </div>
-
-                                        {/* Right side - Rank */}
-                                        <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-white border-2 border-gray-200 text-base sm:text-lg font-bold text-gray-700 flex-shrink-0">
-                                            {displayRank}
+                                        {/* Left side - Usage Stats */}
+                                        <div className="justify-center">
+                                            <div className="flex flex-col gap-1">
+                                                <span className="text-base font-medium text-gray-700">
+                                                    {Math.round(entry.metrics?.avgCompletionTime || 0)} ساعة
+                                                </span>
+                                                <span className="text-base font-medium text-gray-700">
+                                                    {entry.metrics?.topicsCompleted || 0} موضوع
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 )
