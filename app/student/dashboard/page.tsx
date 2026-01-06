@@ -13,7 +13,7 @@ import type { ConsolidatedDashboardResponse, TopicProgress } from "@/lib/types"
 export default function Page() {
     const router = useRouter()
     const [dashboardData, setDashboardData] = useState<ConsolidatedDashboardResponse | null>(null)
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
     const [initialLoad, setInitialLoad] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [active, setActive] = useState('daily')
@@ -41,7 +41,6 @@ export default function Page() {
     useEffect(() => {
         async function fetchDashboardData() {
             try {
-                if (initialLoad) setLoading(true)
                 setError(null)
 
                 // Single API call instead of multiple
