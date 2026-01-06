@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { X, UserRound, Target, Zap, CheckSquare, BarChart3 } from "lucide-react";
 
 interface FeedbackPopupProps {
   isOpen: boolean;
@@ -36,10 +36,10 @@ export default function FeedbackPopup({ isOpen, onClose, scores, transcription }
   };
 
   const feedbackItems = scores ? [
-    { label: "النطق", value: scores.pronunciation, icon: "🗣️" },
-    { label: "الدقة", value: scores.accuracy, icon: "🎯" },
-    { label: "الطلاقة", value: scores.fluency, icon: "⚡" },
-    { label: "الاكتمال", value: scores.completeness, icon: "✅" },
+    { label: "النطق", value: scores.pronunciation, icon: <UserRound className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" /> },
+    { label: "الدقة", value: scores.accuracy, icon: <Target className="w-5 h-5 sm:w-6 sm:h-6 text-red-500" /> },
+    { label: "الطلاقة", value: scores.fluency, icon: <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500 fill-yellow-500" /> },
+    { label: "الاكتمال", value: scores.completeness, icon: <CheckSquare className="w-5 h-5 sm:w-6 sm:h-6 text-green-500" /> },
   ] : [];
 
   const totalScore = scores?.total || 0;
@@ -60,7 +60,7 @@ export default function FeedbackPopup({ isOpen, onClose, scores, transcription }
           {/* Header */}
           <div className="text-center mb-4 sm:mb-6 md:mb-8">
             <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-green-400 to-green-600 mb-3 sm:mb-4 shadow-lg">
-              <span className="text-2xl sm:text-3xl md:text-4xl">📊</span>
+              <BarChart3 className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-white" />
             </div>
             <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-1 sm:mb-2">تغذية راجعة</h2>
             <p className="text-gray-500 text-xs sm:text-sm">نتائج التسجيل الصوتي</p>
@@ -97,7 +97,7 @@ export default function FeedbackPopup({ isOpen, onClose, scores, transcription }
               {feedbackItems.map((item, index) => (
                 <div key={index} className="flex items-center justify-between p-3 sm:p-4 bg-gray-50 rounded-lg sm:rounded-xl hover:bg-gray-100 transition-colors">
                   <div className="flex items-center gap-2 sm:gap-3">
-                    <span className="text-xl sm:text-2xl">{item.icon}</span>
+                    {item.icon}
                     <span className="text-sm sm:text-base font-medium text-gray-700">{item.label}</span>
                   </div>
                   <div className="flex items-center gap-1 sm:gap-2">
