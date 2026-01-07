@@ -201,12 +201,12 @@ export default function LeaderboardPage() {
                     </div>
                     <CardContent className="p-6 sm:p-8 relative z-10">
                         <div className="flex items-center gap-2 mb-6">
-                            <div className="w-6 h-6">
+                            <div className="w-8 h-8">
                                 <Image 
-                                    src="/images/cup.png" 
+                                    src="/images/podium.png" 
                                     alt="Leaderboard"
-                                    width={24}
-                                    height={24}
+                                    width={30}
+                                    height={30}
                                     className="w-full h-full object-contain"
                                 />
                             </div>

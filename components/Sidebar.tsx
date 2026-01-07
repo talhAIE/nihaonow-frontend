@@ -95,7 +95,7 @@ export default function Sidebar() {
       />
 
       <aside
-        className={`fixed top-4 z-50 transform transition-transform duration-300 ease-in-out ${offscreenClass} ${posClasses} md:translate-x-0 w-[280px] md:w-[260px] lg:w-[280px] bg-[#35AB4E] rounded-[20px] shadow-lg overflow-hidden flex flex-col`}
+        className={`fixed top-4 z-50 transform transition-transform duration-300 ease-in-out ${offscreenClass} ${posClasses} md:translate-x-0 w-[260px] md:w-[260px] lg:w-[280px] bg-[#35AB4E] rounded-[20px] shadow-lg overflow-hidden flex flex-col`}
         style={{ height: 'fit-content' }}
       >
           <div className="flex flex-col items-center pt-6 pb-4 px-4">

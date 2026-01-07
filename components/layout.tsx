@@ -22,7 +22,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     return (
         <div className="flex min-h-screen">
             {shouldShowSidebar && !state.isLoggingOut && (
-                <div className="hidden md:block w-[24px] flex-shrink-0">
+                <div className="hidden md:block w-[32px] flex-shrink-0">
                     <AuthSidebar />
                 </div>
             )}

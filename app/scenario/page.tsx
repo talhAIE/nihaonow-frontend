@@ -439,17 +439,19 @@ export default function ScenarioPage() {
   };
 
   return (
-    <div className="h-screen flex flex-col md:pb-0 pb-8 w-full md:px-8 px-8" dir="rtl">
+    <div className="top-4 h-screen flex flex-col md:pb-0 pb-8 w-full md:px-8 px-8" dir="rtl">
       <audio ref={audioPlayerRef} className="hidden" />
-      <ProgressBar
-        unit={sessionUtils.getCurrentTopic()?.chapter?.name || ""}
-        lesson={sessionUtils.getCurrentTopic()?.name || ""}
-        progress={scenarioProgress}
-        title="يعود"
-        onClick={() => {
-          router.push('/units')
-        }}
-      />
+      <div className="mt-4">
+        <ProgressBar
+          unit={sessionUtils.getCurrentTopic()?.chapter?.name || ""}
+          lesson={sessionUtils.getCurrentTopic()?.name || ""}
+          progress={scenarioProgress}
+          title="يعود"
+          onClick={() => {
+            router.push("/units");
+          }}
+        />
+      </div>
       <div className="flex-1 overflow-y-auto md:px-4 px-0 pb-24">
         <div className="flex flex-col items-center justify-center space-y-6">
           {isLoadingScenario ? (
