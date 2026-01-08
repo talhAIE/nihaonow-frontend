@@ -120,4 +120,25 @@ export const apiEndpoints = {
         studentLevel: '/leaderboard/student-level',
         studentLevelById: (userId: number | string) => `/leaderboard/student-level/${userId}`,
     },
+    achievements: {
+        list: (userId: string | number) => `/v1/users/${userId}/achievements`,
+        certificates: (userId: string | number) => `/v1/users/${userId}/achievements/certificates`,
+        progress: (userId: string | number) => `/v1/users/${userId}/achievements/progress`,
+        check: (userId: string | number) => `/v1/users/${userId}/achievements/check`,
+        sync: (userId: string | number) => `/v1/users/${userId}/achievements/sync`,
+        claim: (userId: string | number, key: string) => `/v1/users/${userId}/achievements/${key}/claim`,
+        downloadCertificate: (userId: string | number, achievementId: string | number) => `/v1/users/${userId}/achievements/certificates/download/${achievementId}`,
+    },
+    teacher: {
+        analytics: '/teacher/analytics',
+        students: '/teacher/students',
+        studentDetails: (userId: number | string) => `/teacher/students/${userId}`,
+        usage: '/teacher/usage',
+        completions: '/teacher/completions',
+    },
+    reports: {
+        summary: '/reports/summary',
+        export: '/reports/export',
+        metrics: '/reports/metrics',
+    },
 };
