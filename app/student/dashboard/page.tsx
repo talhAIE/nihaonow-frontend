@@ -13,7 +13,7 @@ import type { ConsolidatedDashboardResponse, TopicProgress } from "@/lib/types"
 export default function Page() {
     const router = useRouter()
     const [dashboardData, setDashboardData] = useState<ConsolidatedDashboardResponse | null>(null)
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
     const [initialLoad, setInitialLoad] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [active, setActive] = useState('daily')
@@ -41,7 +41,6 @@ export default function Page() {
     useEffect(() => {
         async function fetchDashboardData() {
             try {
-                if (initialLoad) setLoading(true)
                 setError(null)
 
                 // Single API call instead of multiple
@@ -102,8 +101,9 @@ export default function Page() {
     return (
         <div className="min-h-screen bg-white" dir="rtl">
             <div className="max-w-full mx-auto px-2 sm:px-6">
+                <div className="mt-4">&nbsp;</div>
                 <h1 className="text-right font-almarai-extrabold-28 mb-8 hidden sm:block">مرحبًا بعودتك يا {userName}</h1>
-                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-8 items-stretch">
+                <div className="mt-4 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-8 items-stretch">
                     <div className="flex flex-col w-full col-span-2 sm:col-span-2 lg:col-span-1 h-auto sm:h-56 md:h-60 lg:h-64 px-4 py-6 gap-6 rounded-2xl border-2 border-slate-200 bg-white shadow-lg overflow-hidden">
                         <div className="text-right flex md:flex-row flex-col flex-shrink-0 justify-between items-start md:items-center w-full gap-3">
                             <div>
@@ -155,8 +155,15 @@ export default function Page() {
 
 
                     </div>
-                    <div className="relative flex flex-col items-center justify-center text-center w-full h-[140px] sm:h-56 md:h-60 lg:h-64 py-4 gap-3 rounded-[16px] border-2 border-transparent bg-[#FBD4D3] shadow-sm">
-                        <Image src="/images/start.png" alt="decor" width={70} height={56} className="absolute left-0.5 sm:left-1 top-1/2 -translate-y-1/2 opacity-100 sm:opacity-100" />
+
+                    <div className="relative flex flex-col items-center justify-center text-center w-full h-[140px] sm:h-56 md:h-60 lg:h-64 py-4 gap-3 rounded-[16px] border-2 border-transparent bg-[#FBD4D3] shadow-sm pl-0">
+                        <Image
+                            src="/images/start.png"
+                            alt="decor"
+                            width={70}
+                            height={56}
+                            className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-auto sm:w-[70px] sm:h-auto"
+                        />
                         <div className="relative z-10">
                             <p className="text-sm sm:text-base font-bold mb-1">أطول خط</p>
                             <h3 className="text-4xl sm:text-5xl font-extrabold mb-1">{longestStreak}</h3>
@@ -164,16 +171,22 @@ export default function Page() {
                         </div>
                     </div>
 
-                    <div className="relative flex flex-col items-center justify-center text-center w-full h-[140px] sm:h-56 md:h-60 lg:h-64 py-4 gap-3 rounded-[16px] border-2 border-transparent bg-[#FFF5CE] shadow-sm">
-                        <Image src="/images/fire.png" alt="decor" width={70} height={56} className="absolute left-1 sm:left-1 top-1/2 -translate-y-1/2 opacity-100 sm:opacity-100" />
+                    <div className="relative flex flex-col items-center justify-center text-center w-full h-[140px] sm:h-56 md:h-60 lg:h-64 py-4 gap-3 rounded-[16px] border-2 border-transparent bg-[#FFF5CE] shadow-sm pl-0">
+                        <Image
+                            src="/images/fire.png"
+                            alt="decor"
+                            width={70}
+                            height={56}
+                            className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-auto sm:w-[70px] sm:h-auto"
+                        />
                         <div className="relative z-10">
-                            <p className="text-sm sm:text-base font-bold mb-1"> الخط الحالي</p>
+                            <p className="text-sm sm:text-base font-bold mb-1">الخط الحالي</p>
                             <h3 className="text-4xl sm:text-5xl font-extrabold mb-1">{currentStreak}</h3>
                             <p className="text-sm sm:text-base">أيام</p>
                         </div>
                     </div>
 
-                   
+
                 </div>
 
                 <div className="bg-transparent sm:bg-white sm:shadow-sm h-auto py-[10px] px-0 sm:px-[16px] gap-[12px] rounded-[13px] overflow-y-auto sm:border-2 sm:border-[#E5E5E5] flex flex-col justify-start">

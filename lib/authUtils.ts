@@ -5,7 +5,6 @@ import { getCookie, getCookies, setCookie, deleteCookie, hasCookie } from 'cooki
 export function getAuthToken(): string | null {
   try {
     const val = getCookie('authToken');
-    console.log('Retrieved auth token from cookies:', val);
     if (typeof val === 'string') return val;
     // cookies-next may return a string or object depending on usage; coerce
     return val ?? null;

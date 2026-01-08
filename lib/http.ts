@@ -19,8 +19,6 @@ axiosInstance.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
         try {
             const token: string | null = getCookie('authToken') as string | null;
-            console.log('Attaching token to request:', getAuthToken());
-            console.log('Attaching token to request:', token);
             if (token && config.headers) {
                 config.headers['Authorization'] = `Bearer ${token}`;
             }
