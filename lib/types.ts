@@ -344,3 +344,52 @@ export interface ConsolidatedDashboardResponse {
   metrics: DashboardMetrics;
   calendar: DashboardCalendar;
 }
+
+// Achievements Types
+export interface Badge {
+  id: number;
+  key: string;
+  name: string;
+  description: string;
+  awardedAt?: string | null;
+  rewardClaimed?: boolean;
+  iconUrl: string;
+  pointValue: number;
+  threshold?: number;
+}
+
+export interface CategorizedAchievements {
+  category: string;
+  earned: Badge[];
+  available: Badge[];
+}
+
+export interface AchievementsResponse {
+  achievements: CategorizedAchievements[];
+  userStats: any;
+}
+
+export interface Certificate {
+  id: number;
+  key: string;
+  name: string;
+  description: string;
+  awardedAt: string | null;
+  rewardClaimed: boolean;
+  iconUrl: string;
+  pointValue: number;
+  threshold?: number;
+  unlocked?: boolean;
+}
+
+export interface CertificatesResponse {
+  certificates: {
+    earned: Certificate[];
+    locked: (Certificate & { unlocked?: boolean })[];
+  };
+  userStats: any;
+  user: {
+    username: string;
+    email: string;
+  };
+}

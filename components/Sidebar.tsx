@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from 'react';
-import { Home, Trophy, Award, Users, User, LogOut, X ,Medal,LayoutDashboard,BookCheck,TrophyIcon, Menu } from 'lucide-react';
+import { Home, Trophy, Award, Users, User, LogOut, X, Medal, LayoutDashboard, BookCheck, TrophyIcon, Menu, FileBarChart } from 'lucide-react';
 import { useAppContext } from '@/context/AppContext';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -9,9 +9,11 @@ import Link from 'next/link';
 const navItems = [
   { href: '/student/dashboard', label: 'لوحة القيادة', Icon: LayoutDashboard },
   { href: '/units', label: 'الوحدات', Icon: BookCheck },
-  // { href: '/achievements', label: 'الإنجازات', Icon: TrophyIcon },
-  { href: '/leaderboard', label: 'المتصدرين', Icon: Medal },
-  { href: '/account', label: 'حساب المستخدم', Icon: User },
+  { href: '/leaderboard', label: 'المتصدرين', Icon: Trophy },
+  { href: '/achievements', label: 'الإنجازات', Icon: Medal },
+  { href: '/reports', label: 'التقارير', Icon: FileBarChart },
+  //{ href: '/teacher', label: 'لوحة المعلم', Icon: Users },
+  { href: '/student-level', label: 'مستوى الطلاب', Icon: Award },
 ];
 
 export default function Sidebar() {

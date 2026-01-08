@@ -6,3 +6,5 @@ export { chaptersApi, topicsApi } from './services/content';
 export { sessionsApi } from './services/sessions';
 export { dashboardApi } from './services/dashboard';
 export { leaderboardApi } from './services/leaderboard';
+export { teacherApi } from './services/teacher';
+export { reportsApi } from './services/reports';
