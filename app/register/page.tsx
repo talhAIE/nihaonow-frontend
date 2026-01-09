@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useNavigation } from '@/lib/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,7 +18,7 @@ type FormData = {
 };
 
 export default function RegisterPage() {
-  const router = useRouter();
+  const { goToStudentDashboard } = useNavigation();
   const { login } = useAppContext();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -107,7 +107,7 @@ export default function RegisterPage() {
 
 
           toast({ title: 'تم بنجاح', description: 'مرحبًا بعودتك' });
-        router.push('/student/dashboard');
+        goToStudentDashboard();
       } catch (error: any) {
         console.error('Registration error:', error);
         const message = error?.response?.data?.message ?? error?.message ?? 'حدث خطأ غير متوقع';
@@ -116,7 +116,7 @@ export default function RegisterPage() {
         setIsLoading(false);
       }
     },
-    [formData, login, router, toast, validateForm]
+    [formData, login, goToStudentDashboard, toast, validateForm]
   );
 
   return (

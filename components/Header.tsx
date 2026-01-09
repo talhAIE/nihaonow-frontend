@@ -8,14 +8,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAppContext } from "@/context/AppContext";
+import { useNavigation } from '@/lib/navigation';
 import React, { useState, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { Menu, User, X, LogOut, LayoutDashboard, BookCheck, TrophyIcon, Medal, FileBarChart, Award } from "lucide-react";
 
 export default function Header() {
   const { resetOnboarding, logout, state, sidebarOpen, setSidebarOpen, dir } = useAppContext();
   const displayName = state?.user || state?.authUser?.username || 'جون دو';
-  const router = useRouter();
+  const { goToWelcome, goToLogin } = useNavigation();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -24,17 +25,17 @@ export default function Header() {
       if (!state.isAuthenticated) {
         const publicPaths = ['/welcome', '/login', '/register'];
         if (!publicPaths.includes(pathname)) {
-          router.push('/welcome');
+          goToWelcome();
         }
       }
     }, 100);
     return () => clearTimeout(timer);
-  }, [state.isAuthenticated, pathname, router]);
+  }, [state.isAuthenticated, pathname, goToWelcome]);
 
   const handleLogout = async () => {
     try {
       await logout();
-      router.push('/login');
+      goToLogin();
       // Reset logout state after a short delay to ensure navigation completes
       setTimeout(() => {
         try {

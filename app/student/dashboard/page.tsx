@@ -2,7 +2,7 @@
 import DashboardCard from "@/components/dashboard/card"
 import { ChevronLeft, ChevronRight, BookOpen, Trophy, Star, Play, Pause } from "lucide-react"
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useNavigation } from '@/lib/navigation'
 import Image from "next/image"
 import ArabicStatsChart from "@/components/dashboard/charts"
 import { dashboardApi } from "@/lib/services/dashboard"
@@ -12,7 +12,7 @@ import { sessionUtils } from "@/lib/sessionUtils"
 import type { ConsolidatedDashboardResponse, TopicProgress, UserLevelResponse, LevelDefinition } from "@/lib/types"
 
 export default function Page() {
-    const router = useRouter()
+    const { goToStudentIntroduction, goToStudentLevel } = useNavigation()
     const [dashboardData, setDashboardData] = useState<ConsolidatedDashboardResponse | null>(null)
     const [loading, setLoading] = useState(true)
     const [initialLoad, setInitialLoad] = useState(true)
@@ -29,7 +29,7 @@ export default function Page() {
             setStartingSession(topicId)
             const session = await sessionsApi.start({ topicId })
             sessionUtils.setCurrentSession(session)
-            router.push(`/student/introduction?topicId=${topicId}`)
+            goToStudentIntroduction(topicId)
         } catch (error) {
             console.error("Failed to start session:", error)
         } finally {
@@ -180,7 +180,7 @@ export default function Page() {
                                 </p>
                                 
                                 <button 
-                                    onClick={() => router.push('/student/level')}
+                                    onClick={goToStudentLevel}
                                     className="h-10 px-4 bg-[#35AB4E] hover:bg-[#2f9c46] text-white text-sm font-bold rounded-lg border-b-2 border-[#20672F] flex items-center gap-2 transition active:translate-y-[2px] active:border-b-0"
                                 >
                                      <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" strokeWidth={3} />
@@ -233,7 +233,7 @@ export default function Page() {
                                     if (wordOfTheWeek?.topicId) {
                                         handleContinue(wordOfTheWeek.topicId);
                                     } else {
-                                        router.push('/student/introduction');
+                                        goToStudentIntroduction();
                                     }
                                 }}
                                 className="h-10 px-4 bg-[#35AB4E] hover:bg-[#2f9c46] text-white text-sm font-bold rounded-lg border-b-2 border-[#20672F] flex items-center gap-2 transition active:translate-y-[2px] active:border-b-0"

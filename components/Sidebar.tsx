@@ -3,7 +3,8 @@
 import React, { useEffect } from 'react';
 import { Home, Trophy, Award, Users, User, LogOut, X, Medal, LayoutDashboard, BookCheck, TrophyIcon, Menu, FileBarChart } from 'lucide-react';
 import { useAppContext } from '@/context/AppContext';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
+import { useNavigation } from '@/lib/navigation';
 import Link from 'next/link';
 
 const navItems = [
@@ -20,7 +21,7 @@ const navItems = [
 export default function Sidebar() {
   const pathname = usePathname();
   const { state, sidebarOpen, setSidebarOpen, dir, mobileMenuOpen, setMobileMenuOpen, logout, resetOnboarding } = useAppContext();
-  const router = useRouter();
+  const { goToLogin } = useNavigation();
 
   const handleLogout = async () => {
     try {
@@ -30,7 +31,7 @@ export default function Sidebar() {
       } catch (err) { }
       setSidebarOpen?.(false);
       setMobileMenuOpen?.(false);
-      router.push('/login');
+      goToLogin();
       // Reset logout state after a short delay to ensure navigation completes
       setTimeout(() => {
         try {

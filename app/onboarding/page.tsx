@@ -2,7 +2,7 @@
 
 import OnboardingScreen from '@/components/OnboardingScreen';
 import { useAppContext } from '@/context/AppContext';
-import { useRouter } from 'next/navigation';
+import { useNavigation } from '@/lib/navigation';
 import { useEffect } from 'react';
 import { useAuthProtection } from '@/hooks/useAuthProtection';
 
@@ -10,13 +10,13 @@ export default function OnboardingPage() {
   useAuthProtection();
 
   const { state, completeOnboarding } = useAppContext();
-  const router = useRouter();
+  const { goToStudentUnits } = useNavigation();
 
   useEffect(() => {
     if (state.hasCompletedOnboarding) {
-      router.push('/student/units');
+      goToStudentUnits();
     }
-  }, [state.hasCompletedOnboarding, router]);
+  }, [state.hasCompletedOnboarding, goToStudentUnits]);
 
   if (state.hasCompletedOnboarding) {
     return null;

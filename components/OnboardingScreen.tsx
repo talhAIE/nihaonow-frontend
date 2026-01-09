@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useRouter } from "next/navigation";
+import { useNavigation } from '@/lib/navigation';
 
 interface OnboardingScreenProps {
   onComplete: (userName: string) => void;
@@ -14,12 +14,12 @@ export default function OnboardingScreen({
   onComplete,
 }: OnboardingScreenProps) {
   const [userName, setUserName] = useState("");
-  const router = useRouter();
+  const { goToStudentUnits, goToComingSoon } = useNavigation();
 
   const handleContinue = () => {
     if (userName.trim()) {
       onComplete(userName.trim());
-      router.push("/student/units");
+      goToStudentUnits();
     }
   };
 
@@ -39,9 +39,7 @@ export default function OnboardingScreen({
     setUserName(filteredValue);
   };
 
-  useEffect(() => {
-    router.prefetch("/login");
-  }, [router]);
+
 
   return (
     <div className="h-screen bg-white flex flex-col overflow-hidden">
@@ -119,7 +117,7 @@ export default function OnboardingScreen({
 
             <div className="flex justify-center pt-4">
               <Button
-                onClick={() => router.push("/coming-soon")}
+                onClick={goToComingSoon}
                 variant="outline"
                 className="py-2 px-6 bg-transparent border-2 border-white text-white hover:bg-white hover:text-brand font-medium rounded-full transition-all duration-200 text-base"
               >
@@ -174,7 +172,7 @@ export default function OnboardingScreen({
             {/* Coming Soon Button */}
             <div className="flex justify-center mt-4">
               <Button
-                onClick={() => router.push("/coming-soon")}
+                onClick={goToComingSoon}
                 variant="outline"
                 className="py-2 px-6 bg-transparent border-2 border-white text-white hover:bg-white hover:text-brand font-medium rounded-full transition-all duration-200 text-base"
               >

@@ -1,12 +1,12 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useAppContext } from '@/context/AppContext';
+import { useNavigation } from '@/lib/navigation';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 
 export default function LogoutButton() {
-  const router = useRouter();
+  const { goToLogin } = useNavigation();
   const { logout } = useAppContext();
   const { toast } = useToast();
 
@@ -17,7 +17,7 @@ export default function LogoutButton() {
       //   title: 'Success',
       //   description: 'You have been logged out',
       // });
-      router.push('/login');
+      goToLogin();
       // Reset logout state after a short delay to ensure navigation completes
       setTimeout(() => {
         try {

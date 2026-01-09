@@ -3,7 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Lock, CheckCircle, Loader2, AlertCircle } from "lucide-react";
 import Header from "@/components/Header";
-import { useRouter } from "next/navigation";
+import { useNavigation } from '@/lib/navigation';
 import { useChapters } from "@/hooks/useChapters";
 import { ChapterUI } from "@/lib/api";
 import { useAuthProtection } from "@/hooks/useAuthProtection";
@@ -11,12 +11,12 @@ import { useAuthProtection } from "@/hooks/useAuthProtection";
 export default function UnitsPage() {
   useAuthProtection();
 
-  const router = useRouter();
+  const { goToStudentTopics } = useNavigation();
   const { chapters, loading, error, refetch } = useChapters();
 
   const handleUnitClick = (chapter: ChapterUI) => {
     if (chapter.status === "active") {
-      router.push(`/student/topics?chapterId=${chapter.id}`);
+      goToStudentTopics(chapter.id);
     }
   };
 
