@@ -14,6 +14,7 @@ const navItems = [
   { href: '/student/reports', label: 'التقارير', Icon: FileBarChart },
   //{ href: '/teacher', label: 'لوحة المعلم', Icon: Users },
   { href: '/student/level', label: 'مستوى الطلاب', Icon: Award },
+  { href: '/student/account', label: 'حساب المستخدم', Icon: User },
 ];
 
 export default function Sidebar() {
@@ -48,7 +49,7 @@ export default function Sidebar() {
 
     const onResize = () => {
       try {
-        if (window.innerWidth >= 768 && sidebarOpen) {
+        if (window.innerWidth >= 1024 && sidebarOpen) {
           setSidebarOpen?.(false);
         }
       } catch (err) {
@@ -68,7 +69,7 @@ export default function Sidebar() {
   return (
     <>
       
-      <div className={`md:hidden border border-[blue] fixed top-4 ${isRtl ? 'right-4' : 'left-4'} z-60 ${mobileMenuOpen ? 'hidden' : ''}`}> 
+      <div className={`lg:hidden border border-[blue] fixed top-4 ${isRtl ? 'right-4' : 'left-4'} z-60 ${mobileMenuOpen ? 'hidden' : ''}`}> 
         <button
           onClick={() => {
             const open = !mobileMenuOpen;
@@ -90,7 +91,7 @@ export default function Sidebar() {
       </div>
 
       <div
-        className={`fixed inset-0 bg-black/30 z-50 transition-opacity duration-200 md:hidden ${sidebarOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        className={`fixed inset-0 bg-black/30 z-50 transition-opacity duration-200 lg:hidden ${sidebarOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
           }`}
         onClick={() => setSidebarOpen?.(false)}
         aria-hidden={!sidebarOpen}
@@ -114,7 +115,7 @@ export default function Sidebar() {
             {navItems.map((item) => {
               const isActive = pathname === item.href || 
                              (item.href === '/student/dashboard' && pathname === '/') ||
-                             (item.href === '/leaderboard' && pathname.startsWith('/leaderboard'));
+                             (item.href === '/student/leaderboard' && pathname.startsWith('/student/leaderboard'));
               return (
                 <li key={item.href}>
                   <Link
@@ -123,7 +124,7 @@ export default function Sidebar() {
                       ? 'bg-white/10 text-white shadow-md scale-[1.02]'
                       : 'text-white/80 hover:bg-white/5 hover:text-white'}`}
                     onClick={() => {
-                      if (typeof window !== 'undefined' && window.innerWidth < 768) {
+                      if (typeof window !== 'undefined' && window.innerWidth < 1024) {
                         setSidebarOpen(false);
                       }
                     }}
@@ -156,7 +157,7 @@ export default function Sidebar() {
 
         <button
           onClick={() => setSidebarOpen(false)}
-          className={`absolute top-4 ${isRtl ? 'right-4' : 'left-4'} p-1 rounded hover:bg-white/10 md:hidden text-white`}
+          className={`absolute top-4 ${isRtl ? 'right-4' : 'left-4'} p-1 rounded hover:bg-white/10 lg:hidden text-white`}
           aria-label="Close menu"
         >
           <X size={20} />

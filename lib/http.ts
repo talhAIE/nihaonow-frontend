@@ -106,6 +106,12 @@ export const apiEndpoints = {
         topicProgress: '/dashboard/topics/progress',
         chapterProgress: '/dashboard/chapters/progress',
     },
+    levels: {
+        list: '/levels',
+        me: '/levels/me',
+        evaluate: '/levels/evaluate',
+        sync: '/levels/sync',
+    },
     calendar: (year: number, month: number) => `/dashboard/calendar?year=${year}&month=${month}`,
     leaderboard: {
         // Unified leaderboard listing endpoint

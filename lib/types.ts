@@ -172,11 +172,35 @@ export interface CalendarResponse {
 
 // Overview / summary for the student dashboard
 export interface WordOfTheWeek {
+  id?: number;
   chinese: string;
   pinyin?: string | null;
   english?: string | null;
   audioUrl?: string | null;
   exampleSentence?: string | null;
+  weekStartDate?: string;
+  isActive?: boolean;
+}
+
+export interface LevelDefinition {
+  key: string;
+  level: number;
+  name: string;
+  minUsageHours: number;
+  minTopics: number;
+}
+
+export interface UserLevelStats {
+  usageHours: number;
+  usageHoursFloor: number;
+  topicsCompleted: number;
+  sessionsCompleted: number;
+}
+
+export interface UserLevelResponse {
+  level: LevelDefinition;
+  stats: UserLevelStats;
+  storedLevel: number;
 }
 
 export interface TopicModeSummary {
@@ -188,6 +212,7 @@ export interface TopicModeSummary {
 
 export interface DashboardOverview {
   userName?: string;
+  userEmail?: string | null;
   topicsCompleted: number;
   totalTopics: number;
   currentStreak: number;
@@ -200,6 +225,7 @@ export interface DashboardOverview {
   xpProgress?: number; // 0 - 100
   wordOfTheWeek?: WordOfTheWeek | null;
   topicModes?: TopicModeSummary[];
+  levelInfo?: LevelDefinition; // New named levels system
 }
 
 // Topic Progress types
@@ -290,7 +316,7 @@ export interface LevelInfo {
 export interface StudentLevelInfo {
   userId: number;
   username: string;
-  level: number;
+  level: number; // XP level
   xp: number;
   currentLevelXp: number;
   nextLevelXp: number;
@@ -302,6 +328,9 @@ export interface StudentLevelInfo {
   rank: number;
   totalStudents: number;
   percentile: number;
+  completedTopics: number;
+  levelDefinition?: LevelDefinition; // Named level
+  levelStats?: UserLevelStats;
 }
 
 // Consolidated Dashboard API Response

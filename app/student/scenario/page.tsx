@@ -333,7 +333,7 @@ export default function ScenarioPage() {
               "sessionFeedback",
               JSON.stringify(response.overallFeedback)
             );
-            router.push("/feedback");
+            router.push("/student/feedback");
             return;
           }
         }
@@ -448,7 +448,7 @@ export default function ScenarioPage() {
           progress={scenarioProgress}
           title="يعود"
           onClick={() => {
-            router.push("/units");
+            router.push("/student/units");
           }}
         />
       </div>

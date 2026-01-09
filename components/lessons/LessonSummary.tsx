@@ -48,7 +48,7 @@ export function LessonSummary() {
         <Button className="flex-1 py-8 text-xl font-bold bg-gray-100 text-gray-900 hover:bg-gray-200 border-none transition-all active:scale-95 shadow-none">
           Review Mistakes
         </Button>
-        <Link href="/dashboard" className="flex-1">
+        <Link href="/student/dashboard" className="flex-1">
           <Button className="w-full py-8 text-xl font-bold bg-blue-600 hover:bg-blue-700 text-white transition-all active:scale-95 shadow-lg shadow-blue-200">
             Next Lesson
             <ArrowRight className="ml-2 h-6 w-6" />

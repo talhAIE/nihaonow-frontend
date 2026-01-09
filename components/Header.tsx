@@ -10,7 +10,7 @@ import {
 import { useAppContext } from "@/context/AppContext";
 import React, { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Menu, User, X, LogOut, LayoutDashboard, BookCheck, TrophyIcon, Medal } from "lucide-react";
+import { Menu, User, X, LogOut, LayoutDashboard, BookCheck, TrophyIcon, Medal, FileBarChart, Award } from "lucide-react";
 
 export default function Header() {
   const { resetOnboarding, logout, state, sidebarOpen, setSidebarOpen, dir } = useAppContext();
@@ -66,16 +66,18 @@ export default function Header() {
 
   const navItems = [
     { href: '/student/dashboard', label: 'لوحة القيادة', Icon: LayoutDashboard },
-    { href: '/units', label: 'الوحدات', Icon: BookCheck },
-    // { href: '/achievements', label: 'الإنجازات', Icon: TrophyIcon },
-    { href: '/leaderboard', label: 'المتصدرين', Icon: Medal },
-    { href: '/account', label: 'حساب المستخدم', Icon: User },
+    { href: '/student/units', label: 'الوحدات', Icon: BookCheck },
+    { href: '/student/achievements', label: 'الإنجازات', Icon: TrophyIcon },
+    { href: '/student/leaderboard', label: 'المتصدرين', Icon: Medal },
+    { href: '/student/reports', label: 'التقارير', Icon: FileBarChart },
+    { href: '/student/level', label: 'مستوى الطلاب', Icon: Award },
+    { href: '/student/account', label: 'حساب المستخدم', Icon: User },
   ];
 
   return (
     <div className="px-4 py-4 md:px-6" dir={dir}>
 
-      <div className="md:hidden">
+      <div className="lg:hidden">
         <div
           className="flex items-center justify-between h-[84px] px-[16px] py-[14px] rounded-[13px] bg-[#35AB4E]"
           style={{ boxShadow: "0px 4px 0px 0px #20672F" }}
@@ -119,7 +121,7 @@ export default function Header() {
 
         {/* Mobile dropdown panel */}
         <div
-          className={`fixed inset-0 z-30 md:hidden ${mobileMenuOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
+          className={`fixed inset-0 z-30 lg:hidden ${mobileMenuOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
           aria-hidden={!mobileMenuOpen}
         >
           <div
@@ -167,7 +169,7 @@ export default function Header() {
           </div>
         </div>
       </div>
-      <div className="hidden md:flex items-center justify-between">
+      <div className="hidden lg:flex items-center justify-between">
         <div className="flex items-center gap-3">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

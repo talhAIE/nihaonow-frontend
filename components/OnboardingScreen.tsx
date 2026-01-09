@@ -19,7 +19,7 @@ export default function OnboardingScreen({
   const handleContinue = () => {
     if (userName.trim()) {
       onComplete(userName.trim());
-      router.push("/units");
+      router.push("/student/units");
     }
   };
 
@@ -41,7 +41,7 @@ export default function OnboardingScreen({
 
   useEffect(() => {
     router.prefetch("/login");
-  }, []);
+  }, [router]);
 
   return (
     <div className="h-screen bg-white flex flex-col overflow-hidden">

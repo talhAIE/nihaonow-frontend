@@ -26,7 +26,7 @@ export default function TopicsPage() {
     if (topic.status === "active") {
       try {
         await startSession(topic.id);
-        router.push("/introduction");
+        router.push("/student/introduction");
       } catch (err) {
         console.error("Failed to start session:", err);
       }
