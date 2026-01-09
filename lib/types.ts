@@ -173,6 +173,7 @@ export interface CalendarResponse {
 // Overview / summary for the student dashboard
 export interface WordOfTheWeek {
   id?: number;
+  topicId?: number | null;
   chinese: string;
   pinyin?: string | null;
   english?: string | null;

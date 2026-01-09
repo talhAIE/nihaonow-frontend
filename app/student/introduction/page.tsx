@@ -8,10 +8,11 @@ import VideoModal from "@/components/VideoModal";
 import LanguageLearningInterface from "@/components/AudioSheikh";
 import { sessionUtils } from "@/lib/sessionUtils";
 import { Scenario } from "@/lib/api";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthProtection } from "@/hooks/useAuthProtection";
 import LogoutButton from "@/components/LogoutButton";
 import ProgressBar from "@/components/ui/progressBar";
+import { sessionsApi } from "@/lib/api";
 
 export default function SheikhPage() {
   useAuthProtection();
@@ -27,18 +28,37 @@ export default function SheikhPage() {
   const [skipIntro, setSkipIntro] = useState(false);
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const topicIdParam = searchParams.get("topicId");
 
   useEffect(() => {
-    const scenarios = sessionUtils.getScenarios();
-    const introScenario = scenarios.find((scenario) => scenario.isIntroduction);
-    console.log("Introduction scenario:", introScenario);
-    console.log("All scenarios:", scenarios);
+    async function loadData() {
+      const currentTopic = sessionUtils.getCurrentTopic();
+      
+      // If we have a topicId in URL but no session or different topic in session
+      if (topicIdParam && (!currentTopic || currentTopic.id.toString() !== topicIdParam)) {
+        try {
+          setLoading(true);
+          const session = await sessionsApi.start({ topicId: parseInt(topicIdParam) });
+          sessionUtils.setCurrentSession(session);
+        } catch (error) {
+          console.error("Failed to start session from topicId:", error);
+        }
+      }
 
-    if (introScenario) {
-      setIntroductionScenario(introScenario);
+      const scenarios = sessionUtils.getScenarios();
+      const introScenario = scenarios.find((scenario) => scenario.isIntroduction);
+      console.log("Introduction scenario:", introScenario);
+      console.log("All scenarios:", scenarios);
+
+      if (introScenario) {
+        setIntroductionScenario(introScenario);
+      }
+      setLoading(false);
     }
-    setLoading(false);
-  }, []);
+    
+    loadData();
+  }, [topicIdParam]);
 
   const handleUserGuideClick = () => {
     setIsVideoModalOpen(true);
@@ -104,9 +124,18 @@ export default function SheikhPage() {
             setSkipIntro(true);
             setProgress(100);
             handleNextClick();
-
           }}
         />
+
+        {/* Topic Title Section */}
+        <div className="mt-8 mb-4 text-center">
+          <h2 className="text-3xl font-black text-gray-900 font-almarai-extrabold">
+            {sessionUtils.getCurrentTopic()?.name || "المقدمة"}
+          </h2>
+          <p className="text-gray-500 font-bold mt-2">
+            {sessionUtils.getCurrentTopic()?.subtitle || "استعد لبدء الدرس الجديد"}
+          </p>
+        </div>
 
         <div className="mb-8">
           {loading ? (

@@ -232,13 +232,13 @@ export default function AchievementsPage() {
       {activeTab === 'awards' ? (
         <div className="animate-in fade-in slide-in-from-bottom-3 duration-500 text-right">
 
-           {/* Desktop Map - Hidden on mobile */}
-           <div className="hidden md:block">
+           {/* Desktop Map - Hidden on mobile/tablet */}
+           <div className="hidden lg:block">
              <AwardsMap achievements={mapData} />
            </div>
 
-           {/* Mobile Map - Hidden on desktop */}
-           <div className="block md:hidden">
+           {/* Mobile/Tablet Map - Shown up to lg */}
+           <div className="block lg:hidden">
              <MobileAwardsMap achievements={mapData} />
            </div>
         </div>
