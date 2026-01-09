@@ -32,16 +32,16 @@ export default function StudentLayout({
   // We can render Sidebar directly here since we know it's the student area
   return (
     <div className="flex min-h-screen bg-white">
-      {/* Desktop Sidebar */}
-      <div className="hidden md:block w-[280px] flex-shrink-0 m-4">
+      {/* Desktop Sidebar - Hidden on tablets to prevent cramped layout */}
+      <div className="hidden lg:block w-[280px] flex-shrink-0 m-4">
          <Sidebar />
       </div>
 
       {/* Mobile Header logic is inside ConditionalHeader or we can place it here */}
       
-      <main className="flex-1 w-full transition-all duration-200 pt-0 px-4 md:px-8 py-8 overflow-x-hidden md:w-[calc(100%-280px)]" >
-          {/* Mobile Header */}
-          <div className="md:hidden mb-6">
+      <main className="flex-1 w-full transition-all duration-200 pt-0 px-4 md:px-8 py-8 overflow-x-hidden lg:w-[calc(100%-280px)]" >
+          {/* Mobile/Tablet Header */}
+          <div className="lg:hidden mb-6">
              <ConditionalHeader />
           </div>
           

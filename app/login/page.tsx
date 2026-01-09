@@ -76,8 +76,9 @@ export default function LoginPage() {
         if (token && userData) {
           setAuthToken(token);
           
-          // MOCK ROLE ASSIGNMENT FOR TESTING (Remove when backend returns role)
-          let userRole = userData.role || 'student';
+          // Normalize role to lowercase for consistent frontend comparison
+          let userRole = String(userData.role || 'student').toLowerCase();
+          
           if (formData.username.toLowerCase().includes('teacher') || formData.username.toLowerCase().includes('admin')) {
              userRole = 'teacher';
           }

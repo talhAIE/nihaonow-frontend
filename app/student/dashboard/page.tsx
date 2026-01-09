@@ -1,14 +1,15 @@
 "use client"
 import DashboardCard from "@/components/dashboard/card"
-import { ChevronLeft, ChevronRight, BookOpen } from "lucide-react"
+import { ChevronLeft, ChevronRight, BookOpen, Trophy, Star } from "lucide-react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import ArabicStatsChart from "@/components/dashboard/charts"
 import { dashboardApi } from "@/lib/services/dashboard"
+import { levelsApi } from "@/lib/services/levels"
 import { sessionsApi } from "@/lib/api"
 import { sessionUtils } from "@/lib/sessionUtils"
-import type { ConsolidatedDashboardResponse, TopicProgress } from "@/lib/types"
+import type { ConsolidatedDashboardResponse, TopicProgress, UserLevelResponse, LevelDefinition } from "@/lib/types"
 
 export default function Page() {
     const router = useRouter()
@@ -18,13 +19,15 @@ export default function Page() {
     const [error, setError] = useState<string | null>(null)
     const [active, setActive] = useState('daily')
     const [startingSession, setStartingSession] = useState<number | null>(null)
+    const [userLevel, setUserLevel] = useState<UserLevelResponse | null>(null)
+    const [levelDefinitions, setLevelDefinitions] = useState<LevelDefinition[]>([])
 
     const handleContinue = async (topicId: number) => {
         try {
             setStartingSession(topicId)
             const session = await sessionsApi.start({ topicId })
             sessionUtils.setCurrentSession(session)
-            router.push('/introduction')
+            router.push('/student/introduction')
         } catch (error) {
             console.error("Failed to start session:", error)
         } finally {
@@ -51,6 +54,14 @@ export default function Page() {
                 if (data.overview?.userName) {
                     localStorage.setItem('userName', data.overview.userName)
                 }
+
+                // Fetch named level and definitions
+                const [levelData, defs] = await Promise.all([
+                    levelsApi.evaluateMe(), // Force fresh evaluation
+                    levelsApi.getDefinitions()
+                ])
+                setUserLevel(levelData)
+                setLevelDefinitions(defs)
             } catch (err) {
                 console.error('Failed to fetch dashboard data:', err)
                 setError('Failed to load dashboard data')
@@ -102,47 +113,99 @@ export default function Page() {
     const xpProgress = overview?.xpProgress || 0
     const wordOfTheWeek = overview?.wordOfTheWeek
 
+    // Calculate Named Level progress
+    const nextLevel = levelDefinitions.find(d => d.level === (userLevel?.level.level || 0) + 1)
+    let namedProgress = 0
+    if (userLevel && nextLevel) {
+        // Calculate progress based on topics (could also factor in hours)
+        const topicProgress = (userLevel.stats.topicsCompleted / nextLevel.minTopics) * 100
+        const hourProgress = (userLevel.stats.usageHours / nextLevel.minUsageHours) * 100
+        // Use the lower of the two or an average? Let's use topics as the main driver for the bar
+        namedProgress = Math.min(100, topicProgress)
+    } else if (userLevel?.level.level === levelDefinitions.length) {
+        namedProgress = 100 // Max level
+    }
+
     return (
         <div className="min-h-screen bg-white" dir="rtl">
             <div className="max-w-full mx-auto px-2 sm:px-6">
                 <div className="mt-4">&nbsp;</div>
-                <h1 className="text-right font-almarai-extrabold-28 mb-8 hidden sm:block">مرحبًا بعودتك يا {userName}</h1>
+                <h1 className="text-right font-almarai-extrabold-28 mb-8 hidden sm:block">مرحبًا بعودتك يا <span className="text-red-600">{userName}</span></h1>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 mb-8">
-                    {/* Word of the Week */}
-                    <div className="bg-white rounded-2xl border-2 border-slate-100 p-6 flex flex-row-reverse items-center justify-between shadow-sm">
-                        <div className="text-right">
-                            <h4 className="font-almarai-extrabold text-slate-400 text-sm mb-2">كلمة الأسبوع</h4>
-                            <p className="text-4xl font-black text-[#35AB4E] mb-1 font-nunito">{wordOfTheWeek?.chinese || "مرحباً"}</p>
-                            <p className="text-slate-600 font-bold">{wordOfTheWeek?.pinyin || "Nǐ hǎo"}</p>
-                            <p className="text-slate-400 text-sm">{wordOfTheWeek?.english || "Hello"}</p>
-                        </div>
-                        <div className="bg-[#E8F5E9] p-4 rounded-2xl">
-                            <BookOpen className="w-8 h-8 text-[#35AB4E]" />
-                        </div>
-                    </div>
-
                     {/* Level Progress */}
-                    <div className="bg-white rounded-2xl border-2 border-slate-100 p-6 shadow-sm">
-                        <div className="flex flex-row-reverse items-center justify-between mb-4">
-                            <h4 className="font-almarai-extrabold text-slate-400 text-sm">المستوى الحالي</h4>
-                            <div className="bg-[#FFF8E1] px-3 py-1 rounded-full">
-                                <span className="text-amber-600 font-black text-sm">مستوى {level}</span>
+                    <div className="bg-white rounded-[24px] lg:rounded-[32px] border border-slate-100 p-0 shadow-sm flex flex-col sm:flex-row-reverse items-stretch overflow-hidden h-full">
+                        {/* Image decoration on the left - Hidden on mobile and tablet */}
+                        <div className="relative hidden lg:flex items-center justify-center">
+                            {/* Clouds from design */}
+                            <div className="absolute top-6 right-8 z-10 w-10 opacity-80">
+                                <Image src="/images/clouddd.png" alt="cloud" width={40} height={20} className="object-contain" />
+                            </div>
+                            
+                            <Image 
+                                src="/images/Object.png" 
+                                alt="Level Decoration" 
+                                width={110} 
+                                height={110}
+                                className="object-contain relative z-0 mt-4"
+                            />
+                        </div>
+
+                        {/* Level Info on the right */}
+                        <div className="flex-1 flex flex-row-reverse items-center justify-between p-6 gap-6">
+                            <div className="text-right flex-1">
+                                <h3 className="text-[#332902] font-almarai-extrabold text-xl lg:text-2xl mb-1 leading-tight">
+                                    {userLevel ? `${userLevel.level.name}` : `الباندا الصغيرة`}
+                                </h3>
+                                <p className="text-[#35AB4E] font-bold text-sm mb-4">
+                                    {`مبتدئ`}
+                                </p>
+                                
+                                <button 
+                                    onClick={() => router.push('/student/level')}
+                                    className="flex items-center gap-2 bg-[#35AB4E] text-white px-5 py-2.5 rounded-xl text-sm font-black shadow-sm hover:shadow-md hover:bg-[#2e9644] transition-all group"
+                                >
+                                     <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" strokeWidth={3} />
+                                     <span>مستواي</span>
+                                </button>
+                            </div>
+                            
+                            {/* Level Icon/Placeholder Square from design */}
+                            <div className="w-20 h-20 lg:w-28 lg:h-28 bg-[#F0FDF4] rounded-[24px] flex-shrink-0 flex flex-col items-center justify-center border-2 border-green-50 shadow-inner">
+                                <span className="text-[10px] lg:text-xs font-black text-[#35AB4E] uppercase tracking-wider mb-0.5">المستوى</span>
+                                <span className="text-3xl lg:text-5xl font-black text-[#35AB4E] leading-none">
+                                    {userLevel?.level.level || level || '1'}
+                                </span>
                             </div>
                         </div>
-                        <div className="w-full bg-slate-100 rounded-full h-3 mb-2">
-                            <div 
-                                className="bg-amber-400 h-full rounded-full shadow-[0_0_10px_rgba(251,191,36,0.3)] transition-all duration-500" 
-                                style={{ width: `${xpProgress}%` }}
-                            ></div>
+                    </div>
+                    {/* Word of the Week */}
+                    <div className="bg-white rounded-[24px] lg:rounded-[32px] border border-slate-100 p-6 flex flex-col shadow-sm relative overflow-hidden h-full">
+                        {/* Decorative Star */}
+                        <div className="absolute top-4 left-4">
+                            <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
                         </div>
-                        <div className="flex flex-row-reverse justify-between text-xs font-bold text-slate-400">
-                            <span>{xp} نقطه</span>
-                            <span>{xpProgress}% نحو المستوى التالي</span>
+
+                        <div className="w-full text-right mb-2">
+                             <h4 className="font-almarai-extrabold text-[#4B4B4B] text-sm lg:text-base">كلمة الأسبوع</h4>
+                        </div>
+
+                        <div className="flex-1 flex flex-col items-center justify-center text-center w-full">
+                            <p className="text-5xl font-black text-[#35AB4E] mb-2 font-nunito">{wordOfTheWeek?.chinese || "مرحباً"}</p>
+                            <p className="text-slate-600 font-bold text-lg mb-1">{wordOfTheWeek?.pinyin || "Nǐ hǎo"}</p>
+                            <p className="text-slate-400 text-sm mb-6">{wordOfTheWeek?.english || "Hello"}</p>
+                            
+                            
+                            <button className="h-10 px-4 bg-[#35AB4E] hover:bg-[#2f9c46] text-white text-sm font-bold rounded-lg border-b-2 border-[#20672F] flex items-center gap-2 transition opacity-70">
+                                 <span>استمع للنطق</span>
+                                 <div className="w-5 h-5 bg-white/20 rounded-md flex items-center justify-center">
+                                     <div className="w-0 h-0 border-t-[4px] border-t-transparent border-l-[6px] border-l-white border-b-[4px] border-b-transparent ml-0.5" />
+                                 </div>
+                            </button>
                         </div>
                     </div>
                 </div>
-                
+
                 <div className="mt-4 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-8 items-stretch">
                     <div className="flex flex-col w-full col-span-2 sm:col-span-2 lg:col-span-1 h-auto sm:h-56 md:h-60 lg:h-64 px-4 py-6 gap-6 rounded-2xl border-2 border-slate-200 bg-white shadow-lg overflow-hidden">
                         <div className="text-right flex md:flex-row flex-col flex-shrink-0 justify-between items-start md:items-center w-full gap-3">

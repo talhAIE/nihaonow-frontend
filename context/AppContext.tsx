@@ -228,7 +228,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }));
 
       // Force redirect based on role to ensure consistent behavior
-      if (user.role === 'teacher') {
+      if (String(user.role).toLowerCase() === 'teacher') {
          // Use window.location for hard redirect if router fails or use router if available in context
          // Since we can't easily access router here without passing it, we rely on the component calling this updates
          // layout. But effectively, the protected routes should handle it.

@@ -81,9 +81,9 @@ export default function SheikhPage() {
     const nextScenario = scenarios.find((scenario) => !scenario.isIntroduction);
 
     if (nextScenario) {
-      router.push(`/scenario?scenarioId=${nextScenario.id}`);
+      router.push(`/student/scenario?scenarioId=${nextScenario.id}`);
     } else {
-      router.push("/scenario");
+      router.push("/student/scenario");
     }
   };
 

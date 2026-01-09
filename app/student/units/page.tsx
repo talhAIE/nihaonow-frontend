@@ -16,7 +16,7 @@ export default function UnitsPage() {
 
   const handleUnitClick = (chapter: ChapterUI) => {
     if (chapter.status === "active") {
-      router.push(`/topics?chapterId=${chapter.id}`);
+      router.push(`/student/topics?chapterId=${chapter.id}`);
     }
   };
 

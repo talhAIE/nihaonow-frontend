@@ -14,7 +14,7 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     if (state.hasCompletedOnboarding) {
-      router.push('/units');
+      router.push('/student/units');
     }
   }, [state.hasCompletedOnboarding, router]);
 

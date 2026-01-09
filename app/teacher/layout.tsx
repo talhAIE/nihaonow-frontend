@@ -24,9 +24,8 @@ export default function TeacherLayout({
           return;
        }
        
-       // Check user object or localStorage for role persistence
-       // @ts-ignore
-       if (user?.role === 'student' && localStorage.getItem('userRole') !== 'teacher') {
+       const userRole = String(user?.role || '').toLowerCase();
+       if (userRole === 'student' && localStorage.getItem('userRole') !== 'teacher') {
           router.push('/student/dashboard');
        } else {
           setIsAuthorized(true);
@@ -51,8 +50,8 @@ export default function TeacherLayout({
       <TeacherSidebar />
 
       {/* Main Content */}
-      <main className="flex-1 transition-all duration-300 ease-in-out w-full md:w-[calc(100%-280px)]">
-        <div className="p-4 md:p-8 w-full max-w-[1600px] mx-auto">
+      <main className="flex-1 transition-all duration-300 ease-in-out w-full lg:w-[calc(100%-300px)]">
+        <div className="p-4 md:p-10 w-full max-w-[1800px] mx-auto">
           {children}
         </div>
       </main>

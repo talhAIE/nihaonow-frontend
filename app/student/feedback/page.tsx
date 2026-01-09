@@ -262,7 +262,7 @@ export default function FeedbackPage() {
     localStorage.clear();
 
     // Navigate to home page
-    router.push('/units');
+    router.push('/student/units');
   };
 
   if (loading) {
@@ -281,7 +281,7 @@ export default function FeedbackPage() {
       <div className="min-h-screen flex items-center justify-center" dir="rtl">
         <div className="text-center">
           <p className="text-gray-600 mb-4">لا توجد تغذية راجعة متاحة</p>
-          <Button onClick={() => router.push('/onboarding')} className="bg-green-500 hover:bg-green-600">
+          <Button onClick={() => router.push('/student/dashboard')} className="bg-green-500 hover:bg-green-600">
             العودة للبداية
           </Button>
         </div>

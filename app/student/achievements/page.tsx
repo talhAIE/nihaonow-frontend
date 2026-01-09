@@ -20,8 +20,9 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { achievementsApi } from "@/lib/services/achievements";
+import { levelsApi } from "@/lib/services/levels";
 import { useAppContext } from "@/context/AppContext";
-import { Badge, Certificate } from "@/lib/types";
+import { Badge, Certificate, LevelDefinition, UserLevelResponse } from "@/lib/types";
 import Image from "next/image";
 import { useToast } from "@/hooks/use-toast";
 import AwardsMap from "@/components/achievements/AwardsMap";
@@ -35,6 +36,8 @@ export default function AchievementsPage() {
   const [achievements, setAchievements] = useState<any[]>([]);
   const [certificates, setCertificates] = useState<{ earned: Certificate[]; locked: Certificate[] }>({ earned: [], locked: [] });
   const [userStats, setUserStats] = useState<any>(null);
+  const [userLevel, setUserLevel] = useState<any>(null);
+  const [levelDefs, setLevelDefs] = useState<LevelDefinition[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,14 +54,18 @@ export default function AchievementsPage() {
       setLoading(true);
       setError(null);
 
-      const [achData, certData] = await Promise.all([
+      const [achData, certData, levelData, defs] = await Promise.all([
         achievementsApi.getAchievements(Number(authUserId)),
-        achievementsApi.getCertificates(Number(authUserId))
+        achievementsApi.getCertificates(Number(authUserId)),
+        levelsApi.evaluateMe(),
+        levelsApi.getDefinitions()
       ]);
 
       setAchievements(achData.achievements || []);
       setUserStats(achData.userStats || {});
       setCertificates(certData.certificates || { earned: [], locked: [] });
+      setUserLevel(levelData);
+      setLevelDefs(defs);
     } catch (err: any) {
       console.error("Error fetching achievements:", err);
       setError("فشل في تحميل البيانات. يرجى المحاولة مرة أخرى.");
@@ -180,8 +187,50 @@ export default function AchievementsPage() {
         </button>
       </div>
 
+      {/* Level Progress Banner */}
+      {userLevel && (() => {
+        const nextLevel = levelDefs.find(d => d.level === userLevel.level.level + 1);
+        const isMaxLevel = !nextLevel;
+        
+        return (
+          <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-100 rounded-3xl p-6 mb-8 flex flex-col md:flex-row-reverse items-center justify-between gap-6 shadow-sm">
+            <div className="flex flex-row-reverse items-center gap-4 text-right">
+              <div className="bg-white p-4 rounded-2xl shadow-inner border border-amber-100">
+                <Trophy className="w-10 h-10 text-amber-500" />
+              </div>
+              <div>
+                <h3 className="text-xl font-black text-amber-900 mb-1">{userLevel.level.name}</h3>
+                <p className="text-amber-700/70 font-bold text-sm">أنت تحرز تقدماً رائعاً في رحلتك!</p>
+              </div>
+            </div>
+            
+            {!isMaxLevel ? (
+              <div className="flex-1 w-full max-w-md">
+                <div className="flex flex-row-reverse justify-between text-xs font-bold text-amber-700 mb-2">
+                  <span>المستوى التالي: {nextLevel.level} ({nextLevel.name})</span>
+                  <span>{userLevel.stats.topicsCompleted} / {nextLevel.minTopics} مواضيع</span>
+                </div>
+                <div className="w-full bg-white/50 rounded-full h-3 border border-amber-100 overflow-hidden">
+                  <div 
+                    className="bg-amber-400 h-full rounded-full transition-all duration-1000"
+                    style={{ width: `${Math.max(5, Math.min(100, (userLevel.stats.topicsCompleted / (nextLevel.minTopics || 1)) * 100))}%` }}
+                  ></div>
+                </div>
+                <p className="text-[10px] text-amber-600 mt-2 text-right font-bold">
+                  {Math.floor(userLevel.stats.usageHours)} ساعات من الاستخدام من أصل {nextLevel.minUsageHours} ساعة مطلوبة للمستوى التالي
+                </p>
+              </div>
+            ) : (
+              <div className="flex-1 text-right">
+                <p className="text-amber-600 font-black">لقد وصلت إلى أقصى مستوى! تهانينا 🎉</p>
+              </div>
+            )}
+          </div>
+        );
+      })()}
+
       {activeTab === 'awards' ? (
-        <div className="animate-in fade-in slide-in-from-bottom-3 duration-500">
+        <div className="animate-in fade-in slide-in-from-bottom-3 duration-500 text-right">
 
            {/* Desktop Map - Hidden on mobile */}
            <div className="hidden md:block">
