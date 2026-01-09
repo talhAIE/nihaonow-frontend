@@ -248,7 +248,7 @@ export default function ScenarioPage() {
 
         if (nextScenario) {
           setIsLoadingScenario(true);
-          router.push(`/scenario?scenarioId=${nextScenario.id}`);
+          router.push(`/student/scenario?scenarioId=${nextScenario.id}`);
         } else {
           console.log("All scenarios completed!");
         }

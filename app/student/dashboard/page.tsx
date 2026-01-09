@@ -1,6 +1,6 @@
 "use client"
 import DashboardCard from "@/components/dashboard/card"
-import { ChevronLeft, ChevronRight, BookOpen, Trophy, Star } from "lucide-react"
+import { ChevronLeft, ChevronRight, BookOpen, Trophy, Star, Play, Pause } from "lucide-react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
@@ -21,6 +21,8 @@ export default function Page() {
     const [startingSession, setStartingSession] = useState<number | null>(null)
     const [userLevel, setUserLevel] = useState<UserLevelResponse | null>(null)
     const [levelDefinitions, setLevelDefinitions] = useState<LevelDefinition[]>([])
+    const [isPronunciationPlaying, setIsPronunciationPlaying] = useState(false)
+    const [audioInstance, setAudioInstance] = useState<HTMLAudioElement | null>(null)
 
     const handleContinue = async (topicId: number) => {
         try {
@@ -33,6 +35,22 @@ export default function Page() {
         } finally {
             setStartingSession(null)
         }
+    }
+
+    const handlePronunciationPlay = () => {
+        if (!wordOfTheWeek?.audioUrl) return
+
+        if (isPronunciationPlaying && audioInstance) {
+            audioInstance.pause()
+            setIsPronunciationPlaying(false)
+            return
+        }
+
+        const audio = new Audio(wordOfTheWeek.audioUrl)
+        setAudioInstance(audio)
+        audio.play()
+        setIsPronunciationPlaying(true)
+        audio.onended = () => setIsPronunciationPlaying(false)
     }
 
     const tabs = [
@@ -196,11 +214,15 @@ export default function Page() {
                             <p className="text-slate-400 text-sm mb-6">{wordOfTheWeek?.english || "Hello"}</p>
                             
                             
-                            <button className="h-10 px-4 bg-[#35AB4E] hover:bg-[#2f9c46] text-white text-sm font-bold rounded-lg border-b-2 border-[#20672F] flex items-center gap-2 transition opacity-70">
-                                 <span>استمع للنطق</span>
-                                 <div className="w-5 h-5 bg-white/20 rounded-md flex items-center justify-center">
-                                     <div className="w-0 h-0 border-t-[4px] border-t-transparent border-l-[6px] border-l-white border-b-[4px] border-b-transparent ml-0.5" />
-                                 </div>
+                            <button
+                                onClick={handlePronunciationPlay}
+                                className={`w-10 h-10 rounded-full bg-[#35AB4E] flex items-center justify-center shadow-md hover:scale-110 active:scale-95 transition-all ${isPronunciationPlaying ? "bg-[#298E3E]" : ""}`}
+                            >
+                                {isPronunciationPlaying ? (
+                                    <Pause className="w-5 h-5 text-white fill-current" />
+                                ) : (
+                                    <Play className="w-5 h-5 text-white fill-current ml-0.5" />
+                                )}
                             </button>
                         </div>
                     </div>
