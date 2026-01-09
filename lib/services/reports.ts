@@ -21,8 +21,15 @@ export const reportsApi = {
   },
 
   exportReport: async (format: 'pdf' | 'csv' = 'pdf', config: any = {}) => {
-    // This would typically return a blob or a download URL
-    return apiClient.get(apiEndpoints.reports.export, { format }, config);
+    // Backend only supports CSV export via /user/students/export currently
+    // PDF export is via /user/students/:id/report (single) or /user/students/reports/bulk (zip)
+    // We map to the CSV export endpoint if format is csv, otherwise mock/warn or try bulk
+    if (format === 'csv') {
+        const url = apiEndpoints.reports.export; // mapped to /user/students/export
+        return apiClient.get(url, { responseType: 'blob' }, config);
+    }
+    // For now, return null or handle PDF unimplemented in backend bulk export
+    return null; 
   }
 };
 

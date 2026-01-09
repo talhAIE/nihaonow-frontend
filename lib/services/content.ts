@@ -14,8 +14,18 @@ export const chaptersApi = {
 };
 
 export const topicsApi = {
+  // Simulate getAll by fetching all chapters and then their topics
+  // This avoids bricking functionality since GET /topics doesn't exist
   getAll: async (): Promise<Topic[]> => {
-    return apiClient.get<Topic[]>(apiEndpoints.topics);
+    try {
+      const chapters = await chaptersApi.getAll();
+      const allTopicsPromise = chapters.map(chapter => chaptersApi.getTopics(chapter.id));
+      const nestedTopics = await Promise.all(allTopicsPromise);
+      return nestedTopics.flat(); 
+    } catch (error) {
+        console.error("Failed to fetch all topics:", error);
+        return [];
+    }
   },
   getById: async (id: number): Promise<Topic> => {
     return apiClient.get<Topic>(apiEndpoints.topicById(id));
