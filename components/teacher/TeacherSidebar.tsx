@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { LayoutDashboard, LogOut, X, Menu, GraduationCap, User } from 'lucide-react';
 import { useAppContext } from '@/context/AppContext';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
+import { useNavigation } from '@/lib/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -16,12 +17,12 @@ const navItems = [
 export default function TeacherSidebar() {
   const pathname = usePathname();
   const { state, sidebarOpen, setSidebarOpen, dir, mobileMenuOpen, setMobileMenuOpen, logout } = useAppContext();
-  const router = useRouter();
+  const { goToLogin } = useNavigation();
 
   const handleLogout = async () => {
     try {
       await logout();
-      router.push('/login');
+      goToLogin();
     } catch (err) {
       console.error('Logout failed:', err);
     }

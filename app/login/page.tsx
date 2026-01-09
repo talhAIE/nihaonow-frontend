@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useNavigation } from '@/lib/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,7 +24,7 @@ type ValidationErrors = {
 };
 
 export default function LoginPage() {
-  const router = useRouter();
+  const { goToTeacherDashboard, goToStudentDashboard } = useNavigation();
   const { login, setState } = useAppContext();
   const { toast } = useToast();
   const dir = useDirection('rtl');
@@ -94,9 +94,9 @@ export default function LoginPage() {
           // Wrap in timeout to ensure context updates propagate
           setTimeout(() => {
               if (userRole === 'teacher') {
-                router.push('/teacher');
+                goToTeacherDashboard();
               } else {
-                router.push('/student/dashboard');
+                goToStudentDashboard();
               }
           }, 100);
         } else {
@@ -110,7 +110,7 @@ export default function LoginPage() {
         setIsLoading(false);
       }
     },
-    [formData, login, router, toast]
+    [formData, login, goToTeacherDashboard, goToStudentDashboard, toast]
   );
 
   return (

@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useNavigation } from '@/lib/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
@@ -9,7 +9,7 @@ import { Loader2 } from 'lucide-react';
 import { authApi } from '@/lib/api';
 
 export default function ForgetPasswordPage() {
-  const router = useRouter();
+  const { goToLogin } = useNavigation();
   const { toast } = useToast();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -31,14 +31,14 @@ export default function ForgetPasswordPage() {
     try {
       const res = await authApi.forgetPassword({ email });
       toast({ title: 'تم بنجاح', description: res?.message || 'إذا كان هذا البريد الإلكتروني موجوداً، فقد تم إرسال رابط إعادة التعيين.' });
-      router.push('/login');
+      goToLogin();
     } catch (err: any) {
       console.error('Forget password error:', err);
       toast({ title: 'خطأ', description: err?.message ?? 'حدث خطأ أثناء طلب إعادة تعيين كلمة المرور', variant: 'destructive' });
     } finally {
       setIsLoading(false);
     }
-  }, [email, router, toast]);
+  }, [email, goToLogin, toast]);
 
   return (
     <div className="relative min-h-[calc(100vh-4rem)] bg-white flex flex-col items-center justify-center px-4 py-8 overflow-hidden">

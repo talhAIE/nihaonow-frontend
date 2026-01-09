@@ -3,7 +3,8 @@
 import { Loader2, AlertCircle } from "lucide-react";
 import { useTopics } from "@/hooks/useTopics";
 import { useSession } from "@/hooks/useSession";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from 'next/navigation';
+import { useNavigation } from '@/lib/navigation';
 import { useAuthProtection } from "@/hooks/useAuthProtection";
 import TopicMap from "@/components/TopicMap";
 
@@ -11,7 +12,7 @@ export default function TopicsPage() {
   useAuthProtection();
 
   const searchParams = useSearchParams();
-  const router = useRouter();
+  const { goToStudentIntroduction } = useNavigation();
   const chapterId = searchParams.get("chapterId")
     ? parseInt(searchParams.get("chapterId")!)
     : null;
@@ -26,7 +27,7 @@ export default function TopicsPage() {
     if (topic.status === "active") {
       try {
         await startSession(topic.id);
-        router.push("/student/introduction");
+        goToStudentIntroduction();
       } catch (err) {
         console.error("Failed to start session:", err);
       }

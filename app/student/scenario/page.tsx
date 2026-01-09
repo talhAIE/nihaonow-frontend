@@ -20,7 +20,8 @@ import {
 import { useEffect, useState, useRef } from "react";
 import { sessionsApi, Scenario } from "@/lib/api";
 import { sessionUtils } from "@/lib/sessionUtils";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useNavigation } from "@/lib/navigation";
 import FeedbackPopup from "@/components/FeedbackPopup";
 import VideoModal from "@/components/VideoModal";
 import { useToast } from "@/hooks/use-toast";
@@ -56,7 +57,7 @@ export default function ScenarioPage() {
   const [feedback, setFeedback] = useState<string>("");
   const [showFeedbackWidget, setShowFeedbackWidget] = useState(false);
   const searchParams = useSearchParams();
-  const router = useRouter();
+  const { goToStudentScenario, goToStudentFeedback, goToStudentUnits } = useNavigation();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -248,7 +249,7 @@ export default function ScenarioPage() {
 
         if (nextScenario) {
           setIsLoadingScenario(true);
-          router.push(`/student/scenario?scenarioId=${nextScenario.id}`);
+          goToStudentScenario(nextScenario.id);
         } else {
           console.log("All scenarios completed!");
         }
@@ -285,7 +286,7 @@ export default function ScenarioPage() {
 
         if (nextScenario) {
           setIsLoadingScenario(true);
-          router.push(`/scenario?scenarioId=${nextScenario.id}`);
+          goToStudentScenario(nextScenario.id);
         } else {
           console.log("All scenarios completed!");
         }
@@ -333,7 +334,7 @@ export default function ScenarioPage() {
               "sessionFeedback",
               JSON.stringify(response.overallFeedback)
             );
-            router.push("/student/feedback");
+            goToStudentFeedback();
             return;
           }
         }
@@ -448,7 +449,7 @@ export default function ScenarioPage() {
           progress={scenarioProgress}
           title="يعود"
           onClick={() => {
-            router.push("/student/units");
+            goToStudentUnits();
           }}
         />
       </div>

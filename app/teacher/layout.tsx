@@ -4,7 +4,7 @@ import { useAuthProtection } from "@/hooks/useAuthProtection";
 import TeacherSidebar from "@/components/teacher/TeacherSidebar";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useNavigation } from '@/lib/navigation';
 import { useAppContext } from "@/context/AppContext";
 
 export default function TeacherLayout({
@@ -15,7 +15,7 @@ export default function TeacherLayout({
   const { isAuthenticated, isLoading, user } = useAuthProtection({
     redirectTo: "/login",
   });
-  const router = useRouter();
+  const { goToStudentDashboard } = useNavigation();
   const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
@@ -26,12 +26,12 @@ export default function TeacherLayout({
        
        const userRole = String(user?.role || '').toLowerCase();
        if (userRole === 'student' && localStorage.getItem('userRole') !== 'teacher') {
-          router.push('/student/dashboard');
+           goToStudentDashboard();
        } else {
           setIsAuthorized(true);
        }
     }
-  }, [isLoading, isAuthenticated, user, router]);
+  }, [isLoading, isAuthenticated, user, goToStudentDashboard]);
 
   if (isLoading || !isAuthenticated) {
     return (

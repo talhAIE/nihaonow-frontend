@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState, useRef } from "react";
 import { sessionsApi } from '@/lib/api'
 import { apiClient } from '@/lib/http'
-import { useRouter } from "next/navigation";
+import { useNavigation } from '@/lib/navigation';
 import { Play, Pause, Volume2 } from "lucide-react";
 import { useAuthProtection } from "@/hooks/useAuthProtection";
 
@@ -100,7 +100,7 @@ export default function FeedbackPage() {
   const [isPlayingFeedback, setIsPlayingFeedback] = useState(false);
   const [currentPlayingUrl, setCurrentPlayingUrl] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const router = useRouter();
+  const { goToStudentUnits, goToStudentDashboard } = useNavigation();
 
   useEffect(() => {
     let mounted = true
@@ -262,7 +262,7 @@ export default function FeedbackPage() {
     localStorage.clear();
 
     // Navigate to home page
-    router.push('/student/units');
+    goToStudentUnits();
   };
 
   if (loading) {
@@ -281,7 +281,7 @@ export default function FeedbackPage() {
       <div className="min-h-screen flex items-center justify-center" dir="rtl">
         <div className="text-center">
           <p className="text-gray-600 mb-4">لا توجد تغذية راجعة متاحة</p>
-          <Button onClick={() => router.push('/student/dashboard')} className="bg-green-500 hover:bg-green-600">
+          <Button onClick={goToStudentDashboard} className="bg-green-500 hover:bg-green-600">
             العودة للبداية
           </Button>
         </div>

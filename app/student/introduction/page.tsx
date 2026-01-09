@@ -8,7 +8,8 @@ import VideoModal from "@/components/VideoModal";
 import LanguageLearningInterface from "@/components/AudioSheikh";
 import { sessionUtils } from "@/lib/sessionUtils";
 import { Scenario } from "@/lib/api";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useNavigation } from "@/lib/navigation";
 import { useAuthProtection } from "@/hooks/useAuthProtection";
 import LogoutButton from "@/components/LogoutButton";
 import ProgressBar from "@/components/ui/progressBar";
@@ -27,7 +28,7 @@ export default function SheikhPage() {
   const [progress, setProgress] = useState(0);
   const [skipIntro, setSkipIntro] = useState(false);
 
-  const router = useRouter();
+  const { goToStudentScenario } = useNavigation();
   const searchParams = useSearchParams();
   const topicIdParam = searchParams.get("topicId");
 
@@ -101,9 +102,9 @@ export default function SheikhPage() {
     const nextScenario = scenarios.find((scenario) => !scenario.isIntroduction);
 
     if (nextScenario) {
-      router.push(`/student/scenario?scenarioId=${nextScenario.id}`);
+      goToStudentScenario(nextScenario.id);
     } else {
-      router.push("/student/scenario");
+      goToStudentScenario();
     }
   };
 
