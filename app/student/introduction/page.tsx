@@ -153,7 +153,7 @@ export default function SheikhPage() {
           <Button
             onClick={handleNextClick}
             disabled={isNavigating || (!introComplete && !skipIntro)}
-            className="w-full bg-[#636363] hover:bg-[#636363] border-b-[3px] border-b-[#454545] text-white 
+            className="w-full bg-[#35AB4E] h-14 hover:bg-[#35AB4E] border-b-[3px] border-b-[#454545] text-white 
             h-14 pt-4 pb-4 flex items-center justify-center gap-2.5 text-base sm:text-lg font-bold rounded-xl shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:border-none border-none"
           >
             <span className="truncate">{isNavigating ? "جاري التحميل..." : "استمر"}</span>
