@@ -117,10 +117,11 @@ export const apiEndpoints = {
         // Unified leaderboard listing endpoint
         list: (limit = 100, offset = 0, userId?: number | string) =>
             `/leaderboard?limit=${limit}&offset=${offset}${typeof userId !== 'undefined' ? `&userId=${userId}` : ''}`,
-        xp: (limit = 100, offset = 0) => `/leaderboard/xp?limit=${limit}&offset=${offset}`,
-        level: (limit = 100, offset = 0) => `/leaderboard/level?limit=${limit}&offset=${offset}`,
-        streak: (limit = 100, offset = 0) => `/leaderboard/streak?limit=${limit}&offset=${offset}`,
-        longestStreak: (limit = 100, offset = 0) => `/leaderboard/longest-streak?limit=${limit}&offset=${offset}`,
+        // Map all specific sorts to the unified one as backend doesn't support them individually yet
+        xp: (limit = 100, offset = 0) => `/leaderboard?limit=${limit}&offset=${offset}`,
+        level: (limit = 100, offset = 0) => `/leaderboard?limit=${limit}&offset=${offset}`,
+        streak: (limit = 100, offset = 0) => `/leaderboard?limit=${limit}&offset=${offset}`,
+        longestStreak: (limit = 100, offset = 0) => `/leaderboard?limit=${limit}&offset=${offset}`,
         levels: '/leaderboard/levels',
         levelByNumber: (level: number) => `/leaderboard/levels/${level}`,
         studentLevel: '/leaderboard/student-level',
@@ -136,15 +137,17 @@ export const apiEndpoints = {
         downloadCertificate: (userId: string | number, achievementId: string | number) => `/v1/users/${userId}/achievements/certificates/download/${achievementId}`,
     },
     teacher: {
-        analytics: '/teacher/analytics',
-        students: '/teacher/students',
-        studentDetails: (userId: number | string) => `/teacher/students/${userId}`,
-        usage: '/teacher/usage',
-        completions: '/teacher/completions',
+        // Map to existing User controller endpoints
+        analytics: '/user/analytics', // Doesn't exist, will mock in service or return 404
+        students: '/user/students',
+        studentDetails: (userId: number | string) => `/user/students/${userId}`, // Doesn't exist, check mapping
+        usage: '/user/usage',
+        completions: '/user/completions',
     },
     reports: {
-        summary: '/reports/summary',
-        export: '/reports/export',
-        metrics: '/reports/metrics',
+        // Map to existing User/Dashboard endpoints where possible
+        summary: '/dashboard', // Fallback to dashboard overview
+        export: '/user/students/export', // CSV Export from UserController
+        metrics: '/dashboard/metrics/daily', // Fallback to daily metrics
     },
 };
