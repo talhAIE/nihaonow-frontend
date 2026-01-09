@@ -11,6 +11,7 @@ import { setAuthToken } from '@/lib/authUtils';
 import { useToast } from '@/hooks/use-toast';
 import { useDirection } from '@/hooks/useDirection';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
+import Image from 'next/image';
 
 type FormData = {
   username: string;
@@ -74,9 +75,29 @@ export default function LoginPage() {
         const userData = response?.user;
         if (token && userData) {
           setAuthToken(token);
-          login({ id: String(userData.id ?? ''), email: userData.email ?? '', username: userData.username ?? '' });
+          
+          // MOCK ROLE ASSIGNMENT FOR TESTING (Remove when backend returns role)
+          let userRole = userData.role || 'student';
+          if (formData.username.toLowerCase().includes('teacher') || formData.username.toLowerCase().includes('admin')) {
+             userRole = 'teacher';
+          }
+
+          login({ 
+            id: String(userData.id ?? ''), 
+            email: userData.email ?? '', 
+            username: userData.username ?? '',
+            role: userRole
+          });
           toast({ title: 'تم بنجاح', description: 'مرحبًا بعودتك' });
-          router.push('/student/dashboard');
+          
+          // Wrap in timeout to ensure context updates propagate
+          setTimeout(() => {
+              if (userRole === 'teacher') {
+                router.push('/teacher');
+              } else {
+                router.push('/student/dashboard');
+              }
+          }, 100);
         } else {
           toast({ title: 'خطأ', description: response?.message ?? 'فشل تسجيل الدخول', variant: 'destructive', duration: 5000 });
         }
@@ -94,20 +115,26 @@ export default function LoginPage() {
   return (
     <div className="relative min-h-[calc(100vh-4rem)] bg-white flex flex-col items-center justify-center px-4 py-8 overflow-hidden" dir={'ltr'}>
 
-      <img
-        src="/images/LoginLogo2.png"
-        alt=""
-        aria-hidden="true"
-        className="pointer-events-none absolute top-0 right-0 z-0 w-[60%] max-w-[220px] h-auto max-h-[225px] opacity-100 transform-none md:top-0"
-        style={{ transform: 'rotate(0deg)', opacity: 1 }}
-      />
-      <img
-        src="/images/LoginLogo.png"
-        alt=""
-        aria-hidden="true"
-        className="pointer-events-none absolute left-0 bottom-0 z-0 w-[60%] max-w-[420px] h-auto max-h-[225px] opacity-100 transform-none sm:left-4 sm:bottom-0 lg:left-[5px] lg:bottom-0"
-        style={{ transform: 'rotate(0deg)', opacity: 1 }}
-      />
+      <div className="pointer-events-none absolute top-0 right-0 z-0 w-[60%] max-w-[220px] h-auto max-h-[225px] md:top-0">
+        <Image
+          src="/images/LoginLogo2.png"
+          alt=""
+          fill
+          className="object-contain"
+          style={{ transform: 'rotate(0deg)', opacity: 1 }}
+          priority
+        />
+      </div>
+      <div className="pointer-events-none absolute left-0 bottom-0 z-0 w-[60%] max-w-[420px] h-auto max-h-[225px] sm:left-4 sm:bottom-0 lg:left-[5px] lg:bottom-0">
+        <Image
+          src="/images/LoginLogo.png"
+          alt=""
+          fill
+          className="object-contain"
+          style={{ transform: 'rotate(0deg)', opacity: 1 }}
+          priority
+        />
+      </div>
 
 
       <div className="w-[98%] md:w-[92%] max-w-[100%] md:max-w-[520px] relative z-10 mx-auto">
@@ -206,7 +233,7 @@ export default function LoginPage() {
             <Button
               className="font-nunito font-bold w-full sm:max-w-[470.5px] h-11 sm:h-[45px] px-3 sm:px-4 rounded-[12px] hover:bg-[#E5E5E5] bg-[#E5E5E5] border-b-[3px] border-b-[rgba(0,0,0,0.08)] text-[#282828] text-[13px] sm:text-[16px] transition duration-200"
             >
-              <span className="whitespace-nowrap">Don't have an account?</span>{' '}<Link href="/register" className="font-semibold text-green-600 hover:text-green-700 transition-colors whitespace-nowrap">Sign Up</Link>
+              <span className="whitespace-nowrap">Don&apos;t have an account?</span>{' '}<Link href="/register" className="font-semibold text-green-600 hover:text-green-700 transition-colors whitespace-nowrap">Sign Up</Link>
             </Button>
 
           </form>

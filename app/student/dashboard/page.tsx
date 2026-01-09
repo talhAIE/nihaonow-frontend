@@ -107,6 +107,42 @@ export default function Page() {
             <div className="max-w-full mx-auto px-2 sm:px-6">
                 <div className="mt-4">&nbsp;</div>
                 <h1 className="text-right font-almarai-extrabold-28 mb-8 hidden sm:block">مرحبًا بعودتك يا {userName}</h1>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 mb-8">
+                    {/* Word of the Week */}
+                    <div className="bg-white rounded-2xl border-2 border-slate-100 p-6 flex flex-row-reverse items-center justify-between shadow-sm">
+                        <div className="text-right">
+                            <h4 className="font-almarai-extrabold text-slate-400 text-sm mb-2">كلمة الأسبوع</h4>
+                            <p className="text-4xl font-black text-[#35AB4E] mb-1 font-nunito">{wordOfTheWeek?.chinese || "مرحباً"}</p>
+                            <p className="text-slate-600 font-bold">{wordOfTheWeek?.pinyin || "Nǐ hǎo"}</p>
+                            <p className="text-slate-400 text-sm">{wordOfTheWeek?.english || "Hello"}</p>
+                        </div>
+                        <div className="bg-[#E8F5E9] p-4 rounded-2xl">
+                            <BookOpen className="w-8 h-8 text-[#35AB4E]" />
+                        </div>
+                    </div>
+
+                    {/* Level Progress */}
+                    <div className="bg-white rounded-2xl border-2 border-slate-100 p-6 shadow-sm">
+                        <div className="flex flex-row-reverse items-center justify-between mb-4">
+                            <h4 className="font-almarai-extrabold text-slate-400 text-sm">المستوى الحالي</h4>
+                            <div className="bg-[#FFF8E1] px-3 py-1 rounded-full">
+                                <span className="text-amber-600 font-black text-sm">مستوى {level}</span>
+                            </div>
+                        </div>
+                        <div className="w-full bg-slate-100 rounded-full h-3 mb-2">
+                            <div 
+                                className="bg-amber-400 h-full rounded-full shadow-[0_0_10px_rgba(251,191,36,0.3)] transition-all duration-500" 
+                                style={{ width: `${xpProgress}%` }}
+                            ></div>
+                        </div>
+                        <div className="flex flex-row-reverse justify-between text-xs font-bold text-slate-400">
+                            <span>{xp} نقطه</span>
+                            <span>{xpProgress}% نحو المستوى التالي</span>
+                        </div>
+                    </div>
+                </div>
+                
                 <div className="mt-4 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-8 items-stretch">
                     <div className="flex flex-col w-full col-span-2 sm:col-span-2 lg:col-span-1 h-auto sm:h-56 md:h-60 lg:h-64 px-4 py-6 gap-6 rounded-2xl border-2 border-slate-200 bg-white shadow-lg overflow-hidden">
                         <div className="text-right flex md:flex-row flex-col flex-shrink-0 justify-between items-start md:items-center w-full gap-3">
@@ -187,41 +223,6 @@ export default function Page() {
                             <p className="text-sm sm:text-base font-bold mb-1">الخط الحالي</p>
                             <h3 className="text-4xl sm:text-5xl font-extrabold mb-1">{currentStreak}</h3>
                             <p className="text-sm sm:text-base">أيام</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 mb-8">
-                    {/* Word of the Week */}
-                    <div className="bg-white rounded-2xl border-2 border-slate-100 p-6 flex flex-row-reverse items-center justify-between shadow-sm">
-                        <div className="text-right">
-                            <h4 className="font-almarai-extrabold text-slate-400 text-sm mb-2">كلمة الأسبوع</h4>
-                            <p className="text-4xl font-black text-[#35AB4E] mb-1 font-nunito">{wordOfTheWeek?.chinese || "مرحباً"}</p>
-                            <p className="text-slate-600 font-bold">{wordOfTheWeek?.pinyin || "Nǐ hǎo"}</p>
-                            <p className="text-slate-400 text-sm">{wordOfTheWeek?.english || "Hello"}</p>
-                        </div>
-                        <div className="bg-[#E8F5E9] p-4 rounded-2xl">
-                            <BookOpen className="w-8 h-8 text-[#35AB4E]" />
-                        </div>
-                    </div>
-
-                    {/* Level Progress */}
-                    <div className="bg-white rounded-2xl border-2 border-slate-100 p-6 shadow-sm">
-                        <div className="flex flex-row-reverse items-center justify-between mb-4">
-                            <h4 className="font-almarai-extrabold text-slate-400 text-sm">المستوى الحالي</h4>
-                            <div className="bg-[#FFF8E1] px-3 py-1 rounded-full">
-                                <span className="text-amber-600 font-black text-sm">مستوى {level}</span>
-                            </div>
-                        </div>
-                        <div className="w-full bg-slate-100 rounded-full h-3 mb-2">
-                            <div 
-                                className="bg-amber-400 h-full rounded-full shadow-[0_0_10px_rgba(251,191,36,0.3)] transition-all duration-500" 
-                                style={{ width: `${xpProgress}%` }}
-                            ></div>
-                        </div>
-                        <div className="flex flex-row-reverse justify-between text-xs font-bold text-slate-400">
-                            <span>{xp} نقطه</span>
-                            <span>{xpProgress}% نحو المستوى التالي</span>
                         </div>
                     </div>
                 </div>

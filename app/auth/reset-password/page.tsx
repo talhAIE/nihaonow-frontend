@@ -49,7 +49,7 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50/50 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-white px-4">
       <Card className="w-full max-w-md shadow-lg border-none">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-2xl font-bold tracking-tight">Create new password</CardTitle>

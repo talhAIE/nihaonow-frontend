@@ -7,6 +7,8 @@ export interface User {
   id?: string;
   email: string;
   username?: string;
+  role?: string;
+  image?: string;
 }
 
 interface AppState {
@@ -224,6 +226,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
         isAuthenticated: true,
         authUser: user,
       }));
+
+      // Force redirect based on role to ensure consistent behavior
+      if (user.role === 'teacher') {
+         // Use window.location for hard redirect if router fails or use router if available in context
+         // Since we can't easily access router here without passing it, we rely on the component calling this updates
+         // layout. But effectively, the protected routes should handle it.
+         // However, let's persist the role in a separate key if needed for middleware/layouts
+         localStorage.setItem('userRole', 'teacher');
+      } else {
+         localStorage.removeItem('userRole');
+      }
 
       try {
         const bc = typeof window !== 'undefined' && 'BroadcastChannel' in window ? new BroadcastChannel('nihao-auth') : null;

@@ -8,12 +8,12 @@ import Link from 'next/link';
 
 const navItems = [
   { href: '/student/dashboard', label: 'لوحة القيادة', Icon: LayoutDashboard },
-  { href: '/units', label: 'الوحدات', Icon: BookCheck },
-  { href: '/leaderboard', label: 'المتصدرين', Icon: Trophy },
-  { href: '/achievements', label: 'الإنجازات', Icon: Medal },
-  { href: '/reports', label: 'التقارير', Icon: FileBarChart },
+  { href: '/student/units', label: 'الوحدات', Icon: BookCheck },
+  { href: '/student/leaderboard', label: 'المتصدرين', Icon: Trophy },
+  { href: '/student/achievements', label: 'الإنجازات', Icon: Medal },
+  { href: '/student/reports', label: 'التقارير', Icon: FileBarChart },
   //{ href: '/teacher', label: 'لوحة المعلم', Icon: Users },
-  { href: '/student-level', label: 'مستوى الطلاب', Icon: Award },
+  { href: '/student/level', label: 'مستوى الطلاب', Icon: Award },
 ];
 
 export default function Sidebar() {
