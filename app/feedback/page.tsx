@@ -289,7 +289,7 @@ export default function FeedbackPage() {
     );
   }
   return (
-    <div className="min-h-screen bg-gray-100" dir="rtl">
+    <div className="min-h-screen bg-white" dir="rtl">
 
       {/* Main Content */}
       <div className="px-4 py-6">

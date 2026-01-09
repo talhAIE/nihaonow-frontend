@@ -3,9 +3,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { AppProvider } from "@/context/AppContext";
 import { Toaster } from "@/components/ui/toaster";
-import AuthSidebar from '@/components/AuthSidebar';
-import ConditionalHeader from '@/components/ConditionalHeader';
-import Layout from "@/components/layout";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,7 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className} suppressHydrationWarning={true}>
         <AppProvider>
-          <Layout>{children}</Layout>
+          {children}
         </AppProvider>
         <Toaster />
       </body>
