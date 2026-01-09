@@ -29,7 +29,7 @@ export default function Page() {
             setStartingSession(topicId)
             const session = await sessionsApi.start({ topicId })
             sessionUtils.setCurrentSession(session)
-            router.push('/student/introduction')
+            router.push(`/student/introduction?topicId=${topicId}`)
         } catch (error) {
             console.error("Failed to start session:", error)
         } finally {
@@ -181,7 +181,7 @@ export default function Page() {
                                 
                                 <button 
                                     onClick={() => router.push('/student/level')}
-                                    className="flex items-center gap-2 bg-[#35AB4E] text-white px-5 py-2.5 rounded-xl text-sm font-black shadow-sm hover:shadow-md hover:bg-[#2e9644] transition-all group"
+                                    className="h-10 px-4 bg-[#35AB4E] hover:bg-[#2f9c46] text-white text-sm font-bold rounded-lg border-b-2 border-[#20672F] flex items-center gap-2 transition active:translate-y-[2px] active:border-b-0"
                                 >
                                      <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" strokeWidth={3} />
                                      <span>مستواي</span>
@@ -208,21 +208,44 @@ export default function Page() {
                              <h4 className="font-almarai-extrabold text-[#4B4B4B] text-sm lg:text-base">كلمة الأسبوع</h4>
                         </div>
 
-                        <div className="flex-1 flex flex-col items-center justify-center text-center w-full">
-                            <p className="text-5xl font-black text-[#35AB4E] mb-2 font-nunito">{wordOfTheWeek?.chinese || "مرحباً"}</p>
-                            <p className="text-slate-600 font-bold text-lg mb-1">{wordOfTheWeek?.pinyin || "Nǐ hǎo"}</p>
-                            <p className="text-slate-400 text-sm mb-6">{wordOfTheWeek?.english || "Hello"}</p>
-                            
-                            
-                            <button
-                                onClick={handlePronunciationPlay}
-                                className={`w-10 h-10 rounded-full bg-[#35AB4E] flex items-center justify-center shadow-md hover:scale-110 active:scale-95 transition-all ${isPronunciationPlaying ? "bg-[#298E3E]" : ""}`}
+                        <div className="flex-1 flex flex-col items-center justify-center w-full">
+                            <div className="flex flex-row items-center justify-center gap-6 mb-6">
+                                <div className="flex flex-col items-center">
+                                    <p className="text-5xl font-black text-[#35AB4E] mb-2 font-nunito">{wordOfTheWeek?.chinese || "مرحباً"}</p>
+                                    <p className="text-slate-600 font-bold text-lg mb-1">{wordOfTheWeek?.pinyin || "Nǐ hǎo"}</p>
+                                    <p className="text-slate-400 text-sm">{wordOfTheWeek?.english || "Hello"}</p>
+                                </div>
+                                
+                                <button
+                                    onClick={handlePronunciationPlay}
+                                    className={`w-10 h-10 rounded-full bg-[#35AB4E] flex items-center justify-center shadow-md hover:scale-110 active:scale-95 transition-all ${isPronunciationPlaying ? "bg-[#298E3E]" : ""}`}
+                                >
+                                    {isPronunciationPlaying ? (
+                                        <Pause className="w-5 h-5 text-white fill-current" />
+                                    ) : (
+                                        <Play className="w-5 h-5 text-white fill-current ml-0.5" />
+                                    )}
+                                </button>
+                            </div>
+
+                            <button 
+                                onClick={() => {
+                                    if (wordOfTheWeek?.topicId) {
+                                        handleContinue(wordOfTheWeek.topicId);
+                                    } else {
+                                        router.push('/student/introduction');
+                                    }
+                                }}
+                                className="h-10 px-4 bg-[#35AB4E] hover:bg-[#2f9c46] text-white text-sm font-bold rounded-lg border-b-2 border-[#20672F] flex items-center gap-2 transition active:translate-y-[2px] active:border-b-0"
                             >
-                                {isPronunciationPlaying ? (
-                                    <Pause className="w-5 h-5 text-white fill-current" />
-                                ) : (
-                                    <Play className="w-5 h-5 text-white fill-current ml-0.5" />
-                                )}
+                                 <span>استمع للنطق</span>
+                                 <div className="w-5 h-5 bg-white/20 rounded-md flex items-center justify-center">
+                                     {isPronunciationPlaying ? (
+                                         <Pause className="w-3 h-3 text-white fill-current" />
+                                     ) : (
+                                         <Play className="w-3 h-3 text-white fill-current ml-0.5" />
+                                     )}
+                                 </div>
                             </button>
                         </div>
                     </div>
