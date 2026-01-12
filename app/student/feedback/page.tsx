@@ -107,7 +107,6 @@ export default function FeedbackPage() {
 
     // Get feedback data from session storage and attempt to refresh from server
     const feedbackData = sessionStorage.getItem('sessionFeedback')
-    console.log('Feedback data from sessionStorage:', feedbackData)
     if (feedbackData) {
       try {
         const parsed = JSON.parse(feedbackData)
