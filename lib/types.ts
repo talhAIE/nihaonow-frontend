@@ -43,6 +43,10 @@ export interface SessionStartRequest {
   topicId?: number;
 }
 
+export interface WordSessionStartRequest {
+  wordTopicId: number;
+}
+
 export interface Scenario {
   id: number;
   scenarioNumber: number;
@@ -172,7 +176,7 @@ export interface CalendarResponse {
 
 // Overview / summary for the student dashboard
 export interface WordOfTheWeek {
-  id?: number;
+  id: number;
   topicId?: number | null;
   chinese: string;
   pinyin?: string | null;
@@ -181,6 +185,51 @@ export interface WordOfTheWeek {
   exampleSentence?: string | null;
   weekStartDate?: string;
   isActive?: boolean;
+}
+
+export interface WordTopic {
+  id: number;
+  wordId: number;
+  name: string;
+  subtitle?: string;
+  difficulty?: string; // Added for unification
+  mode?: string; // Added for unification
+  orderIndex: number;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  scenarios?: WordScenario[];
+  word?: WordOfTheWeek;
+}
+
+export interface WordScenario {
+  id: number;
+  wordTopicId: number;
+  scenarioNumber: number;
+  isIntroduction?: boolean; // Added for unification
+  targetPhraseChinese: string;
+  targetPhrasePinyin?: string | null;
+  chineseAudioUrl?: string | null;
+  arabicAudioUrl?: string | null; // Renamed from scenarioAudioUrl
+  scenarioImageUrl?: string | null;
+  expectedPhonemes?: any; // Added for unification
+  orderIndex: number;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface UserWordStatus {
+  id: number;
+  userId: number;
+  wordId: number;
+  completed: boolean;
+  completedAt?: string | null;
+}
+
+export interface WordOfWeekStatusResponse {
+  word: WordOfTheWeek | null;
+  status: UserWordStatus | null;
 }
 
 export interface LevelDefinition {

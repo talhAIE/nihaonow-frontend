@@ -9,6 +9,7 @@ import ArabicStatsChart from "@/components/dashboard/charts"
 import { dashboardApi } from "@/lib/services/dashboard"
 import { levelsApi } from "@/lib/services/levels"
 import { sessionsApi } from "@/lib/api"
+import { wordOfWeekApi } from "@/lib/services/word-of-week"
 import { sessionUtils } from "@/lib/sessionUtils"
 import type { ConsolidatedDashboardResponse, TopicProgress, UserLevelResponse, LevelDefinition } from "@/lib/types"
 
@@ -25,7 +26,7 @@ export default function Page() {
     const [isPronunciationPlaying, setIsPronunciationPlaying] = useState(false)
     const [audioInstance, setAudioInstance] = useState<HTMLAudioElement | null>(null)
 
-    const { startSession } = useSession();
+    const { startSession, startWordSession } = useSession();
 
     const handleContinue = async (topicId: number) => {
         try {
@@ -221,7 +222,8 @@ export default function Page() {
                                 
                                 <button
                                     onClick={handlePronunciationPlay}
-                                    className={`w-10 h-10 rounded-full bg-[#35AB4E] flex items-center justify-center shadow-md hover:scale-110 active:scale-95 transition-all ${isPronunciationPlaying ? "bg-[#298E3E]" : ""}`}
+                                    disabled={!wordOfTheWeek?.audioUrl}
+                                    className={`w-10 h-10 rounded-full bg-[#35AB4E] flex items-center justify-center shadow-md hover:scale-110 active:scale-95 transition-all ${isPronunciationPlaying ? "bg-[#298E3E]" : ""} ${!wordOfTheWeek?.audioUrl ? "opacity-50 cursor-not-allowed" : ""}`}
                                 >
                                     {isPronunciationPlaying ? (
                                         <Pause className="w-5 h-5 text-white fill-current" />
@@ -232,21 +234,33 @@ export default function Page() {
                             </div>
 
                             <button 
-                                onClick={() => {
-                                    if (wordOfTheWeek?.topicId) {
-                                        handleContinue(wordOfTheWeek.topicId);
+                                onClick={async () => {
+                                    if (!wordOfTheWeek?.id) return;
+                                    
+                                    try {
+                                        // Fetch topics for this word
+                                        const topics = await wordOfWeekApi.getWordTopics();
+                                        if (topics && topics.length > 0) {
+                                            // Start session with the first topic
+                                            const firstTopic = topics[0];
+                                            setStartingSession(firstTopic.id); // Or a negative number to indicate generic loading
+                                            await startWordSession(firstTopic.id);
+                                            goToStudentIntroduction();
+                                        } else {
+                                            console.warn("No topics found for this word");
+                                            // Fallback or toast
+                                        }
+                                    } catch (error) {
+                                        console.error("Failed to start word session:", error);
+                                    } finally {
+                                        setStartingSession(null);
                                     }
-                                    // If no topicId is linked, do nothing or show toast (prevent blank page navigation)
                                 }}
                                 className="h-10 px-4 bg-[#35AB4E] hover:bg-[#2f9c46] text-white text-sm font-bold rounded-lg border-b-2 border-[#20672F] flex items-center gap-2 transition active:translate-y-[2px] active:border-b-0"
                             >
-                                 <span>استمع للنطق</span>
+                                 <span>ابدأ التعلم</span>
                                  <div className="w-5 h-5 bg-white/20 rounded-md flex items-center justify-center">
-                                     {isPronunciationPlaying ? (
-                                         <Pause className="w-3 h-3 text-white fill-current" />
-                                     ) : (
-                                         <Play className="w-3 h-3 text-white fill-current ml-0.5" />
-                                     )}
+                                     <Play className="w-3 h-3 text-white fill-current ml-0.5" />
                                  </div>
                             </button>
                         </div>

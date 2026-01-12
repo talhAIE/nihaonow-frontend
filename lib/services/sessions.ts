@@ -5,6 +5,9 @@ export const sessionsApi = {
   start: async (data: SessionStartRequest): Promise<SessionStartResponse> => {
     return apiClient.post<SessionStartResponse>(apiEndpoints.sessions.start, data);
   },
+  startWord: async (data: { wordTopicId: number }): Promise<SessionStartResponse> => {
+    return apiClient.post<SessionStartResponse>(apiEndpoints.sessions.startWord, data);
+  },
   getById: async (sessionId: string): Promise<any> => {
     return apiClient.get<any>(apiEndpoints.sessions.byId(sessionId));
   },

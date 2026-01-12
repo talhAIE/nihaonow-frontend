@@ -136,18 +136,14 @@ export default function ScenarioPage() {
   }, [recordedAudio]);
 
   const handleRecordingCompleted = (type: "arabic" | "chinese") => {
-    console.log(`Recording completed for: ${type}`);
     if (type === "arabic") {
       setArabicCompleted(true);
-      console.log("Arabic completed set to true");
     } else if (type === "chinese") {
       setChineseCompleted(true);
-      console.log("Chinese completed set to true");
     }
   };
 
   const handleRecordClick = async () => {
-    console.log("Record button clicked", { isRecording, arabicCompleted, chineseCompleted });
     if (isRecording) {
       if (mediaRecorderRef.current) {
         mediaRecorderRef.current.stop();
@@ -181,7 +177,6 @@ export default function ScenarioPage() {
           });
 
           const wavBlob = await convertToWav(webmBlob);
-          console.log("Recorded audio blob (WAV format):", wavBlob);
           setRecordedAudio(wavBlob);
 
           setHasSubmittedSuccessfully(false);
@@ -299,7 +294,6 @@ export default function ScenarioPage() {
     setIsSubmitting(true);
     try {
       const sessionId = sessionUtils.getSessionId();
-      console.log("Submitting attempt for session ID:", recordedAudio, sessionId);
 
       if (sessionId && currentScenario) {
         const response = await sessionsApi.submitAttempt(

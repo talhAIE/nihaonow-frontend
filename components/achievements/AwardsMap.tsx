@@ -27,117 +27,114 @@ interface MapNode {
   size?: "small" | "medium" | "large" | "xl";
 }
 
-// Exact path from Rewards.png - Refined coordinates to fix overlap and flow
+// Exact path from Rewards.png - Scaled down to fit viewport properly
 const PATH_POINTS: MapNode[] = [
-  // --- ROW 1: Top Left to Right ---
-  // 1. Red Start (Hand)
-  { x: 30, y: 30, type: "node", variant: "red", size: "medium" },
+  // --- Top Section: Left to Right ---
+  // 1. Red Start (Top Left)
+  { x: 15, y: 15, type: "node", variant: "red", size: "medium" },
   
-  { x: 36, y: 33, type: "dot", dotColor: "red" },
-  { x: 40, y: 35, type: "dot", dotColor: "red" },
+  { x: 22, y: 17, type: "dot", dotColor: "red" },
+  { x: 28, y: 18, type: "dot", dotColor: "red" },
   
-  // 2. Yellow
-  { x: 46, y: 36, type: "node", variant: "yellow", size: "medium" },
+  // 2. Yellow Star
+  { x: 35, y: 19, type: "node", variant: "yellow", size: "medium" },
   
-  { x: 52, y: 38, type: "dot", dotColor: "yellow" },
-  { x: 56, y: 35, type: "dot", dotColor: "yellow" },
+  { x: 42, y: 20, type: "dot", dotColor: "yellow" },
+  { x: 48, y: 21, type: "dot", dotColor: "yellow" },
   
-  // 3. Green
-  { x: 62, y: 30, type: "node", variant: "green", size: "medium" },
+  // 3. Green Star
+  { x: 55, y: 20, type: "node", variant: "green", size: "medium" },
   
-  { x: 68, y: 32, type: "dot", dotColor: "green" },
+  { x: 62, y: 21, type: "dot", dotColor: "green" },
   
   // 4. Book (Green)
-  { x: 74, y: 35, type: "node", variant: "book", size: "medium" },
+  { x: 70, y: 23, type: "node", variant: "book", size: "medium" },
   
-  { x: 76, y: 41, type: "dot", dotColor: "green" },
+  { x: 72, y: 30, type: "dot", dotColor: "green" },
   
-  // 5. Read (Big Green) - Just below Book
-  { x: 76, y: 48, type: "node", variant: "read", size: "large" },
+  // 5. Read (Big Green) - Below Book
+  { x: 70, y: 37, type: "node", variant: "read", size: "large" },
   
-  // Winding Left from Read
-  { x: 72, y: 55, type: "dot", dotColor: "green" },
-  { x: 68, y: 58, type: "dot", dotColor: "green" },
+  // Path winds left from Read
+  { x: 64, y: 42, type: "dot", dotColor: "green" },
+  { x: 58, y: 46, type: "dot", dotColor: "green" },
   
   // 6. Light Green Lock
-  { x: 62, y: 60, type: "node", variant: "light_green", size: "medium" },
+  { x: 52, y: 50, type: "node", variant: "light_green", size: "medium" },
   
-  { x: 58, y: 56, type: "dot", dotColor: "green" },
+  { x: 46, y: 48, type: "dot", dotColor: "green" },
   
-  // 7. Green Lock (Left of 6)
-  { x: 53, y: 53, type: "node", variant: "green_lock", size: "medium" },
+  // 7. Green Lock
+  { x: 40, y: 46, type: "node", variant: "green_lock", size: "medium" },
   
-  { x: 48, y: 56, type: "dot", dotColor: "green" },
+  { x: 34, y: 48, type: "dot", dotColor: "green" },
   
-  // 8. Speak (Yellow - Yatakallam) -> Positioned above/left of center star
-  { x: 42, y: 58, type: "node", variant: "speak", size: "large" },
+  // 8. Speak (Yellow - Yatakallam)
+  { x: 28, y: 50, type: "node", variant: "speak", size: "large" },
   
-  { x: 42, y: 66, type: "dot", dotColor: "yellow" },
+  { x: 28, y: 57, type: "dot", dotColor: "yellow" },
+  { x: 28, y: 64, type: "dot", dotColor: "yellow" },
 
   // 9. Big Gold Star (Center)
-  { x: 42, y: 74, type: "node", variant: "star_gold", size: "xl" },
+  { x: 28, y: 72, type: "node", variant: "star_gold", size: "xl" },
 
-  // Path continues LEFT from Speak (or star?)
-  // Actually looks like path splits or comes from left to Speak?
-  // Let's assume flow: 
-  // ... Speak -> Star (Goal)
+  // Left side path branching from main path
+  // 10. Red Temple Node (Left side)
+  { x: 15, y: 38, type: "node", variant: "red_lock", size: "medium" },
   
-  // But there's a left side path too:
-  // Red Temple -> Red Lock -> Pink Star -> Pink Star
+  { x: 17, y: 44, type: "dot", dotColor: "red" },
   
-  // Let's position the Left Side path explicitly:
-  
-  // 10. Red Temple Node (Far Left Middle)
-  { x: 26, y: 52, type: "node", variant: "red_lock", size: "medium" },
-  
-  { x: 28, y: 60, type: "dot", dotColor: "red" },
-  
-  // 11. Red Lock (Below 10)
-  { x: 30, y: 66, type: "node", variant: "red_plain", size: "medium" },
+  // 11. Red Lock
+  { x: 19, y: 50, type: "node", variant: "red_plain", size: "medium" },
 
   // 12. Pink Star (Far Left Bottom)
-  { x: 20, y: 74, type: "node", variant: "pink_star", size: "large" },
+  { x: 10, y: 58, type: "node", variant: "pink_star", size: "large" },
   
-  { x: 25, y: 80, type: "dot", dotColor: "red" },
+  { x: 15, y: 65, type: "dot", dotColor: "red" },
   
   // 13. Pink Star (Moving Right)
-  { x: 32, y: 84, type: "node", variant: "pink_star", size: "large" },
+  { x: 22, y: 72, type: "node", variant: "pink_star", size: "large" },
   
-  { x: 38, y: 86, type: "dot", dotColor: "red" },
+  { x: 28, y: 78, type: "dot", dotColor: "red" },
 
-  // 14. Pink Star (Center Bottom Left)
-  { x: 46, y: 88, type: "node", variant: "pink_star", size: "large" },
+  // 14. Pink Star (Center Bottom)
+  { x: 35, y: 82, type: "node", variant: "pink_star", size: "large" },
   
-  { x: 54, y: 86, type: "dot", dotColor: "yellow" },
+  { x: 42, y: 80, type: "dot", dotColor: "yellow" },
 
-  // 15. Yellow Star (Center Bottom Right)
-  { x: 62, y: 84, type: "node", variant: "yellow_star", size: "medium" },
+  // 15. Yellow Star (Bottom Right)
+  { x: 48, y: 78, type: "node", variant: "yellow_star", size: "medium" },
   
-  { x: 68, y: 80, type: "dot", dotColor: "green" },
+  { x: 54, y: 76, type: "dot", dotColor: "green" },
 
   // 16. Green Lock (Bottom Right)
-  { x: 74, y: 76, type: "node", variant: "green_lock", size: "medium" },
+  { x: 60, y: 72, type: "node", variant: "green_lock", size: "medium" },
   
-  { x: 74, y: 68, type: "dot", dotColor: "green" },
+  { x: 66, y: 68, type: "dot", dotColor: "green" },
 
-  // 17. Green Lock (Above 16)
-  { x: 70, y: 62, type: "node", variant: "green_lock", size: "medium" },
+  // 17. Green Lock (Upper Right)
+  { x: 72, y: 64, type: "node", variant: "green_lock", size: "medium" },
   
-  // 18. Red Star (Far Left Top path?) 
-  { x: 16, y: 64, type: "node", variant: "pink_star", size: "large" }, // Additional Star left
+  { x: 78, y: 60, type: "dot", dotColor: "green" },
+  
+  // 18. Additional decoration star (Far Right)
+  { x: 84, y: 56, type: "node", variant: "pink_star", size: "large" },
 ];
 
-// Decorations - Adjusted to not overlap nodes
+// Decorations - Scaled down to fit properly
 const DECORATIONS = [
-  { x: 42, y: 22, src: "/achievements/Flagbase 1.png", w: 80, h: 30 },
-  { x: 42, y: 18, src: "/achievements/Flag 1.png", w: 90, h: 50 },
-  { x: 15, y: 45, src: "/achievements/buildingfour 1.png", w: 90, h: 90 }, // Temple Top Left
-  { x: 35, y: 50, src: "/achievements/buildingthree 1.png", w: 100, h: 80 }, // Temple Red (Near Node 10)
-  { x: 58, y: 48, src: "/achievements/Building1 1.png", w: 80, h: 80 }, // Tree Cluster Center
-  { x: 65, y: 22, src: "/achievements/panda1 1.png", w: 70, h: 70 }, // Panda
-  { x: 32, y: 72, src: "/achievements/tiger 1.png", w: 80, h: 80 }, // Tiger (Near Node 13)
-  { x: 75, y: 60, src: "/achievements/monkey1 1.png", w: 60, h: 60 }, // Monkey
-  { x: 10, y: 80, src: "/achievements/Building2 1.png", w: 70, h: 70 }, // Trees Left
+  // Flags at top center
+  { x: 35, y: 8, src: "/achievements/Flagbase 1.png", w: 35, h: 12 },
+  { x: 35, y: 5, src: "/achievements/Flag 1.png", w: 40, h: 25 },
+  
+  // Buildings and structures - scaled down
+  { x: 8, y: 25, src: "/achievements/buildingfour 1.png", w: 40, h: 40 }, // Temple Top Left
+  { x: 18, y: 32, src: "/achievements/buildingthree 1.png", w: 45, h: 35 }, // Temple Red
+  { x: 45, y: 28, src: "/achievements/Building1 1.png", w: 35, h: 35 }, // Tree Cluster Center
+  { x: 75, y: 30, src: "/achievements/panda1 1.png", w: 25, h: 25 }, // Panda Right
+  { x: 22, y: 68, src: "/achievements/tiger 1.png", w: 35, h: 35 }, // Tiger Bottom
+  { x: 72, y: 45, src: "/achievements/monkey1 1.png", w: 20, h: 20 }, // Monkey Right
+  { x: 5, y: 65, src: "/achievements/Building2 1.png", w: 30, h: 30 }, // Trees Far Left
 ];
 
 export default function AwardsMap({ achievements }: AwardsMapProps) {
@@ -174,7 +171,7 @@ export default function AwardsMap({ achievements }: AwardsMapProps) {
   };
 
   return (
-    <div className="relative w-full aspect-[4/3] max-h-[1000px] bg-[#FEF9EC] rounded-[60px] overflow-hidden shadow-2xl border-[12px] border-white/80">
+    <div className="relative w-full aspect-[4/3] max-h-[600px] bg-[#FEF9EC] rounded-[40px] overflow-hidden shadow-xl border-[8px] border-white/80">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#FFFDF9] via-[#FFFFFF] to-[#F5E6CF] opacity-80" />
       
@@ -182,7 +179,14 @@ export default function AwardsMap({ achievements }: AwardsMapProps) {
       {DECORATIONS.map((dec, i) => (
         <div key={i} className="absolute z-10 pointer-events-none transition-transform hover:scale-105 duration-700"
              style={{ left: `${dec.x}%`, top: `${dec.y}%`, transform: "translate(-50%, -50%)" }}>
-          <Image src={dec.src} alt="" width={dec.w} height={dec.h} className="drop-shadow-lg" />
+          <Image 
+            src={dec.src} 
+            alt="" 
+            width={dec.w} 
+            height={dec.h} 
+            className="drop-shadow-lg" 
+            style={{ width: 'auto', height: 'auto' }}
+          />
         </div>
       ))}
 
@@ -196,9 +200,9 @@ export default function AwardsMap({ achievements }: AwardsMapProps) {
         }[p.dotColor || "green"];
 
         return (
-           <div 
+             <div 
              key={`dot-${i}`}
-             className={`absolute rounded-full w-3.5 h-3.5 border-2 shadow-sm opacity-90 ${dotColorClass}`}
+             className={`absolute rounded-full w-2.5 h-2.5 border-2 shadow-sm opacity-90 ${dotColorClass}`}
              style={{ left: `${p.x}%`, top: `${p.y}%`, transform: "translate(-50%, -50%)" }}
            />
         );
@@ -211,10 +215,10 @@ export default function AwardsMap({ achievements }: AwardsMapProps) {
         const assetUrl = getAssetForNode(point, achievement);
         
         const sizeClasses = {
-          small: "w-16 h-16",
-          medium: "w-20 h-20 md:w-24 md:h-24",
-          large: "w-28 h-28 md:w-32 md:h-32",
-          xl: "w-36 h-36 md:w-44 md:h-44",
+          small: "w-10 h-10",
+          medium: "w-12 h-12 md:w-14 md:h-14",
+          large: "w-16 h-16 md:w-18 md:h-18",
+          xl: "w-20 h-20 md:w-24 md:h-24",
         }[point.size || "medium"];
 
         return (

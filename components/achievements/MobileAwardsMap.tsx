@@ -105,7 +105,14 @@ export default function MobileAwardsMap({ achievements }: MobileAwardsMapProps) 
           className={`absolute z-10 pointer-events-none ${getSidePosition(dec.side)}`}
           style={{ top: `${dec.y}%`, transform: "translate(-50%, -50%)" }}
         >
-          <Image src={dec.src} alt="" width={dec.w} height={dec.h} className="drop-shadow-md opacity-80" />
+          <Image 
+            src={dec.src} 
+            alt="" 
+            width={dec.w} 
+            height={dec.h} 
+            className="drop-shadow-md opacity-80" 
+            style={{ width: 'auto', height: 'auto' }}
+          />
         </div>
       ))}
 

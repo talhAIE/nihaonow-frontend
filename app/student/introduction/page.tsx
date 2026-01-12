@@ -35,7 +35,7 @@ export default function SheikhPage() {
   useEffect(() => {
     async function loadData() {
       const currentTopic = sessionUtils.getCurrentTopic();
-      
+
       // If we have a topicId in URL but no session or different topic in session
       if (topicIdParam && (!currentTopic || currentTopic.id.toString() !== topicIdParam)) {
         try {
@@ -49,15 +49,13 @@ export default function SheikhPage() {
 
       const scenarios = sessionUtils.getScenarios();
       const introScenario = scenarios.find((scenario) => scenario.isIntroduction);
-      console.log("Introduction scenario:", introScenario);
-      console.log("All scenarios:", scenarios);
 
       if (introScenario) {
         setIntroductionScenario(introScenario);
       }
       setLoading(false);
     }
-    
+
     loadData();
   }, [topicIdParam]);
 
