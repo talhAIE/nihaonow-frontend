@@ -24,4 +24,7 @@ export const sessionsApi = {
       'Content-Type': 'multipart/form-data',
      } });
   },
+  complete: async (sessionId: string): Promise<any> => {
+    return apiClient.post(apiEndpoints.sessions.complete(sessionId));
+  },
 };

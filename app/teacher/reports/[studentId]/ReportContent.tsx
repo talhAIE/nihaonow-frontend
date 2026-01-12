@@ -4,6 +4,7 @@ import { ChevronLeft, Download, Clock, Trophy, Flame, Star, BookOpen, Medal, Scr
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { reportsApi } from '@/lib/api';
 
 // Mock Data
 const studentData = {
@@ -33,12 +34,28 @@ const studentData = {
 export default function StudentReportContent({ studentId }: { studentId: string }) {
   const [user, setUser] = useState(studentData);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     // Simulating API fetch
     const timer = setTimeout(() => setIsLoading(false), 500);
     return () => clearTimeout(timer);
   }, [studentId]);
+
+  const handleDownloadReport = async () => {
+    try {
+      setIsDownloading(true);
+      const { url } = await reportsApi.getStudentReportUrl(studentId);
+      if (url) {
+        window.open(url, '_blank');
+      }
+    } catch (error) {
+      console.error("Failed to download report", error);
+      alert("فشل تحميل التقرير. يرجى المحاولة مرة أخرى.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   if (isLoading) {
     return <div className="flex items-center justify-center min-h-[60vh] text-amber-500 font-bold">جاري التحميل...</div>;
@@ -54,9 +71,17 @@ export default function StudentReportContent({ studentId }: { studentId: string 
             </span>
             <span className="text-xl">تقرير الطالب</span>
          </Link>
-         <button className="flex flex-row-reverse items-center gap-2 bg-[#35AB4E] text-white px-7 py-3 rounded-2xl font-black hover:bg-[#2f9c46] shadow-lg shadow-green-100 transition-all">
-            <Download className="w-5 h-5" />
-            <span>تحميل</span>
+         <button 
+            onClick={handleDownloadReport}
+            disabled={isDownloading}
+            className="flex flex-row-reverse items-center gap-2 bg-[#35AB4E] text-white px-7 py-3 rounded-2xl font-black hover:bg-[#2f9c46] shadow-lg shadow-green-100 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+         >
+            {isDownloading ? (
+                <span className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
+            ) : (
+                <Download className="w-5 h-5" />
+            )}
+            <span>{isDownloading ? 'جاري التحميل...' : 'تحميل'}</span>
          </button>
       </div>
 

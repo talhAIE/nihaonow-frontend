@@ -20,16 +20,20 @@ export const reportsApi = {
     return apiClient.get(apiEndpoints.reports.metrics, undefined, config);
   },
 
-  exportReport: async (format: 'pdf' | 'csv' = 'pdf', config: any = {}) => {
-    // Backend only supports CSV export via /user/students/export currently
-    // PDF export is via /user/students/:id/report (single) or /user/students/reports/bulk (zip)
-    // We map to the CSV export endpoint if format is csv, otherwise mock/warn or try bulk
-    if (format === 'csv') {
-        const url = apiEndpoints.reports.export; // mapped to /user/students/export
-        return apiClient.get(url, { responseType: 'blob' }, config);
-    }
-    // For now, return null or handle PDF unimplemented in backend bulk export
-    return null; 
+  exportCsv: async (config: any = {}) => {
+    const url = apiEndpoints.reports.export;
+    // Important: responseType: 'blob' is needed for file downloads
+    return apiClient.get(url, { responseType: 'blob' }, config);
+  },
+
+  getStudentReportUrl: async (studentId: number | string, config: any = {}) => {
+    const url = apiEndpoints.teacher.studentReport(studentId);
+    return apiClient.get<{ url: string; expiresAt?: string }>(url, undefined, config);
+  },
+
+  getBulkReportsUrl: async (config: any = {}) => {
+    const url = apiEndpoints.teacher.bulkReports;
+    return apiClient.get<{ url: string; expiresAt?: string }>(url, undefined, config);
   }
 };
 
