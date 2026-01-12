@@ -159,7 +159,7 @@ export default function Page() {
                         <div className="relative hidden lg:flex items-center justify-center">
                             {/* Clouds from design */}
                             <div className="absolute top-6 right-8 z-10 w-10 opacity-80">
-                                <Image src="/images/clouddd.png" alt="cloud" width={40} height={20} className="object-contain" />
+                                <Image src="/images/clouddd.png" alt="cloud" width={40} height={20} className="object-contain w-auto h-auto" />
                             </div>
                             
                             <Image 
@@ -167,7 +167,8 @@ export default function Page() {
                                 alt="Level Decoration" 
                                 width={110} 
                                 height={110}
-                                className="object-contain relative z-0 mt-4"
+                                priority
+                                className="object-contain relative z-0 mt-4 w-auto h-auto"
                             />
                         </div>
 
@@ -311,7 +312,7 @@ export default function Page() {
                             alt="decor"
                             width={70}
                             height={56}
-                            className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-auto sm:w-[70px] sm:h-auto"
+                            className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-auto sm:w-[70px] sm:h-auto w-auto h-auto"
                         />
                         <div className="relative z-10">
                             <p className="text-sm sm:text-base font-bold mb-1">أطول خط</p>
@@ -326,7 +327,7 @@ export default function Page() {
                             alt="decor"
                             width={70}
                             height={56}
-                            className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-auto sm:w-[70px] sm:h-auto"
+                            className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-auto sm:w-[70px] sm:h-auto w-auto h-auto"
                         />
                         <div className="relative z-10">
                             <p className="text-sm sm:text-base font-bold mb-1">الخط الحالي</p>

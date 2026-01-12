@@ -169,6 +169,7 @@ export const apiEndpoints = {
         completions: '/user/completions',
         exportStudents: '/user/students/export',
         studentReport: (userId: number | string) => `/user/students/${userId}/report`,
+        studentReportDetails: (userId: number | string) => `/user/students/${userId}/report/details`,
         bulkReports: '/user/students/reports/bulk',
     },
     reports: {

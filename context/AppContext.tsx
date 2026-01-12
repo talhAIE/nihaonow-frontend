@@ -18,6 +18,7 @@ interface AppState {
   isAuthenticated: boolean;
   authUser: User | null;
   isLoggingOut: boolean;
+  isInitialized: boolean;
 }
 
 interface AppContextType {
@@ -45,32 +46,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
     isAuthenticated: false,
     authUser: null,
     isLoggingOut: false,
+    isInitialized: false, // New flag
   });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // ... (dir state logic omitted for brevity, keeping existing) ...
+
   const [dir, setDirState] = useState<"ltr" | "rtl">(() => {
     try {
-      // Default to RTL. On the server we can't access localStorage or document.
       if (typeof window === 'undefined') return 'rtl';
-
-      // Use stored preference if available
       const stored = localStorage.getItem('dir') as "ltr" | "rtl" | null;
       if (stored === 'ltr' || stored === 'rtl') return stored;
-
-      // Fall back to document direction if present
       const docDir = document.documentElement?.dir as "ltr" | "rtl" | undefined;
-      if (docDir === 'ltr' || docDir === 'rtl') return docDir;
-
-      // Final default
-      return 'rtl';
+      return docDir === 'ltr' || docDir === 'rtl' ? docDir : 'rtl';
     } catch (err) {
       return 'rtl';
     }
   });
 
   const setDir = (d: "ltr" | "rtl") => {
-    try {
+      // ... (keep existing implementation) ...
+      try {
       if (typeof window !== 'undefined') {
         localStorage.setItem('dir', d)
         document.documentElement.dir = d
@@ -103,6 +100,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         hasCompletedOnboarding: hasCompleted,
         isAuthenticated: !!authToken,
         authUser: authUserStr ? JSON.parse(authUserStr) : null,
+        isInitialized: true, // Mark initialized
       }));
     }
   }, []);

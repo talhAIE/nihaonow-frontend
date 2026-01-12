@@ -2,22 +2,66 @@
 
 import { Search, Filter, Download, ChevronLeft, BookOpen, FileText, User, Users, Moon } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
-import { reportsApi } from '@/lib/api';
+import { useState, useEffect } from 'react';
+import { reportsApi, teacherApi } from '@/lib/api';
 
-// Mock Data
-const students = [
-  { id: 1, name: "سارة أحمد", status: "متوسط", statusColor: "text-amber-500", points: 9000000, usage: "80%" },
-  { id: 2, name: "علي محمد", status: "مرتفع", statusColor: "text-green-500", points: 8500000, usage: "75%" },
-  { id: 3, name: "ليلى حسن", status: "عالي", statusColor: "text-blue-500", points: 9500000, usage: "90%" },
-  { id: 4, name: "عمر خالد", status: "ضعيف", statusColor: "text-red-500", points: 5000000, usage: "40%" },
-];
+interface StudentData {
+  id: number;
+  username: string;
+  level: number;
+  totalPoints: number;
+  usageLabel: string;
+  statusColor?: string;
+  email?: string;
+}
+
+interface AnalyticsData {
+  totalUsers: number;
+  loggedInCount: number;
+  yetToLogin: number;
+}
 
 export default function MyStudentsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isDownloading, setIsDownloading] = useState(false);
+  const [students, setStudents] = useState<StudentData[]>([]);
+  const [analytics, setAnalytics] = useState<AnalyticsData>({
+      totalUsers: 0,
+      loggedInCount: 0,
+      yetToLogin: 0
+  });
+  const [isLoading, setIsLoading] = useState(true);
 
-  const filteredStudents = students.filter(s => s.name.includes(searchTerm));
+  useEffect(() => {
+    const fetchStudents = async () => {
+        try {
+            const data = await teacherApi.getStudents({ limit: 100 }); // Fetch up to 100 students for now
+            
+            if (data.students) {
+                setStudents(data.students);
+            }
+            
+            if (data.analytics) {
+                setAnalytics({
+                    totalUsers: data.analytics.totalUsers,
+                    loggedInCount: data.analytics.loggedInCount,
+                    yetToLogin: data.analytics.yetToLogin
+                });
+            }
+        } catch (error) {
+            console.error("Failed to fetch students:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    fetchStudents();
+  }, []);
+
+  // Robust filtering
+  const filteredStudents = students.filter(s => 
+    (s.username || '').toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleDownloadReports = async () => {
     try {
@@ -34,119 +78,137 @@ export default function MyStudentsPage() {
     }
   };
 
+  const getStatusColor = (level: number) => {
+    if (level >= 5) return "text-green-500";
+    if (level >= 3) return "text-amber-500";
+    return "text-slate-500";
+  };
+
+  const getLevelLabel = (level: number) => `مستوى ${level}`;
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center min-h-[60vh] text-amber-500 font-bold">جاري التحميل...</div>;
+  }
+
   return (
     <div className="space-y-10" dir="rtl">
       
-      {/* Login Status & Search Section */}
-      <div className="bg-white rounded-[40px] shadow-sm border border-slate-50 p-6 md:p-10 space-y-8">
+      {/* Login Status Section - Removed Search */}
+      <div className="bg-white rounded-[32px] shadow-sm border border-slate-50 p-6 space-y-6">
           {/* Login Status Row */}
-          <div className="flex flex-col md:flex-row-reverse justify-between items-center gap-8">
-              <div className="flex items-center gap-12">
+          <div className="flex flex-col md:flex-row-reverse justify-between items-center gap-6">
+              <div className="flex items-center gap-8">
                   <div className="text-center group">
-                      <div className="flex items-center gap-2 justify-center mb-1">
-                          <span className="text-slate-400 font-bold text-xs">تم تسجيل الدخول</span>
-                          <Users className="w-4 h-4 text-[#CA495A]" />
+                      <div className="flex items-center gap-1.5 justify-center mb-0.5">
+                          <span className="text-slate-400 font-bold text-[10px]">تم تسجيل الدخول</span>
+                          <Users className="w-3.5 h-3.5 text-[#CA495A]" />
                       </div>
-                      <div className="text-4xl font-black text-slate-800 font-nunito">3232</div>
+                      <div className="text-2xl font-black text-slate-800 font-nunito">{analytics.loggedInCount}</div>
                   </div>
 
-                  <div className="h-12 w-[1px] bg-slate-100 hidden md:block"></div>
+                  <div className="h-8 w-[1px] bg-slate-100 hidden md:block"></div>
 
                   <div className="text-center group">
-                      <div className="flex items-center gap-2 justify-center mb-1">
-                          <span className="text-slate-400 font-bold text-xs">لم يسجل الدخول بعد</span>
-                          <Moon className="w-4 h-4 text-amber-400" />
+                      <div className="flex items-center gap-1.5 justify-center mb-0.5">
+                          <span className="text-slate-400 font-bold text-[10px]">لم يسجل الدخول بعد</span>
+                          <Moon className="w-3.5 h-3.5 text-amber-400" />
                       </div>
-                      <div className="text-4xl font-black text-slate-800 font-nunito">752</div>
+                      <div className="text-2xl font-black text-slate-800 font-nunito">{analytics.yetToLogin}</div>
                   </div>
               </div>
 
-              {/* Search Bar - Green themed as per design */}
-              <div className="relative w-full md:max-w-md">
-                  <input
-                      type="text"
-                      placeholder="البحث عن الطلاب هنا..."
-                      className="w-full bg-white border-2 border-[#35AB4E] rounded-2xl py-4 px-12 text-right focus:outline-none focus:ring-4 focus:ring-[#35AB4E]/10 transition-all font-bold text-slate-600"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                  <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-[#35AB4E] w-5 h-5" />
+              <div className="flex flex-row-reverse gap-4">
+                  <button 
+                      onClick={handleDownloadReports}
+                      disabled={isDownloading}
+                      className="flex flex-row-reverse items-center justify-center gap-2 bg-white border border-slate-100 text-slate-600 px-5 py-2.5 rounded-xl font-black hover:bg-slate-50 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed text-xs"
+                  >
+                      {isDownloading ? (
+                          <span className="animate-spin w-4 h-4 border-2 border-slate-600 border-t-transparent rounded-full" />
+                      ) : (
+                          <Download className="w-4 h-4" />
+                      )}
+                      <span>{isDownloading ? 'جاري التحميل...' : 'تحميل التقارير'}</span>
+                  </button>
+                  <button className="flex flex-row-reverse items-center justify-center gap-2 bg-white border border-slate-100 text-slate-600 px-5 py-2.5 rounded-xl font-black hover:bg-slate-50 transition-all shadow-sm text-xs">
+                      <Filter className="w-4 h-4" />
+                      <span>المرشحات</span>
+                  </button>
               </div>
-          </div>
-
-          {/* Action Buttons Row */}
-          <div className="flex flex-row-reverse gap-4">
-               <button 
-                  onClick={handleDownloadReports}
-                  disabled={isDownloading}
-                  className="flex flex-row-reverse items-center justify-center gap-2 bg-white border-2 border-slate-100 text-slate-600 px-6 py-3 rounded-2xl font-black hover:bg-slate-50 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-               >
-                  {isDownloading ? (
-                      <span className="animate-spin w-5 h-5 border-2 border-slate-600 border-t-transparent rounded-full" />
-                  ) : (
-                      <Download className="w-5 h-5" />
-                  )}
-                  <span>{isDownloading ? 'جاري التحميل...' : 'تحميل التقارير'}</span>
-               </button>
-               <button className="flex flex-row-reverse items-center justify-center gap-2 bg-white border-2 border-slate-100 text-slate-600 px-6 py-3 rounded-2xl font-black hover:bg-slate-50 transition-all shadow-sm">
-                  <Filter className="w-5 h-5" />
-                  <span>المرشحات</span>
-               </button>
           </div>
       </div>
 
       {/* Results Section */}
       <div className="space-y-6">
-          <div className="flex flex-row-reverse items-center gap-2 px-2">
-               <div className="bg-slate-800 p-1 rounded-md text-white">
-                  <FileText className="w-4 h-4" />
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 px-2">
+               {/* Header Title */}
+               <div className="flex items-center gap-2">
+                   <div className="bg-slate-800 p-1 rounded-md text-white">
+                      <FileText className="w-3.5 h-3.5" />
+                   </div>
+                   <span className="font-black text-slate-800 text-base">نتائج</span>
                </div>
-               <span className="font-black text-slate-800 text-lg">نتائج</span>
+               
+               {/* Search Bar - Moved Here */}
+               <div className="relative w-full md:max-w-xs">
+                  <input
+                      type="text"
+                      placeholder="البحث عن الطلاب هنا..."
+                      className="w-full bg-white border border-[#35AB4E] rounded-xl py-3 px-10 text-right focus:outline-none focus:ring-2 focus:ring-[#35AB4E]/10 transition-all font-bold text-slate-600 text-sm"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                  <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-[#35AB4E] w-4 h-4" />
+               </div>
           </div>
 
-          <div className="space-y-4">
-              {filteredStudents.map((student) => (
-                  <div key={student.id} className="group bg-white border border-slate-50 rounded-[32px] p-6 flex flex-col md:flex-row-reverse items-center justify-between hover:shadow-xl hover:shadow-slate-100 transition-all duration-300 gap-6">
-                      
-                      {/* Name and Level */}
-                      <div className="flex flex-row-reverse items-center gap-5 w-full md:w-1/4">
-                          <div className="w-16 h-16 rounded-3xl bg-[#FBD4D3] border-4 border-white shadow-sm flex items-center justify-center text-[#BC313F] overflow-hidden relative rotate-3 group-hover:rotate-0 transition-transform">
-                              <User className="w-10 h-10 opacity-50" />
-                          </div>
-                          <div className="text-right">
-                              <h4 className="font-black text-slate-800 text-xl">{student.name}</h4>
-                              <span className={`text-sm font-bold ${student.statusColor}`}>{student.status}</span>
-                          </div>
-                      </div>
-
-                      {/* Points */}
-                      <div className="flex flex-col items-center md:items-end w-full md:w-1/6">
-                          <p className="text-[10px] text-slate-400 font-black mb-1 uppercase tracking-wider">مجموع النقاط</p>
-                          <p className="font-black text-slate-800 font-nunito text-xl">{student.points.toLocaleString()}</p>
-                      </div>
-
-                      {/* Usage */}
-                      <div className="flex flex-col items-center md:items-end w-full md:w-1/6">
-                          <p className="text-[10px] text-slate-400 font-black mb-1 uppercase tracking-wider">الاستخدام</p>
-                          <p className="font-black text-slate-800 font-nunito text-xl">{student.usage}</p>
-                      </div>
-
-                      {/* Action Buttons */}
-                      <div className="flex flex-row-reverse gap-3 w-full md:w-1/3">
-                          <button className="flex-1 flex flex-row-reverse items-center justify-center gap-2 px-4 py-4 bg-[#FBD4D3] hover:bg-[#F9C3C2] text-[#8D1716] rounded-2xl text-sm font-black transition-all">
-                              <BookOpen className="w-4 h-4" />
-                              <span className="truncate">عرض المواضيع المكتملة</span>
-                          </button>
+          <div className="space-y-3">
+              {filteredStudents.length === 0 ? (
+                  <div className="text-center py-8 text-slate-500 font-bold text-sm">لا يوجد طلاب مطابقين للبحث</div>
+              ) : (
+                  filteredStudents.map((student) => (
+                      <div key={student.id} className="group bg-white border border-slate-50 rounded-[20px] p-4 flex flex-col md:flex-row items-center justify-between hover:shadow-lg hover:shadow-slate-100 transition-all duration-300 gap-4">
                           
-                          <Link href={`/teacher/reports/${student.id}`} className="flex-1">
-                              <button className="w-full h-full flex flex-row-reverse items-center justify-center gap-2 px-6 bg-white border-2 border-slate-100 rounded-2xl text-slate-700 text-sm font-black hover:bg-slate-50 transition-all">
-                                  <span>عرض التقرير</span>
-                                  <ChevronLeft className="w-4 h-4" />
+                          {/* Name and Level */}
+                          <div className="flex flex-row items-center gap-3 w-full md:w-1/4">
+                              <div className="w-12 h-12 rounded-[18px] bg-[#FBD4D3] border-2 border-white shadow-sm flex items-center justify-center text-[#BC313F] overflow-hidden relative rotate-3 group-hover:rotate-0 transition-transform">
+                                  <User className="w-6 h-6 opacity-50" />
+                              </div>
+                              <div className="text-right">
+                                  <h4 className="font-black text-slate-800 text-sm">{student.username}</h4>
+                                  <span className={`text-[10px] font-bold ${getStatusColor(student.level)}`}>{getLevelLabel(student.level)}</span>
+                              </div>
+                          </div>
+
+                          {/* Points */}
+                          <div className="flex flex-col items-center md:items-start w-full md:w-1/6">
+                              <p className="text-[9px] text-slate-400 font-black mb-0.5 uppercase tracking-wider">مجموع النقاط</p>
+                              <p className="font-black text-slate-800 font-nunito text-base">{student.totalPoints?.toLocaleString()}</p>
+                          </div>
+
+                          {/* Usage */}
+                          <div className="flex flex-col items-center md:items-start w-full md:w-1/6">
+                              <p className="text-[9px] text-slate-400 font-black mb-0.5 uppercase tracking-wider">الاستخدام</p>
+                              <p className="font-black text-slate-800 font-nunito text-base">{student.usageLabel}</p>
+                          </div>
+
+                          {/* Action Buttons */}
+                          <div className="flex flex-row-reverse gap-3 w-full md:w-1/3 justify-end">
+                              <button className="flex-1 flex flex-row-reverse items-center justify-center gap-1.5 px-3 py-2 bg-[#FBD4D3] hover:bg-[#F9C3C2] text-[#8D1716] rounded-xl text-xs font-black transition-all">
+                                  <BookOpen className="w-3.5 h-3.5" />
+                                  <span className="truncate">عرض المواضيع</span>
                               </button>
-                          </Link>
+                              
+                              <Link href={`/teacher/reports/view?studentId=${student.id}`} className="flex-1">
+                                  <button className="w-full h-full flex flex-row-reverse items-center justify-center gap-1.5 px-4 bg-white border border-slate-100 rounded-xl text-slate-700 text-xs font-black hover:bg-slate-50 transition-all">
+                                      <span>عرض التقرير</span>
+                                      <ChevronLeft className="w-3.5 h-3.5" />
+                                  </button>
+                              </Link>
+                          </div>
                       </div>
-                  </div>
-              ))}
+                  ))
+              )}
           </div>
       </div>
     </div>
