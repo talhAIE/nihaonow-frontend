@@ -5,6 +5,7 @@ import {
   User, 
   Mail, 
   Shield, 
+  LogOut, 
   Lock,
   Save,
   Loader2
@@ -13,11 +14,11 @@ import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
 import { authApi } from "@/lib/services/auth";
 
-export default function AccountPage() {
+export default function TeacherAccountPage() {
   const { state } = useAppContext();
   const user = state.authUser;
-  const displayName = state.user || user?.username || "الطالب";
-  const userEmail = user?.email || "student@example.com";
+  const displayName = state.user || user?.username || "المعلم";
+  const userEmail = user?.email || "teacher@example.com";
   
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -41,7 +42,17 @@ export default function AccountPage() {
     setIsLoading(true);
 
     try {
+        // Since we didn't find a direct update-password endpoint, we'll suggest using the reset flow
+        // Or if we had one, we'd call it here.
+        // For now, let's simulate a delay or try a common endpoint if one existed.
+        // But to be helpful, we can trigger a reset link if the user prefers, OR just show this is UI only.
+        // User asked for fields. I'll simulate success for UI demo purposes if no API.
+        
         await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // In a real app with no endpoint, we might trigger authApi.forgetPassword({ email: userEmail })
+        // But that sends an email, not updates it directly.
+        // I will display a message that this feature is connected to backend (placeholder).
         
         setMessage({ type: 'success', text: 'تم تحديث كلمة المرور بنجاح (Simulation)' });
         setNewPassword("");
@@ -68,21 +79,21 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 p-4 sm:p-8 pt-6" dir="rtl">
+    <div className="max-w-4xl mx-auto space-y-8" dir="rtl">
       <div>
-        <h2 className="text-2xl font-black text-slate-800 font-nunito">حسابي</h2>
-        <p className="text-slate-500 font-bold text-sm">إدارة معلوماتك الشخصية وإعدادات الأمان</p>
+        <h2 className="text-2xl font-black text-slate-800 font-nunito">إعدادات الحساب</h2>
+        <p className="text-slate-500 font-bold text-sm">تحديث ملفك الشخصي وإعدادات الأمان</p>
       </div>
 
       <div className="bg-white rounded-[24px] border border-slate-100 shadow-sm overflow-hidden">
         {/* Simple Profile Header */}
         <div className="bg-slate-50/50 p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6 border-b border-slate-100">
-             <div className="w-24 h-24 rounded-full bg-[#35AB4E] p-1 flex-shrink-0">
+             <div className="w-24 h-24 rounded-full bg-[#FFCB08] p-1 flex-shrink-0">
                 <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
                     {user?.image ? (
                         <Image src={user.image} alt={displayName} width={96} height={96} className="object-cover w-full h-full" />
                     ) : (
-                        <User size={40} className="text-[#35AB4E]" />
+                        <User size={40} className="text-[#8D1716]" />
                     )}
                 </div>
             </div>
@@ -92,11 +103,6 @@ export default function AccountPage() {
                     <Mail className="w-4 h-4" />
                     {userEmail}
                 </p>
-                <div className="pt-1 flex flex-wrap justify-center sm:justify-start gap-2">
-                    <span className="bg-[#35AB4E]/10 text-[#35AB4E] px-3 py-1 rounded-full text-xs font-black">
-                        طالب
-                    </span>
-                </div>
             </div>
         </div>
 
@@ -119,7 +125,7 @@ export default function AccountPage() {
                                     type="password" 
                                     value={newPassword}
                                     onChange={(e) => setNewPassword(e.target.value)}
-                                    className="w-full pl-4 pr-10 py-3 bg-white rounded-xl border border-slate-200 text-slate-700 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#35AB4E] transition-all placeholder:text-slate-300"
+                                    className="w-full pl-4 pr-10 py-3 bg-white rounded-xl border border-slate-200 text-slate-700 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#FFCB08] transition-all placeholder:text-slate-300"
                                     placeholder="••••••••"
                                 />
                             </div>
@@ -132,7 +138,7 @@ export default function AccountPage() {
                                     type="password" 
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
-                                    className="w-full pl-4 pr-10 py-3 bg-white rounded-xl border border-slate-200 text-slate-700 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#35AB4E] transition-all placeholder:text-slate-300"
+                                    className="w-full pl-4 pr-10 py-3 bg-white rounded-xl border border-slate-200 text-slate-700 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#FFCB08] transition-all placeholder:text-slate-300"
                                     placeholder="••••••••"
                                 />
                             </div>
@@ -150,7 +156,7 @@ export default function AccountPage() {
                         <button 
                             type="submit"
                             disabled={isLoading}
-                            className="flex items-center justify-center gap-2 bg-[#35AB4E] text-white px-6 py-2.5 rounded-xl text-sm font-black hover:bg-[#2d9344] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                            className="flex items-center justify-center gap-2 bg-[#FFCB08] text-[#8D1716] px-6 py-2.5 rounded-xl text-sm font-black hover:bg-[#F0BF07] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                         >
                             {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                             <span>حفظ كلمة المرور</span>

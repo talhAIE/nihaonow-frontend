@@ -3,30 +3,18 @@ import { apiClient, apiEndpoints } from '@/lib/http';
 export const teacherApi = {
   getAnalytics: async (config: any = {}) => {
     try {
-      return await apiClient.get(apiEndpoints.teacher.analytics, undefined, config);
+      // The students endpoint returns both analytics and the list
+      const response = await apiClient.get(apiEndpoints.teacher.students, { limit: 1 }, config);
+      return response.analytics;
     } catch (err) {
-      // Mock data for development if backend is not ready
-      return {
-        totalStudents: 128,
-        activeStudents: 42,
-        totalUsageHours: 1240,
-        topicsCompleted: 856,
-        engagementRate: '32%'
-      };
+      console.error('Failed to fetch analytics:', err);
+      // Fallback or rethrow
+      throw err;
     }
   },
 
-  getStudents: async (config: any = {}) => {
-    try {
-      return await apiClient.get(apiEndpoints.teacher.students, undefined, config);
-    } catch (err) {
-      // Mock data
-      return [
-        { id: 1, name: 'أحمد علي', level: 4, points: 1250, usage: '12h', progress: '85%', status: 'active' },
-        { id: 2, name: 'سارة محمد', level: 3, points: 980, usage: '8h', progress: '60%', status: 'active' },
-        { id: 3, name: 'محمد حسن', level: 5, points: 2100, usage: '24h', progress: '95%', status: 'inactive' },
-      ];
-    }
+  getStudents: async (params: any = {}, config: any = {}) => {
+    return apiClient.get(apiEndpoints.teacher.students, params, config);
   },
 
   getStudentDetails: async (userId: number | string, config: any = {}) => {
@@ -43,6 +31,10 @@ export const teacherApi = {
 
   getStudentReport: async (userId: number | string, config: any = {}) => {
     return apiClient.get(apiEndpoints.teacher.studentReport(userId), undefined, config);
+  },
+
+  getStudentReportDetails: async (userId: number | string, config: any = {}) => {
+    return apiClient.get(apiEndpoints.teacher.studentReportDetails(userId), undefined, config);
   },
 
   getBulkReports: async (config: any = {}) => {

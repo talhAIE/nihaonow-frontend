@@ -43,7 +43,7 @@ export function useAuthProtection(options: UseAuthProtectionOptions = {}) {
 
   return {
     isAuthenticated: state.isAuthenticated,
-    isLoading: !state.isAuthenticated,
+    isLoading: !state.isInitialized, // Check initialization status
     user: state.authUser,
   };
 }
