@@ -3,6 +3,7 @@ import DashboardCard from "@/components/dashboard/card"
 import { ChevronLeft, ChevronRight, BookOpen, Trophy, Star, Play, Pause } from "lucide-react"
 import { useState, useEffect } from "react"
 import { useNavigation } from '@/lib/navigation'
+import { useSession } from "@/hooks/useSession"
 import Image from "next/image"
 import ArabicStatsChart from "@/components/dashboard/charts"
 import { dashboardApi } from "@/lib/services/dashboard"
@@ -24,12 +25,13 @@ export default function Page() {
     const [isPronunciationPlaying, setIsPronunciationPlaying] = useState(false)
     const [audioInstance, setAudioInstance] = useState<HTMLAudioElement | null>(null)
 
+    const { startSession } = useSession();
+
     const handleContinue = async (topicId: number) => {
         try {
             setStartingSession(topicId)
-            const session = await sessionsApi.start({ topicId })
-            sessionUtils.setCurrentSession(session)
-            goToStudentIntroduction(topicId)
+            await startSession(topicId)
+            goToStudentIntroduction()
         } catch (error) {
             console.error("Failed to start session:", error)
         } finally {
@@ -232,9 +234,8 @@ export default function Page() {
                                 onClick={() => {
                                     if (wordOfTheWeek?.topicId) {
                                         handleContinue(wordOfTheWeek.topicId);
-                                    } else {
-                                        goToStudentIntroduction();
                                     }
+                                    // If no topicId is linked, do nothing or show toast (prevent blank page navigation)
                                 }}
                                 className="h-10 px-4 bg-[#35AB4E] hover:bg-[#2f9c46] text-white text-sm font-bold rounded-lg border-b-2 border-[#20672F] flex items-center gap-2 transition active:translate-y-[2px] active:border-b-0"
                             >

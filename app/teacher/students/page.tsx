@@ -3,6 +3,7 @@
 import { Search, Filter, Download, ChevronLeft, BookOpen, FileText, User, Users, Moon } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
+import { reportsApi } from '@/lib/api';
 
 // Mock Data
 const students = [
@@ -14,8 +15,24 @@ const students = [
 
 export default function MyStudentsPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const filteredStudents = students.filter(s => s.name.includes(searchTerm));
+
+  const handleDownloadReports = async () => {
+    try {
+      setIsDownloading(true);
+      const { url } = await reportsApi.getBulkReportsUrl();
+      if (url) {
+        window.open(url, '_blank');
+      }
+    } catch (error) {
+      console.error("Failed to download reports", error);
+      alert("فشل تحميل التقارير. يرجى المحاولة مرة أخرى.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   return (
     <div className="space-y-10" dir="rtl">
@@ -59,9 +76,17 @@ export default function MyStudentsPage() {
 
           {/* Action Buttons Row */}
           <div className="flex flex-row-reverse gap-4">
-               <button className="flex flex-row-reverse items-center justify-center gap-2 bg-white border-2 border-slate-100 text-slate-600 px-6 py-3 rounded-2xl font-black hover:bg-slate-50 transition-all shadow-sm">
-                  <Download className="w-5 h-5" />
-                  <span>تحميل التقارير</span>
+               <button 
+                  onClick={handleDownloadReports}
+                  disabled={isDownloading}
+                  className="flex flex-row-reverse items-center justify-center gap-2 bg-white border-2 border-slate-100 text-slate-600 px-6 py-3 rounded-2xl font-black hover:bg-slate-50 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+               >
+                  {isDownloading ? (
+                      <span className="animate-spin w-5 h-5 border-2 border-slate-600 border-t-transparent rounded-full" />
+                  ) : (
+                      <Download className="w-5 h-5" />
+                  )}
+                  <span>{isDownloading ? 'جاري التحميل...' : 'تحميل التقارير'}</span>
                </button>
                <button className="flex flex-row-reverse items-center justify-center gap-2 bg-white border-2 border-slate-100 text-slate-600 px-6 py-3 rounded-2xl font-black hover:bg-slate-50 transition-all shadow-sm">
                   <Filter className="w-5 h-5" />

@@ -11,6 +11,12 @@ export const chaptersApi = {
   getTopics: async (id: number): Promise<any[]> => {
     return apiClient.get<any[]>(apiEndpoints.chapterTopics(id));
   },
+  getNextStep: async (): Promise<any> => {
+    return apiClient.get(apiEndpoints.content.nextStep);
+  },
+  getIntroduction: async (): Promise<any> => {
+    return apiClient.get(apiEndpoints.content.introduction);
+  },
 };
 
 export const topicsApi = {
@@ -32,5 +38,11 @@ export const topicsApi = {
   },
   getScenarios: async (topicId: number): Promise<any[]> => {
     return apiClient.get<any[]>(apiEndpoints.topicScenarios(topicId));
+  },
+};
+
+export const scenariosApi = {
+  getById: async (id: number): Promise<any> => {
+    return apiClient.get<any>(apiEndpoints.content.scenarioById(id));
   },
 };

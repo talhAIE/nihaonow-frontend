@@ -161,10 +161,23 @@ export default function SheikhPage() {
               forceStopAudio={isVideoModalOpen}
             />
           ) : (
-            <div className="flex justify-center items-center h-64">
-              <div className="text-gray-500">
-                No introduction scenario found
-              </div>
+            <div className="flex flex-col justify-center items-center h-64 gap-4">
+              <p className="text-gray-500 font-medium">
+                {sessionUtils.getScenarios().length > 0
+                  ? "لا يوجد مقدمة لهذا الدرس."
+                  : "عذراً، لا يوجد محتوى لهذا الدرس حالياً."}
+              </p>
+              {sessionUtils.getScenarios().length > 0 && (
+                <Button
+                  onClick={handleNextClick}
+                  className="bg-[#35AB4E] hover:bg-[#2f9c46] text-white px-8 py-2 rounded-xl font-bold transition-all"
+                >
+                  <span className="flex items-center gap-2">
+                    ابدأ الدرس
+                    <ChevronLeft className="h-4 w-4" />
+                  </span>
+                </Button>
+              )}
             </div>
           )}
         </div>

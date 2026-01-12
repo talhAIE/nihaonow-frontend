@@ -35,6 +35,14 @@ export const achievementsApi = {
     const url = apiEndpoints.achievements.downloadCertificate(userId, achievementId);
     return apiClient.get(url, undefined, { ...config, responseType: 'blob' });
   },
+
+  getAnalytics: async (userId: string | number, config: any = {}) => {
+    return apiClient.get(apiEndpoints.achievements.analytics(userId), undefined, config);
+  },
+
+  getLeaderboard: async (userId: string | number, config: any = {}) => {
+    return apiClient.get(apiEndpoints.achievements.leaderboard(userId), undefined, config);
+  },
 };
 
 export default achievementsApi;

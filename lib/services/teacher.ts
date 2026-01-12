@@ -36,6 +36,18 @@ export const teacherApi = {
   getUsageMetrics: async (config: any = {}) => {
     return apiClient.get(apiEndpoints.teacher.usage, undefined, config);
   },
+
+  exportStudents: async (config: any = {}) => {
+    return apiClient.get(apiEndpoints.teacher.exportStudents, undefined, { ...config, responseType: 'blob' });
+  },
+
+  getStudentReport: async (userId: number | string, config: any = {}) => {
+    return apiClient.get(apiEndpoints.teacher.studentReport(userId), undefined, config);
+  },
+
+  getBulkReports: async (config: any = {}) => {
+    return apiClient.get(apiEndpoints.teacher.bulkReports, undefined, config);
+  },
 };
 
 export default teacherApi;

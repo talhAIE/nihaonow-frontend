@@ -3,7 +3,7 @@ import { getAuthToken } from '@/lib/authUtils';
 import type { InternalAxiosRequestConfig } from 'axios';
 import { getCookie, getCookies, setCookie, deleteCookie, hasCookie } from 'cookies-next';
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '/api';
 
 const axiosInstance: AxiosInstance = axios.create({
     withCredentials: true,
@@ -87,16 +87,26 @@ export const apiClient = {
 };
 
 export const apiEndpoints = {
+    health: '/health',
+    user: {
+        profile: '/user/profile',
+    },
     chapters: '/chapters',
     chapterById: (id: number) => `/chapters/${id}`,
     chapterTopics: (id: number) => `/chapters/${id}/topics`,
     topics: '/topics',
     topicById: (id: number) => `/topics/${id}`,
     topicScenarios: (topicId: number) => `/topics/${topicId}/scenarios`,
+    content: {
+        nextStep: '/next-step',
+        introduction: '/introduction',
+        scenarioById: (id: number) => `/scenarios/${id}`,
+    },
     sessions: {
         start: '/sessions/start',
         byId: (sessionId: string) => `/sessions/${sessionId}`,
         attempts: (sessionId: string) => `/sessions/${sessionId}/attempts`,
+        complete: (sessionId: string) => `/sessions/${sessionId}/complete`,
     },
     dashboard: {
         overview: '/dashboard',
@@ -135,14 +145,31 @@ export const apiEndpoints = {
         sync: (userId: string | number) => `/v1/users/${userId}/achievements/sync`,
         claim: (userId: string | number, key: string) => `/v1/users/${userId}/achievements/${key}/claim`,
         downloadCertificate: (userId: string | number, achievementId: string | number) => `/v1/users/${userId}/achievements/certificates/download/${achievementId}`,
+        analytics: (userId: string | number) => `/v1/users/${userId}/achievements/analytics`,
+        leaderboard: (userId: string | number) => `/v1/users/${userId}/achievements/leaderboard`,
+    },
+    rewards: {
+        list: (userId: string | number) => `/v1/users/${userId}/rewards`,
+        calculate: (userId: string | number) => `/v1/users/${userId}/rewards/calculate`,
+        dashboard: (userId: string | number) => `/v1/users/${userId}/rewards/dashboard`,
+        summary: (userId: string | number) => `/v1/users/${userId}/rewards/summary`,
+        analytics: (userId: string | number) => `/v1/users/${userId}/rewards/analytics`,
+        next: (userId: string | number) => `/v1/users/${userId}/rewards/next`,
+        recommendations: (userId: string | number) => `/v1/users/${userId}/rewards/recommendations`,
+        claimAll: (userId: string | number) => `/v1/users/${userId}/rewards/claim-all`,
+        pending: (userId: string | number) => `/v1/users/${userId}/rewards/pending`,
+        byCategory: (userId: string | number, category: string) => `/v1/users/${userId}/rewards/by-category/${category}`,
     },
     teacher: {
         // Map to existing User controller endpoints
-        analytics: '/user/analytics', // Doesn't exist, will mock in service or return 404
-        students: '/user/students',
-        studentDetails: (userId: number | string) => `/user/students/${userId}`, // Doesn't exist, check mapping
+        analytics: '/user/analytics',
+        students: '/user/students', // GET with query params
+        studentDetails: (userId: number | string) => `/user/students/${userId}`, 
         usage: '/user/usage',
         completions: '/user/completions',
+        exportStudents: '/user/students/export',
+        studentReport: (userId: number | string) => `/user/students/${userId}/report`,
+        bulkReports: '/user/students/reports/bulk',
     },
     reports: {
         // Map to existing User/Dashboard endpoints where possible

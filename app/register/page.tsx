@@ -10,6 +10,7 @@ import { authApi } from '@/lib/api';
 import { setAuthToken } from '@/lib/authUtils';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
+import Image from 'next/image';
 
 type FormData = {
   username: string;
@@ -62,7 +63,7 @@ export default function RegisterPage() {
       // toast({ title: 'Validation Error', description: 'Please fix the highlighted fields', variant: 'destructive' });
     }
     return ok;
-  }, [validateField, toast]);
+  }, [validateField]);
 
   const normalizeResponse = (res: any) => {
     if (!res) return { token: null, user: null, message: 'Empty response from server' };
@@ -121,17 +122,21 @@ export default function RegisterPage() {
 
   return (
     <div className="relative min-h-[calc(100vh-4rem)] bg-white flex flex-col items-center justify-center px-4 py-8 overflow-hidden" dir='ltr'>
-      <img
+      <Image
         src="/images/LoginLogo2.png"
         alt=""
         aria-hidden="true"
+        width={220}
+        height={225}
         className="pointer-events-none absolute top-0 right-0 z-0 w-[60%] max-w-[220px] h-auto max-h-[225px] opacity-100 transform-none md:top-0"
         style={{ transform: 'rotate(0deg)', opacity: 1 }}
       />
-      <img
+      <Image
         src="/images/LoginLogo.png"
         alt=""
         aria-hidden="true"
+        width={420}
+        height={225}
         className="pointer-events-none absolute left-0 bottom-0 z-0 w-[60%] max-w-[420px] h-auto max-h-[225px] opacity-100 transform-none sm:left-4 sm:bottom-0 lg:left-[5px] lg:bottom-0"
         style={{ transform: 'rotate(0deg)', opacity: 1 }}
       />
