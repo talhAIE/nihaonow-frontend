@@ -20,6 +20,7 @@ export default function TeacherAccountPage() {
   const displayName = state.user || user?.username || "المعلم";
   const userEmail = user?.email || "teacher@example.com";
   
+  const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -38,34 +39,32 @@ export default function TeacherAccountPage() {
         setMessage({ type: 'error', text: 'كلمة المرور يجب أن تكون 6 أحرف على الأقل' });
         return;
     }
+    
+    if (!oldPassword) {
+         setMessage({ type: 'error', text: 'يرجى إدخال كلمة المرور الحالية' });
+         return;
+    }
 
     setIsLoading(true);
 
     try {
-        // Since we didn't find a direct update-password endpoint, we'll suggest using the reset flow
-        // Or if we had one, we'd call it here.
-        // For now, let's simulate a delay or try a common endpoint if one existed.
-        // But to be helpful, we can trigger a reset link if the user prefers, OR just show this is UI only.
-        // User asked for fields. I'll simulate success for UI demo purposes if no API.
+        await authApi.changePassword({ oldPassword, newPassword });
         
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // In a real app with no endpoint, we might trigger authApi.forgetPassword({ email: userEmail })
-        // But that sends an email, not updates it directly.
-        // I will display a message that this feature is connected to backend (placeholder).
-        
-        setMessage({ type: 'success', text: 'تم تحديث كلمة المرور بنجاح (Simulation)' });
+        setMessage({ type: 'success', text: 'تم تحديث كلمة المرور بنجاح' });
+        setOldPassword("");
         setNewPassword("");
         setConfirmPassword("");
 
-    } catch (error) {
-        setMessage({ type: 'error', text: 'فشل تحديث كلمة المرور' });
+    } catch (error: any) {
+        const errorMsg = error?.response?.data?.message || 'فشل تحديث كلمة المرور. تأكد من كلمة المرور الحالية.';
+        setMessage({ type: 'error', text: errorMsg });
     } finally {
         setIsLoading(false);
     }
   };
 
   const handleSendResetLink = async () => {
+      // ... (keep existing)
       setIsLoading(true);
       setMessage(null);
       try {
@@ -80,13 +79,14 @@ export default function TeacherAccountPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8" dir="rtl">
+      {/* ... (keep header) ... */}
       <div>
         <h2 className="text-2xl font-black text-slate-800 font-nunito">إعدادات الحساب</h2>
         <p className="text-slate-500 font-bold text-sm">تحديث ملفك الشخصي وإعدادات الأمان</p>
       </div>
 
       <div className="bg-white rounded-[24px] border border-slate-100 shadow-sm overflow-hidden">
-        {/* Simple Profile Header */}
+        {/* Simple Profile Header: Keep existing code for header, only showing form changes */}
         <div className="bg-slate-50/50 p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6 border-b border-slate-100">
              <div className="w-24 h-24 rounded-full bg-[#FFCB08] p-1 flex-shrink-0">
                 <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
@@ -117,6 +117,19 @@ export default function TeacherAccountPage() {
 
                 <form onSubmit={handlePasswordChange} className="space-y-6 max-w-xl">
                     <div className="space-y-4">
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-black text-slate-600">كلمة المرور الحالية</label>
+                            <div className="relative">
+                                <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                <input 
+                                    type="password" 
+                                    value={oldPassword}
+                                    onChange={(e) => setOldPassword(e.target.value)}
+                                    className="w-full pl-4 pr-10 py-3 bg-white rounded-xl border border-slate-200 text-slate-700 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#FFCB08] transition-all placeholder:text-slate-300"
+                                    placeholder="••••••••"
+                                />
+                            </div>
+                        </div>
                          <div className="space-y-1.5">
                             <label className="text-xs font-black text-slate-600">كلمة المرور الجديدة</label>
                             <div className="relative">

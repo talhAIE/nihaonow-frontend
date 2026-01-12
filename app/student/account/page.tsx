@@ -5,6 +5,7 @@ import {
   User, 
   Mail, 
   Shield, 
+  LogOut, 
   Lock,
   Save,
   Loader2
@@ -13,12 +14,13 @@ import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
 import { authApi } from "@/lib/services/auth";
 
-export default function AccountPage() {
+export default function StudentAccountPage() {
   const { state } = useAppContext();
   const user = state.authUser;
   const displayName = state.user || user?.username || "الطالب";
   const userEmail = user?.email || "student@example.com";
   
+  const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -37,18 +39,25 @@ export default function AccountPage() {
         setMessage({ type: 'error', text: 'كلمة المرور يجب أن تكون 6 أحرف على الأقل' });
         return;
     }
+    
+    if (!oldPassword) {
+         setMessage({ type: 'error', text: 'يرجى إدخال كلمة المرور الحالية' });
+         return;
+    }
 
     setIsLoading(true);
 
     try {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await authApi.changePassword({ oldPassword, newPassword });
         
-        setMessage({ type: 'success', text: 'تم تحديث كلمة المرور بنجاح (Simulation)' });
+        setMessage({ type: 'success', text: 'تم تحديث كلمة المرور بنجاح' });
+        setOldPassword("");
         setNewPassword("");
         setConfirmPassword("");
 
-    } catch (error) {
-        setMessage({ type: 'error', text: 'فشل تحديث كلمة المرور' });
+    } catch (error: any) {
+        const errorMsg = error?.response?.data?.message || 'فشل تحديث كلمة المرور. تأكد من كلمة المرور الحالية.';
+        setMessage({ type: 'error', text: errorMsg });
     } finally {
         setIsLoading(false);
     }
@@ -70,8 +79,8 @@ export default function AccountPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-8 p-4 sm:p-8 pt-6" dir="rtl">
       <div>
-        <h2 className="text-2xl font-black text-slate-800 font-nunito">حسابي</h2>
-        <p className="text-slate-500 font-bold text-sm">إدارة معلوماتك الشخصية وإعدادات الأمان</p>
+        <h2 className="text-2xl font-black text-slate-800 font-nunito">إعدادات الحساب</h2>
+        <p className="text-slate-500 font-bold text-sm">تحديث ملفك الشخصي وإعدادات الأمان</p>
       </div>
 
       <div className="bg-white rounded-[24px] border border-slate-100 shadow-sm overflow-hidden">
@@ -92,9 +101,12 @@ export default function AccountPage() {
                     <Mail className="w-4 h-4" />
                     {userEmail}
                 </p>
-                <div className="pt-1 flex flex-wrap justify-center sm:justify-start gap-2">
-                    <span className="bg-[#35AB4E]/10 text-[#35AB4E] px-3 py-1 rounded-full text-xs font-black">
+                <div className="pt-2 flex flex-wrap justify-center sm:justify-start gap-3">
+                    <span className="bg-[#35AB4E]/10 text-[#35AB4E] px-4 py-1.5 rounded-full backdrop-blur-md border border-[#35AB4E]/20 text-sm font-black">
                         طالب
+                    </span>
+                    <span className="bg-[#35AB4E]/10 text-[#35AB4E] px-4 py-1.5 rounded-full backdrop-blur-md border border-[#35AB4E]/20 text-sm font-black">
+                        نشط
                     </span>
                 </div>
             </div>
@@ -111,6 +123,19 @@ export default function AccountPage() {
 
                 <form onSubmit={handlePasswordChange} className="space-y-6 max-w-xl">
                     <div className="space-y-4">
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-black text-slate-600">كلمة المرور الحالية</label>
+                            <div className="relative">
+                                <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                <input 
+                                    type="password" 
+                                    value={oldPassword}
+                                    onChange={(e) => setOldPassword(e.target.value)}
+                                    className="w-full pl-4 pr-10 py-3 bg-white rounded-xl border border-slate-200 text-slate-700 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#35AB4E] transition-all placeholder:text-slate-300"
+                                    placeholder="••••••••"
+                                />
+                            </div>
+                        </div>
                          <div className="space-y-1.5">
                             <label className="text-xs font-black text-slate-600">كلمة المرور الجديدة</label>
                             <div className="relative">
