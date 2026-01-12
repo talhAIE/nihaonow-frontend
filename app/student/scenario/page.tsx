@@ -302,7 +302,7 @@ export default function ScenarioPage() {
           recordedAudio
         );
 
-        if (response && response.scores && response.scores.total) {
+        if (response && response.scores && typeof response.scores.total === 'number') {
           setFeedbackScore(response.scores.total);
           setHasSubmittedSuccessfully(true);
 
