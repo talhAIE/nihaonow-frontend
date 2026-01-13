@@ -90,6 +90,8 @@ export const apiEndpoints = {
     health: '/health',
     user: {
         profile: '/user/profile',
+        myReportDetails: '/user/my-report/details',
+        myReportUrl: '/user/my-report/url',
     },
     chapters: '/chapters',
     chapterById: (id: number) => `/chapters/${id}`,
@@ -174,7 +176,7 @@ export const apiEndpoints = {
         // Map to existing User controller endpoints
         analytics: '/user/analytics',
         students: '/user/students', // GET with query params
-        studentDetails: (userId: number | string) => `/user/students/${userId}`, 
+        studentDetails: (userId: number | string) => `/user/students/${userId}`,
         usage: '/user/usage',
         completions: '/user/completions',
         exportStudents: '/user/students/export',
