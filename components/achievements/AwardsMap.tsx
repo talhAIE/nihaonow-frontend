@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { Lock, Star } from "lucide-react";
+import { CheckCircle2, Lock, Star } from "lucide-react";
 
 interface AchievementNode {
   id: string | number;
@@ -17,248 +17,157 @@ interface AwardsMapProps {
   achievements: AchievementNode[];
 }
 
-// Node definition for exact visual replication
 interface MapNode {
   x: number;
   y: number;
-  type: "node" | "dot";
-  variant?: "red" | "yellow" | "green" | "light_green" | "book" | "read" | "speak" | "star_gold" | "red_plain" | "pink_star" | "red_star" | "yellow_star" | "green_lock" | "yellow_lock" | "red_lock";
-  dotColor?: "red" | "yellow" | "green" | "light_green";
-  size?: "small" | "medium" | "large" | "xl";
+  pathId: "left" | "center" | "right";
+  variant: "red" | "yellow" | "green" | "star_gold" | "book" | "read" | "speak";
+  size: "small" | "medium" | "large";
 }
 
-// Exact path from Rewards.png - Scaled down to fit viewport properly
-const PATH_POINTS: MapNode[] = [
-  // --- Top Section: Left to Right ---
-  // 1. Red Start (Top Left)
-  { x: 15, y: 15, type: "node", variant: "red", size: "medium" },
-  
-  { x: 22, y: 17, type: "dot", dotColor: "red" },
-  { x: 28, y: 18, type: "dot", dotColor: "red" },
-  
-  // 2. Yellow Star
-  { x: 35, y: 19, type: "node", variant: "yellow", size: "medium" },
-  
-  { x: 42, y: 20, type: "dot", dotColor: "yellow" },
-  { x: 48, y: 21, type: "dot", dotColor: "yellow" },
-  
-  // 3. Green Star
-  { x: 55, y: 20, type: "node", variant: "green", size: "medium" },
-  
-  { x: 62, y: 21, type: "dot", dotColor: "green" },
-  
-  // 4. Book (Green)
-  { x: 70, y: 23, type: "node", variant: "book", size: "medium" },
-  
-  { x: 72, y: 30, type: "dot", dotColor: "green" },
-  
-  // 5. Read (Big Green) - Below Book
-  { x: 70, y: 37, type: "node", variant: "read", size: "large" },
-  
-  // Path winds left from Read
-  { x: 64, y: 42, type: "dot", dotColor: "green" },
-  { x: 58, y: 46, type: "dot", dotColor: "green" },
-  
-  // 6. Light Green Lock
-  { x: 52, y: 50, type: "node", variant: "light_green", size: "medium" },
-  
-  { x: 46, y: 48, type: "dot", dotColor: "green" },
-  
-  // 7. Green Lock
-  { x: 40, y: 46, type: "node", variant: "green_lock", size: "medium" },
-  
-  { x: 34, y: 48, type: "dot", dotColor: "green" },
-  
-  // 8. Speak (Yellow - Yatakallam)
-  { x: 28, y: 50, type: "node", variant: "speak", size: "large" },
-  
-  { x: 28, y: 57, type: "dot", dotColor: "yellow" },
-  { x: 28, y: 64, type: "dot", dotColor: "yellow" },
+// 6-6-6 (Red-Yellow-Green) = 18 Nodes Total
+const TRI_PATH_NODES: MapNode[] = [
+  // --- CENTER PATH (Yellow - Straight) ---
+  { x: 50, y: 24, pathId: "center", variant: "yellow", size: "small" },
+  { x: 50, y: 36, pathId: "center", variant: "yellow", size: "small" },
+  { x: 50, y: 48, pathId: "center", variant: "yellow", size: "medium" },
+  { x: 50, y: 60, pathId: "center", variant: "star_gold", size: "large" },
+  { x: 50, y: 72, pathId: "center", variant: "yellow", size: "medium" },
+  { x: 50, y: 84, pathId: "center", variant: "yellow", size: "small" },
 
-  // 9. Big Gold Star (Center)
-  { x: 28, y: 72, type: "node", variant: "star_gold", size: "xl" },
+  // --- LEFT PATH (Red - Curved Away) ---
+  { x: 44.5, y: 24, pathId: "left", variant: "red", size: "small" },
+  { x: 41, y: 36, pathId: "left", variant: "red", size: "small" },
+  { x: 35, y: 48, pathId: "left", variant: "red", size: "medium" },
+  { x: 26, y: 60, pathId: "left", variant: "speak", size: "large" },
+  { x: 18, y: 72, pathId: "left", variant: "red", size: "medium" },
+  { x: 10, y: 84, pathId: "left", variant: "red", size: "small" },
 
-  // Left side path branching from main path
-  // 10. Red Temple Node (Left side)
-  { x: 15, y: 38, type: "node", variant: "red_lock", size: "medium" },
-  
-  { x: 17, y: 44, type: "dot", dotColor: "red" },
-  
-  // 11. Red Lock
-  { x: 19, y: 50, type: "node", variant: "red_plain", size: "medium" },
-
-  // 12. Pink Star (Far Left Bottom)
-  { x: 10, y: 58, type: "node", variant: "pink_star", size: "large" },
-  
-  { x: 15, y: 65, type: "dot", dotColor: "red" },
-  
-  // 13. Pink Star (Moving Right)
-  { x: 22, y: 72, type: "node", variant: "pink_star", size: "large" },
-  
-  { x: 28, y: 78, type: "dot", dotColor: "red" },
-
-  // 14. Pink Star (Center Bottom)
-  { x: 35, y: 82, type: "node", variant: "pink_star", size: "large" },
-  
-  { x: 42, y: 80, type: "dot", dotColor: "yellow" },
-
-  // 15. Yellow Star (Bottom Right)
-  { x: 48, y: 78, type: "node", variant: "yellow_star", size: "medium" },
-  
-  { x: 54, y: 76, type: "dot", dotColor: "green" },
-
-  // 16. Green Lock (Bottom Right)
-  { x: 60, y: 72, type: "node", variant: "green_lock", size: "medium" },
-  
-  { x: 66, y: 68, type: "dot", dotColor: "green" },
-
-  // 17. Green Lock (Upper Right)
-  { x: 72, y: 64, type: "node", variant: "green_lock", size: "medium" },
-  
-  { x: 78, y: 60, type: "dot", dotColor: "green" },
-  
-  // 18. Additional decoration star (Far Right)
-  { x: 84, y: 56, type: "node", variant: "pink_star", size: "large" },
-];
-
-// Decorations - Scaled down to fit properly
-const DECORATIONS = [
-  // Flags at top center
-  { x: 35, y: 8, src: "/achievements/Flagbase 1.png", w: 35, h: 12 },
-  { x: 35, y: 5, src: "/achievements/Flag 1.png", w: 40, h: 25 },
-  
-  // Buildings and structures - scaled down
-  { x: 8, y: 25, src: "/achievements/buildingfour 1.png", w: 40, h: 40 }, // Temple Top Left
-  { x: 18, y: 32, src: "/achievements/buildingthree 1.png", w: 45, h: 35 }, // Temple Red
-  { x: 45, y: 28, src: "/achievements/Building1 1.png", w: 35, h: 35 }, // Tree Cluster Center
-  { x: 75, y: 30, src: "/achievements/panda1 1.png", w: 25, h: 25 }, // Panda Right
-  { x: 22, y: 68, src: "/achievements/tiger 1.png", w: 35, h: 35 }, // Tiger Bottom
-  { x: 72, y: 45, src: "/achievements/monkey1 1.png", w: 20, h: 20 }, // Monkey Right
-  { x: 5, y: 65, src: "/achievements/Building2 1.png", w: 30, h: 30 }, // Trees Far Left
+  // --- RIGHT PATH (Green - Curved Away) ---
+  { x: 55.5, y: 24, pathId: "right", variant: "green", size: "small" },
+  { x: 59, y: 36, pathId: "right", variant: "green", size: "small" },
+  { x: 65, y: 48, pathId: "right", variant: "green", size: "medium" },
+  { x: 74, y: 60, pathId: "right", variant: "read", size: "large" },
+  { x: 82, y: 72, pathId: "right", variant: "green", size: "medium" },
+  { x: 90, y: 84, pathId: "right", variant: "green", size: "small" },
 ];
 
 export default function AwardsMap({ achievements }: AwardsMapProps) {
-  const nodes = PATH_POINTS.filter(p => p.type === "node");
+  // Find the last earned achievement's position
+  const earnedIndices = achievements.map((a, i) => a.status === "earned" ? i : -1).filter(i => i !== -1);
+  const lastEarnedIndex = earnedIndices.length > 0 ? Math.max(...earnedIndices) : -1;
+  const progressNode = lastEarnedIndex !== -1 ? TRI_PATH_NODES[lastEarnedIndex] : null;
 
   const getAssetForNode = (node: MapNode, achievement: AchievementNode | null) => {
     const isLocked = !achievement || achievement.status === "locked";
-    
+
     switch (node.variant) {
-      case "book": return "/achievements/GreenBook 1.png";
       case "read": return "/achievements/ReadingGreenArabic 1.png";
       case "speak": return "/achievements/SpeakYellow 1.png";
       case "star_gold": return "/achievements/StarYellowAward 1.png";
-      
-      // FIXED: Use correct locked/unlocked star assets
-      case "pink_star": return isLocked ? "/achievements/StarRedlocked 1.png" : "/achievements/StarRedAward 1.png";
-      case "red_star": return isLocked ? "/achievements/StarRedlocked 1.png" : "/achievements/StarRedAward 1.png";
-      case "yellow_star": return isLocked ? "/achievements/StarYellowlocked 1.png" : "/achievements/StarYellowAward 1.png";
-      
-      case "light_green": return isLocked ? "/achievements/LockedGreen 1.png" : "/achievements/minigreenplain 1.png";
-      // Start is explicitly RedStar or Start asset
-      case "red": return isLocked ? "/achievements/LockedRed 1.png" : "/achievements/Redstar 1.png"; // Start node
-      
-      case "red_plain": return isLocked ? "/achievements/LockedRed 1.png" : "/achievements/RedPlain 1.png";
+      case "red": return isLocked ? "/achievements/LockedRed 1.png" : "/achievements/Redstar 1.png";
       case "yellow": return isLocked ? "/achievements/LockedYellow 1.png" : "/achievements/YellowStar 1.png";
       case "green": return isLocked ? "/achievements/LockedGreen 1.png" : "/achievements/GreenStar 1.png";
-      
-      case "green_lock": return isLocked ? "/achievements/LockedGreen 1.png" : "/achievements/GreenStar 1.png";
-      case "yellow_lock": return isLocked ? "/achievements/LockedYellow 1.png" : "/achievements/YellowStar 1.png";
-      case "red_lock": return isLocked ? "/achievements/LockedRed 1.png" : "/achievements/Redstar 1.png";
-      
       default: return isLocked ? "/achievements/LockedGreen 1.png" : "/achievements/GreenStar 1.png";
     }
   };
 
   return (
-    <div className="relative w-full aspect-[4/3] max-h-[600px] bg-[#FEF9EC] rounded-[40px] overflow-hidden shadow-xl border-[8px] border-white/80">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#FFFDF9] via-[#FFFFFF] to-[#F5E6CF] opacity-80" />
-      
-      {/* Decorations */}
-      {DECORATIONS.map((dec, i) => (
-        <div key={i} className="absolute z-10 pointer-events-none transition-transform hover:scale-105 duration-700"
-             style={{ left: `${dec.x}%`, top: `${dec.y}%`, transform: "translate(-50%, -50%)" }}>
-          <Image 
-            src={dec.src} 
-            alt="" 
-            width={dec.w} 
-            height={dec.h} 
-            className="drop-shadow-lg" 
-            style={{ width: 'auto', height: 'auto' }}
-          />
+    <div className="relative w-full min-h-[600px] sm:min-h-[800px] md:min-h-[1000px] bg-[#FEF9EC] rounded-[32px] sm:rounded-[48px] overflow-hidden shadow-2xl border-[8px] sm:border-[14px] border-white transition-all duration-500 mb-10 pt-16 sm:pt-20 pb-32 sm:pb-48">
+      <div className="absolute inset-0 bg-gradient-to-br from-[#FFFDF9] via-[#FFFFFF] to-[#FDF4E5]" />
+
+      {/* Tri-Path SVG Layout - Terms at 84 to match nodes */}
+      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20" viewBox="0 0 100 100" preserveAspectRatio="none">
+        {/* CENTER PATH - Straight Yellow */}
+        <line x1="50" y1="18" x2="50" y2="84" stroke="#EAB308" strokeWidth="1" strokeDasharray="4 4" />
+
+        {/* Left Path: Separated top start at 45, then curves to 10 */}
+        <path d="M45,18 C45,34 40,50 10,84" fill="none" stroke="#EF4444" strokeWidth="1" strokeDasharray="4 4" strokeLinecap="round" />
+        {/* Right Path: Separated top start at 55, then curves to 90 */}
+        <path d="M55,18 C55,34 60,50 90,84" fill="none" stroke="#22C55E" strokeWidth="1" strokeDasharray="4 4" strokeLinecap="round" />
+      </svg>
+
+      {/* Single Starting Flag at the Top Apex - Enlarged and moved higher */}
+      <div className="absolute left-[50%] top-4 sm:top-6 -translate-x-1/2 drop-shadow-2xl z-30 transition-transform duration-500 hover:scale-110">
+        <div className="relative w-24 h-20 sm:w-32 sm:h-24 md:w-44 md:h-32">
+          <Image src="/achievements/Flag 1.png" alt="Start" fill className="object-contain drop-shadow-lg" />
         </div>
-      ))}
+      </div>
 
-      {/* Connection Dots (Stepping Stones) */}
-      {PATH_POINTS.filter(p => p.type === "dot").map((p, i) => {
-        const dotColorClass = {
-          red: "bg-[#F3A5A5] border-[#E57373]",
-          yellow: "bg-[#FDE68A] border-[#FCD34D]",
-          green: "bg-[#A7F3D0] border-[#6EE7B7]",
-          light_green: "bg-[#D1FAE5] border-[#A7F3D0]"
-        }[p.dotColor || "green"];
+      {/* DYNAMIC PROGRESS BOOK MARKER */}
+      {progressNode && (
+        <div
+          className="absolute z-40 pointer-events-none transition-all duration-1000 ease-in-out -translate-y-[80%] -translate-x-1/2"
+          style={{ left: `${progressNode.x}%`, top: `${progressNode.y}%` }}
+        >
+          <div className="relative w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 animate-bounce-subtle">
+            <Image src="/achievements/GreenBook 1.png" alt="Current Progress" fill className="object-contain drop-shadow-2xl" />
+          </div>
+        </div>
+      )}
 
-        return (
-             <div 
-             key={`dot-${i}`}
-             className={`absolute rounded-full w-2.5 h-2.5 border-2 shadow-sm opacity-90 ${dotColorClass}`}
-             style={{ left: `${p.x}%`, top: `${p.y}%`, transform: "translate(-50%, -50%)" }}
-           />
-        );
-      })}
-
-      {/* Nodes */}
-      {nodes.map((point, index) => {
+      {/* Nodes Distribution */}
+      {TRI_PATH_NODES.map((node, index) => {
         const achievement = achievements[index] || null;
         const isEarned = achievement?.status === "earned";
-        const assetUrl = getAssetForNode(point, achievement);
-        
+        const assetUrl = getAssetForNode(node, achievement);
+
+        // Slightly larger node sizes
         const sizeClasses = {
-          small: "w-10 h-10",
-          medium: "w-12 h-12 md:w-14 md:h-14",
-          large: "w-16 h-16 md:w-18 md:h-18",
-          xl: "w-20 h-20 md:w-24 md:h-24",
-        }[point.size || "medium"];
+          small: "w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16",
+          medium: "w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20",
+          large: "w-20 h-20 sm:w-24 sm:h-24 md:w-30 md:h-30",
+        }[node.size];
+
+        // Path-specific colored shadows
+        const coloredShadows = {
+          left: "drop-shadow-[0_6px_8px_rgba(239,68,68,0.45)]",
+          center: "drop-shadow-[0_6px_8px_rgba(234,179,8,0.45)]",
+          right: "drop-shadow-[0_6px_8px_rgba(34,197,94,0.45)]",
+        }[node.pathId];
 
         return (
           <div
             key={index}
-            className="absolute z-20 group"
-            style={{ left: `${point.x}%`, top: `${point.y}%`, transform: "translate(-50%, -50%)" }}
+            className="absolute group z-20"
+            style={{ left: `${node.x}%`, top: `${node.y}%`, transform: "translate(-50%, -50%)" }}
           >
-            {/* Tooltip */}
             {achievement && (
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-white/95 backdrop-blur-md rounded-xl p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none shadow-xl border border-gray-100 text-center z-50">
-                 <p className="text-xs font-black text-gray-800 mb-1">{achievement.name}</p>
-                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isEarned ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
-                   {isEarned ? "مكتمل" : "مغلق"}
-                 </span>
-                 <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-white/95" />
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-40 sm:w-52 bg-slate-900 text-white rounded-2xl p-2 sm:p-4 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none shadow-2xl z-50 scale-90 group-hover:scale-100">
+                <p className="text-[10px] sm:text-sm font-black mb-1">{achievement.name}</p>
+                <span className={`text-[8px] sm:text-[10px] font-black px-2 sm:px-3 py-0.5 sm:py-1 rounded-full uppercase ${isEarned ? "bg-green-500" : "bg-slate-700"}`}>
+                  {isEarned ? "تم الإنجاز" : "مغلق"}
+                </span>
+                <div className="absolute top-full left-1/2 -translate-x-1/2 border-[8px] sm:border-[10px] border-transparent border-t-slate-900" />
               </div>
             )}
 
-            <div className={`relative flex items-center justify-center transition-transform duration-300 hover:scale-110 hover:-translate-y-2 ${sizeClasses} ${isEarned ? "cursor-pointer" : "cursor-default"}`}>
-              {/* Star Glow */}
-              {(point.variant?.includes('star')) && (
-                 <div className="absolute inset-0 bg-yellow-400/20 blur-xl rounded-full scale-75 animate-pulse" />
+            <div className={`relative flex items-center justify-center transition-all duration-500 hover:scale-110 active:scale-95 ${sizeClasses} ${isEarned ? "cursor-pointer" : "cursor-default opacity-90"} ${coloredShadows}`}>
+              {/* Claimed Status Indicator */}
+              {isEarned && (
+                <div className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 z-30 bg-green-500 text-white rounded-full p-1 sm:p-1.5 shadow-2xl border-2 border-white animate-bounce-subtle">
+                  <CheckCircle2 className="w-5 h-5 sm:w-7 sm:h-7" />
+                </div>
               )}
-            
-              <div className={`relative w-full h-full flex items-center justify-center`}>
-                <Image 
-                  src={assetUrl} 
-                  alt="" 
-                  fill 
-                  style={{ objectFit: "contain" }} 
-                  className={`drop-shadow-lg ${isEarned || point.variant === 'book' || point.variant === 'read' || point.variant === 'speak' ? "" : "opacity-90 grayscale-[0.2]"}`}
+
+              {isEarned && pointLight(node.variant)}
+
+              <div className="relative w-full h-full flex items-center justify-center filter">
+                <Image
+                  src={assetUrl}
+                  alt=""
+                  fill
+                  style={{ objectFit: "contain" }}
+                  className={`transition-all duration-700 ${isEarned ? "brightness-110 contrast-125 scale-110" : "grayscale opacity-60"}`}
                 />
               </div>
-              
-              {/* Earned Check */}
-              {isEarned && !point.variant?.includes('star') && (
-                 <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-white rounded-full flex items-center justify-center shadow-md border-2 border-green-50">
-                    <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
-                 </div>
+
+              {isEarned && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none translate-y-5 sm:translate-y-7">
+                  <div className="bg-green-600/95 text-white text-[7px] sm:text-[10px] font-black px-2 sm:px-3 py-0.5 sm:py-1 rounded-full shadow-lg border border-white/20 uppercase">
+                    Claimed
+                  </div>
+                </div>
               )}
             </div>
           </div>
@@ -266,4 +175,11 @@ export default function AwardsMap({ achievements }: AwardsMapProps) {
       })}
     </div>
   );
+}
+
+function pointLight(variant: string) {
+  if (variant.includes('star') || variant === 'star_gold') {
+    return <div className="absolute inset-0 bg-yellow-400/20 blur-2xl rounded-full animate-pulse" />;
+  }
+  return null;
 }

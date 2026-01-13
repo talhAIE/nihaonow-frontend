@@ -245,6 +245,8 @@ export interface UserLevelStats {
   usageHoursFloor: number;
   topicsCompleted: number;
   sessionsCompleted: number;
+  totalPoints: number;
+  currentStreak: number;
 }
 
 export interface UserLevelResponse {
