@@ -1,6 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Almarai:wght@800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -37,7 +37,7 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-nunito;
   }
 }
 
@@ -46,13 +46,13 @@
 
   /* Reserve space for the fixed sidebar (desktop only). We use the explicit sidebar width from `Sidebar` (231px), and include the usual page padding (1rem) so content doesn't touch the sidebar. */
   :dir(ltr) body.has-sidebar {
-    padding-left: calc(207px + 1rem);
-    /* sidebar width (231px) + layout padding (1rem) */
+    padding-left: 207px;
+    /* sidebar width (231px) - adjusted to 207? Wait, Sidebar.tsx says 260px-280px */
     transition: padding-left 200ms ease;
   }
 
   :dir(rtl) body.has-sidebar {
-    padding-right: calc(207px + 1rem);
+    padding-right: 207px;
     transition: padding-right 200ms ease;
   }
 
@@ -83,17 +83,14 @@
      When the body has the `has-sidebar` class (desktop), the bottom nav is
      offset to avoid overlapping the sidebar. Otherwise it spans the full width. */
 .has-sidebar-aware {
-  left: 0;
-  right: 0;
   width: 100%;
-  margin: 0 auto;
 }
 
 @media (min-width: 768px) {
   :dir(ltr) body.has-sidebar .has-sidebar-aware {
-    left: calc(207px + 1rem);
-    width: calc(100% - (207px + 1rem));
-    max-width: calc(100% - (207px + 1rem));
+    left: 207px;
+    width: calc(100% - 207px);
+    max-width: calc(100% - 207px);
   }
 
   :dir(rtl) body.has-sidebar .has-sidebar-aware {

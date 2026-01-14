@@ -26,12 +26,14 @@ export default function WelcomeOnBoardingScreen() {
 
         <div className={`w-full md:w-1/2 flex flex-col items-center md:items-center ${dir === 'rtl' ? 'text-right' : 'text-left'}`} lang={dir === 'rtl' ? 'ar' : 'en'}>
 
-          <h1 className="text-4xl md:text-5xl font-bold text-[#3F3F3F] mb-2">
-            تعلم الصينية بطريقة
-          </h1>
-          <h1 className="text-4xl md:text-5xl font-bold text-[#3F3F3F] mb-12">
-            ممتعة
-          </h1>
+          <div className="relative w-full max-w-[400px] h-[120px] mb-8">
+            <Image
+              src="/images/title.svg"
+              alt="NihaoNow Title"
+              fill
+              className="object-contain"
+            />
+          </div>
 
           <div className="w-full max-w-sm space-y-3">
             <Button
