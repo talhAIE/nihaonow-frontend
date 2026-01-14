@@ -75,29 +75,29 @@ export default function LoginPage() {
         const userData = response?.user;
         if (token && userData) {
           setAuthToken(token);
-          
+
           // Normalize role to lowercase for consistent frontend comparison
           let userRole = String(userData.role || 'student').toLowerCase();
-          
+
           if (formData.username.toLowerCase().includes('teacher') || formData.username.toLowerCase().includes('admin')) {
-             userRole = 'teacher';
+            userRole = 'teacher';
           }
 
-          login({ 
-            id: String(userData.id ?? ''), 
-            email: userData.email ?? '', 
+          login({
+            id: String(userData.id ?? ''),
+            email: userData.email ?? '',
             username: userData.username ?? '',
             role: userRole
           });
           toast({ title: 'تم بنجاح', description: 'مرحبًا بعودتك' });
-          
+
           // Wrap in timeout to ensure context updates propagate
           setTimeout(() => {
-              if (userRole === 'teacher') {
-                goToTeacherDashboard();
-              } else {
-                goToStudentDashboard();
-              }
+            if (userRole === 'teacher') {
+              goToTeacherDashboard();
+            } else {
+              goToStudentDashboard();
+            }
           }, 100);
         } else {
           toast({ title: 'خطأ', description: response?.message ?? 'فشل تسجيل الدخول', variant: 'destructive', duration: 5000 });
@@ -105,7 +105,7 @@ export default function LoginPage() {
         setErrors({});
       } catch (err: any) {
         console.error('Login error:', err);
-        toast({ title: 'خطأ', description: err?.message ?? 'حدث خطأ أثناء تسجيل الدخول', variant: 'destructive',duration: 5000 });
+        toast({ title: 'خطأ', description: err?.message ?? 'حدث خطأ أثناء تسجيل الدخول', variant: 'destructive', duration: 5000 });
       } finally {
         setIsLoading(false);
       }
@@ -161,7 +161,7 @@ export default function LoginPage() {
                   aria-required="true"
                   aria-invalid={errors.username ? 'true' : 'false'}
                   aria-describedby={errors.username ? 'username-error' : undefined}
-                  className="bg-[#ECECEC] border-0 hover:bg-[#ECECEC] focus:bg-[#ECECEC] focus-visible:bg-[#ECECEC] focus:border-0 focus-visible:border-0 focus:ring-0 focus-visible:ring-0 outline-none w-full h-11 sm:h-[44px] px-4 rounded-[12px]"
+                  className="bg-[#ECECEC] border-2 border-transparent focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none w-full h-11 sm:h-[44px] px-4 rounded-[12px] transition-all duration-200"
                 />
               </div>
               {errors.username && (
@@ -186,7 +186,7 @@ export default function LoginPage() {
                   aria-required="true"
                   aria-invalid={errors.password ? 'true' : 'false'}
                   aria-describedby={errors.password ? 'password-error' : undefined}
-                  className="bg-[#ECECEC] border-0 hover:bg-[#ECECEC] focus:bg-[#ECECEC] focus-visible:bg-[#ECECEC] focus:border-0 focus-visible:border-0 focus:ring-0 focus-visible:ring-0 outline-none w-full h-11 sm:h-[44px] px-4 pr-12 rounded-[12px]"
+                  className="bg-[#ECECEC] border-2 border-transparent focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none w-full h-11 sm:h-[44px] px-4 pr-12 rounded-[12px] transition-all duration-200"
                 />
                 <button
                   type="button"
@@ -231,11 +231,15 @@ export default function LoginPage() {
             </div>
 
 
-            <Button
-              className="font-nunito font-bold w-full sm:max-w-[470.5px] h-11 sm:h-[45px] px-3 sm:px-4 rounded-[12px] hover:bg-[#E5E5E5] bg-[#E5E5E5] border-b-[3px] border-b-[rgba(0,0,0,0.08)] text-[#282828] text-[13px] sm:text-[16px] transition duration-200"
-            >
-              <span className="whitespace-nowrap">Don&apos;t have an account?</span>{' '}<Link href="/register" className="font-semibold text-green-600 hover:text-green-700 transition-colors whitespace-nowrap">Sign Up</Link>
-            </Button>
+            <Link href="/register" className="block w-full">
+              <Button
+                type="button"
+                className="font-nunito font-bold w-full h-11 sm:h-[45px] px-3 sm:px-4 rounded-[12px] hover:bg-[#DEDEDE] bg-[#E5E5E5] border-b-[3px] border-b-[rgba(0,0,0,0.08)] text-[#282828] text-[13px] sm:text-[16px] transition duration-200"
+              >
+                <span className="whitespace-nowrap">Don&apos;t have an account?</span>{' '}
+                <span className="font-semibold text-brand hover:text-brand-600 transition-colors ml-1">Sign Up</span>
+              </Button>
+            </Link>
 
           </form>
         </div>

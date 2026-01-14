@@ -36,7 +36,7 @@ export default function Sidebar() {
       setTimeout(() => {
         try {
           // This will be handled by the login page loading
-        } catch (err) {}
+        } catch (err) { }
       }, 100);
     } catch (err) {
       console.error('Logout failed:', err);
@@ -69,8 +69,8 @@ export default function Sidebar() {
 
   return (
     <>
-      
-      <div className={`lg:hidden border border-[blue] fixed top-4 ${isRtl ? 'right-4' : 'left-4'} z-60 ${mobileMenuOpen ? 'hidden' : ''}`}> 
+
+      <div className={`lg:hidden border border-[blue] fixed top-4 ${isRtl ? 'right-4' : 'left-4'} z-60 ${mobileMenuOpen ? 'hidden' : ''}`}>
         <button
           onClick={() => {
             const open = !mobileMenuOpen;
@@ -99,10 +99,9 @@ export default function Sidebar() {
       />
 
       <aside
-        className={`fixed top-4 z-50 transform transition-transform duration-300 ease-in-out ${offscreenClass} ${posClasses} md:translate-x-0 w-[260px] md:w-[260px] lg:w-[280px] bg-[#35AB4E] rounded-[20px] shadow-lg overflow-hidden flex flex-col`}
-        style={{ height: 'fit-content' }}
+        className={`fixed top-0 bottom-0 z-50 transform transition-transform duration-300 ease-in-out ${offscreenClass} ${posClasses} md:translate-x-0 w-[260px] md:w-[260px] lg:w-[280px] bg-[#35AB4E] shadow-lg overflow-hidden flex flex-col`}
       >
-          <div className="flex flex-col items-center pt-6 pb-4 px-4">
+        <div className="flex flex-col items-center pt-6 pb-4 px-4">
           <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mb-4 shadow-md">
             <div className="w-16 h-16 rounded-full bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center">
               <User size={32} className="text-white" />
@@ -111,12 +110,12 @@ export default function Sidebar() {
           <div className="text-white font-bold text-xl mb-2 truncate">{displayName}</div>
         </div>
 
-        <nav className="px-4 py-3">
+        <nav className="px-4 py-3 flex-1 overflow-y-auto">
           <ul className="flex flex-col gap-1">
             {navItems.map((item) => {
-              const isActive = pathname === item.href || 
-                             (item.href === '/student/dashboard' && pathname === '/') ||
-                             (item.href === '/student/leaderboard' && pathname.startsWith('/student/leaderboard'));
+              const isActive = pathname === item.href ||
+                (item.href === '/student/dashboard' && pathname === '/') ||
+                (item.href === '/student/leaderboard' && pathname.startsWith('/student/leaderboard'));
               return (
                 <li key={item.href}>
                   <Link
@@ -147,11 +146,11 @@ export default function Sidebar() {
           <button
             onClick={() => handleLogout()}
             aria-label="Logout"
-            className={`w-[90%] mx-auto min-h-[56px] flex items-center ${isRtl ? 'flex-row' : 'flex-row-reverse'} px-4 py-2 rounded-[12px] bg-[#FBD4D3] text-[#8D1716] transition-colors`}
+            className={`w-[90%] mx-auto min-h-[56px] flex items-center ${isRtl ? 'flex-row' : 'flex-row-reverse'} px-4 py-2 rounded-[12px] bg-[#FBD4D3] hover:bg-[#F9C1C0] transition-colors text-[#8D1716] group mb-4`}
           >
             <span className="text-[18px] font-semibold leading-normal tracking-[0%] flex-1 text-ellipsis overflow-hidden">تسجيل الخروج</span>
             <span className="w-[28px] flex items-center justify-center shrink-0 whitespace-nowrap">
-              <LogOut size={20} className="text-[#8D1716]" />
+              <LogOut size={20} className="text-[#8D1716] group-hover:translate-x-1 transition-transform" />
             </span>
           </button>
         </div>
