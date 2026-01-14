@@ -19,7 +19,7 @@ export default function ConditionalHeader() {
   if (isPublicAuthPath) return null;
 
   return (
-    <div className="md:hidden">
+    <div className="lg:hidden">
       <Header />
     </div>
   );

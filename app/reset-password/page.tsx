@@ -1,15 +1,17 @@
 "use client";
 
 import { useCallback, useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { useNavigation } from '@/lib/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { authApi } from '@/lib/api';
+import Image from 'next/image';
 
 export default function ResetPasswordPage() {
-  const router = useRouter();
+  const { goToLogin } = useNavigation();
   const searchParams = useSearchParams();
   const { toast } = useToast();
   const token = searchParams?.get('token') || '';
@@ -47,28 +49,32 @@ export default function ResetPasswordPage() {
     try {
       const res = await authApi.resetPassword({ token, newPassword });
       toast({ title: 'Success', description: res?.message || 'Password has been reset. Please login.' });
-      router.push('/login');
+      goToLogin();
     } catch (err: any) {
       console.error('Reset password error:', err);
       toast({ title: 'Error', description: err?.message ?? 'An error occurred while resetting the password', variant: 'destructive' });
     } finally {
       setIsLoading(false);
     }
-  }, [token, newPassword, confirmPassword, router, toast]);
+  }, [token, newPassword, confirmPassword, goToLogin, toast]);
 
   return (
     <div className="relative min-h-[calc(100vh-4rem)] bg-white flex flex-col items-center justify-center px-4 py-8 overflow-hidden">
-      <img
+      <Image
         src="/images/LoginLogo2.png"
         alt=""
         aria-hidden="true"
+        width={220}
+        height={225}
         className="pointer-events-none absolute top-0 right-0 z-0 w-[60%] max-w-[220px] h-auto max-h-[225px] opacity-100 transform-none md:top-0"
         style={{ transform: 'rotate(0deg)', opacity: 1 }}
       />
-      <img
+      <Image
         src="/images/LoginLogo.png"
         alt=""
         aria-hidden="true"
+        width={420}
+        height={225}
         className="pointer-events-none absolute left-0 bottom-0 z-0 w-[60%] max-w-[420px] h-auto max-h-[225px] opacity-100 transform-none sm:left-4 sm:bottom-0 lg:left-[5px] lg:bottom-0"
         style={{ transform: 'rotate(0deg)', opacity: 1 }}
       />

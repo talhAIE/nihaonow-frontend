@@ -1,15 +1,16 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useNavigation } from '@/lib/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { authApi } from '@/lib/api';
+import Image from 'next/image';
 
 export default function ForgetPasswordPage() {
-  const router = useRouter();
+  const { goToLogin } = useNavigation();
   const { toast } = useToast();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -31,29 +32,33 @@ export default function ForgetPasswordPage() {
     try {
       const res = await authApi.forgetPassword({ email });
       toast({ title: 'تم بنجاح', description: res?.message || 'إذا كان هذا البريد الإلكتروني موجوداً، فقد تم إرسال رابط إعادة التعيين.' });
-      router.push('/login');
+      goToLogin();
     } catch (err: any) {
       console.error('Forget password error:', err);
       toast({ title: 'خطأ', description: err?.message ?? 'حدث خطأ أثناء طلب إعادة تعيين كلمة المرور', variant: 'destructive' });
     } finally {
       setIsLoading(false);
     }
-  }, [email, router, toast]);
+  }, [email, goToLogin, toast]);
 
   return (
     <div className="relative min-h-[calc(100vh-4rem)] bg-white flex flex-col items-center justify-center px-4 py-8 overflow-hidden">
 
-      <img
+      <Image
         src="/images/LoginLogo2.png"
         alt=""
         aria-hidden="true"
+        width={220}
+        height={225}
         className="pointer-events-none absolute top-0 right-0 z-0 w-[60%] max-w-[220px] h-auto max-h-[225px] opacity-100 transform-none md:top-0"
         style={{ transform: 'rotate(0deg)', opacity: 1 }}
       />
-      <img
+      <Image
         src="/images/LoginLogo.png"
         alt=""
         aria-hidden="true"
+        width={420}
+        height={225}
         className="pointer-events-none absolute left-0 bottom-0 z-0 w-[60%] max-w-[420px] h-auto max-h-[225px] opacity-100 transform-none sm:left-4 sm:bottom-0 lg:left-[5px] lg:bottom-0"
         style={{ transform: 'rotate(0deg)', opacity: 1 }}
       />

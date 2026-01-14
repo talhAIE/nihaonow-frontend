@@ -1,0 +1,22 @@
+
+> nextjs@0.1.0 build
+> next build
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Skipping linting
+   Checking validity of types ...
+   Collecting page data ...
+
+> Build error occurred
+Error: Page "/teacher/reports/[studentId]" is missing "generateStaticParams()" so it cannot be used with "output: export" config.
+    at /home/busternw/MyHDD-1/Work/NihaoNow/nihaonow-frontend/node_modules/next/dist/build/index.js:969:59
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async Span.traceAsyncFn (/home/busternw/MyHDD-1/Work/NihaoNow/nihaonow-frontend/node_modules/next/dist/trace/trace.js:105:20)
+    at async Promise.all (index 26)
+    at async /home/busternw/MyHDD-1/Work/NihaoNow/nihaonow-frontend/node_modules/next/dist/build/index.js:862:17
+    at async Span.traceAsyncFn (/home/busternw/MyHDD-1/Work/NihaoNow/nihaonow-frontend/node_modules/next/dist/trace/trace.js:105:20)
+    at async /home/busternw/MyHDD-1/Work/NihaoNow/nihaonow-frontend/node_modules/next/dist/build/index.js:801:124
+    at async Span.traceAsyncFn (/home/busternw/MyHDD-1/Work/NihaoNow/nihaonow-frontend/node_modules/next/dist/trace/trace.js:105:20)
+    at async build (/home/busternw/MyHDD-1/Work/NihaoNow/nihaonow-frontend/node_modules/next/dist/build/index.js:185:29)
+    at async main (/home/busternw/MyHDD-1/Work/NihaoNow/nihaonow-frontend/node_modules/next/dist/bin/next:157:5)

@@ -43,6 +43,10 @@ export interface SessionStartRequest {
   topicId?: number;
 }
 
+export interface WordSessionStartRequest {
+  wordTopicId: number;
+}
+
 export interface Scenario {
   id: number;
   scenarioNumber: number;
@@ -172,11 +176,83 @@ export interface CalendarResponse {
 
 // Overview / summary for the student dashboard
 export interface WordOfTheWeek {
+  id: number;
+  topicId?: number | null;
   chinese: string;
   pinyin?: string | null;
   english?: string | null;
   audioUrl?: string | null;
   exampleSentence?: string | null;
+  weekStartDate?: string;
+  isActive?: boolean;
+}
+
+export interface WordTopic {
+  id: number;
+  wordId: number;
+  name: string;
+  subtitle?: string;
+  difficulty?: string; // Added for unification
+  mode?: string; // Added for unification
+  orderIndex: number;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  scenarios?: WordScenario[];
+  word?: WordOfTheWeek;
+}
+
+export interface WordScenario {
+  id: number;
+  wordTopicId: number;
+  scenarioNumber: number;
+  isIntroduction?: boolean; // Added for unification
+  targetPhraseChinese: string;
+  targetPhrasePinyin?: string | null;
+  chineseAudioUrl?: string | null;
+  arabicAudioUrl?: string | null; // Renamed from scenarioAudioUrl
+  scenarioImageUrl?: string | null;
+  expectedPhonemes?: any; // Added for unification
+  orderIndex: number;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface UserWordStatus {
+  id: number;
+  userId: number;
+  wordId: number;
+  completed: boolean;
+  completedAt?: string | null;
+}
+
+export interface WordOfWeekStatusResponse {
+  word: WordOfTheWeek | null;
+  status: UserWordStatus | null;
+}
+
+export interface LevelDefinition {
+  key: string;
+  level: number;
+  name: string;
+  minUsageHours: number;
+  minTopics: number;
+}
+
+export interface UserLevelStats {
+  usageHours: number;
+  usageHoursFloor: number;
+  topicsCompleted: number;
+  sessionsCompleted: number;
+  totalPoints: number;
+  currentStreak: number;
+}
+
+export interface UserLevelResponse {
+  level: LevelDefinition;
+  stats: UserLevelStats;
+  storedLevel: number;
 }
 
 export interface TopicModeSummary {
@@ -188,6 +264,7 @@ export interface TopicModeSummary {
 
 export interface DashboardOverview {
   userName?: string;
+  userEmail?: string | null;
   topicsCompleted: number;
   totalTopics: number;
   currentStreak: number;
@@ -200,6 +277,7 @@ export interface DashboardOverview {
   xpProgress?: number; // 0 - 100
   wordOfTheWeek?: WordOfTheWeek | null;
   topicModes?: TopicModeSummary[];
+  levelInfo?: LevelDefinition; // New named levels system
 }
 
 // Topic Progress types
@@ -290,7 +368,7 @@ export interface LevelInfo {
 export interface StudentLevelInfo {
   userId: number;
   username: string;
-  level: number;
+  level: number; // XP level
   xp: number;
   currentLevelXp: number;
   nextLevelXp: number;
@@ -302,6 +380,9 @@ export interface StudentLevelInfo {
   rank: number;
   totalStudents: number;
   percentile: number;
+  completedTopics: number;
+  levelDefinition?: LevelDefinition; // Named level
+  levelStats?: UserLevelStats;
 }
 
 // Consolidated Dashboard API Response
@@ -343,4 +424,53 @@ export interface ConsolidatedDashboardResponse {
   };
   metrics: DashboardMetrics;
   calendar: DashboardCalendar;
+}
+
+// Achievements Types
+export interface Badge {
+  id: number;
+  key: string;
+  name: string;
+  description: string;
+  awardedAt?: string | null;
+  rewardClaimed?: boolean;
+  iconUrl: string;
+  pointValue: number;
+  threshold?: number;
+}
+
+export interface CategorizedAchievements {
+  category: string;
+  earned: Badge[];
+  available: Badge[];
+}
+
+export interface AchievementsResponse {
+  achievements: CategorizedAchievements[];
+  userStats: any;
+}
+
+export interface Certificate {
+  id: number;
+  key: string;
+  name: string;
+  description: string;
+  awardedAt: string | null;
+  rewardClaimed: boolean;
+  iconUrl: string;
+  pointValue: number;
+  threshold?: number;
+  unlocked?: boolean;
+}
+
+export interface CertificatesResponse {
+  certificates: {
+    earned: Certificate[];
+    locked: (Certificate & { unlocked?: boolean })[];
+  };
+  userStats: any;
+  user: {
+    username: string;
+    email: string;
+  };
 }

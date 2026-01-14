@@ -7,6 +7,8 @@ export interface User {
   id?: string;
   email: string;
   username?: string;
+  role?: string;
+  image?: string;
 }
 
 interface AppState {
@@ -16,6 +18,7 @@ interface AppState {
   isAuthenticated: boolean;
   authUser: User | null;
   isLoggingOut: boolean;
+  isInitialized: boolean;
 }
 
 interface AppContextType {
@@ -43,32 +46,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
     isAuthenticated: false,
     authUser: null,
     isLoggingOut: false,
+    isInitialized: false, // New flag
   });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // ... (dir state logic omitted for brevity, keeping existing) ...
+
   const [dir, setDirState] = useState<"ltr" | "rtl">(() => {
     try {
-      // Default to RTL. On the server we can't access localStorage or document.
       if (typeof window === 'undefined') return 'rtl';
-
-      // Use stored preference if available
       const stored = localStorage.getItem('dir') as "ltr" | "rtl" | null;
       if (stored === 'ltr' || stored === 'rtl') return stored;
-
-      // Fall back to document direction if present
       const docDir = document.documentElement?.dir as "ltr" | "rtl" | undefined;
-      if (docDir === 'ltr' || docDir === 'rtl') return docDir;
-
-      // Final default
-      return 'rtl';
+      return docDir === 'ltr' || docDir === 'rtl' ? docDir : 'rtl';
     } catch (err) {
       return 'rtl';
     }
   });
 
   const setDir = (d: "ltr" | "rtl") => {
-    try {
+      // ... (keep existing implementation) ...
+      try {
       if (typeof window !== 'undefined') {
         localStorage.setItem('dir', d)
         document.documentElement.dir = d
@@ -101,6 +100,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         hasCompletedOnboarding: hasCompleted,
         isAuthenticated: !!authToken,
         authUser: authUserStr ? JSON.parse(authUserStr) : null,
+        isInitialized: true, // Mark initialized
       }));
     }
   }, []);
@@ -224,6 +224,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
         isAuthenticated: true,
         authUser: user,
       }));
+
+      // Force redirect based on role to ensure consistent behavior
+      if (String(user.role).toLowerCase() === 'teacher') {
+         // Use window.location for hard redirect if router fails or use router if available in context
+         // Since we can't easily access router here without passing it, we rely on the component calling this updates
+         // layout. But effectively, the protected routes should handle it.
+         // However, let's persist the role in a separate key if needed for middleware/layouts
+         localStorage.setItem('userRole', 'teacher');
+      } else {
+         localStorage.removeItem('userRole');
+      }
 
       try {
         const bc = typeof window !== 'undefined' && 'BroadcastChannel' in window ? new BroadcastChannel('nihao-auth') : null;
