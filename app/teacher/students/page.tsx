@@ -66,16 +66,40 @@ export default function MyStudentsPage() {
     );
 
     const handleDownloadReports = async () => {
+        let progressInterval: NodeJS.Timeout;
         try {
             setIsDownloading(true);
+            setCompilingId(-1);
+            setDownloadProgress(0);
+
+            // Simulate progress
+            progressInterval = setInterval(() => {
+                setDownloadProgress(prev => {
+                    if (prev >= 92) return prev;
+                    const increment = Math.floor(Math.random() * 8) + 3;
+                    return Math.min(prev + increment, 92);
+                });
+            }, 500);
+
             const { url } = await reportsApi.getBulkReportsUrl();
+
+            clearInterval(progressInterval);
+            setDownloadProgress(100);
+
             if (url) {
                 window.open(url, '_blank');
+                setCompilingId(null);
+                setDownloadProgress(0);
+                setIsDownloading(false);
+            } else {
+                setCompilingId(null);
+                setIsDownloading(false);
             }
         } catch (error) {
+            if (progressInterval!) clearInterval(progressInterval);
             console.error("Failed to download reports", error);
             alert("فشل تحميل التقارير. يرجى المحاولة مرة أخرى.");
-        } finally {
+            setCompilingId(null);
             setIsDownloading(false);
         }
     };
@@ -107,12 +131,9 @@ export default function MyStudentsPage() {
             setDownloadProgress(100);
 
             if (url) {
-                // Small delay to show 100% before opening
-                setTimeout(() => {
-                    window.open(url, '_blank');
-                    setCompilingId(null);
-                    setDownloadProgress(0);
-                }, 400);
+                window.open(url, '_blank');
+                setCompilingId(null);
+                setDownloadProgress(0);
             } else {
                 setCompilingId(null);
             }
@@ -160,15 +181,27 @@ export default function MyStudentsPage() {
                     <div className="flex flex-row-reverse gap-4">
                         <button
                             onClick={handleDownloadReports}
-                            disabled={isDownloading}
-                            className="flex flex-row-reverse items-center justify-center gap-2 bg-white border border-slate-100 text-slate-600 px-5 py-2.5 rounded-xl font-black hover:bg-slate-50 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed text-xs"
+                            disabled={isDownloading || compilingId === -1}
+                            className="flex flex-row-reverse items-center justify-center gap-2 bg-white border border-slate-100 text-slate-600 px-5 py-2.5 rounded-xl font-black hover:bg-slate-50 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed text-xs relative overflow-hidden"
                         >
-                            {isDownloading ? (
-                                <span className="animate-spin w-4 h-4 border-2 border-slate-600 border-t-transparent rounded-full" />
+                            {isDownloading || compilingId === -1 ? (
+                                <>
+                                    <div
+                                        className="absolute inset-0 bg-green-50 transition-all duration-300 -z-0"
+                                        style={{ width: `${downloadProgress}%` }}
+                                    />
+                                    <div className="flex items-center gap-2 relative z-10">
+                                        <div className="w-4 h-4 border-2 border-slate-600 border-t-transparent rounded-full animate-spin" />
+                                        <span>{downloadProgress}%</span>
+                                        <span>جاري التحميل...</span>
+                                    </div>
+                                </>
                             ) : (
-                                <Download className="w-4 h-4" />
+                                <>
+                                    <Download className="w-4 h-4" />
+                                    <span>تحميل التقارير</span>
+                                </>
                             )}
-                            <span>{isDownloading ? 'جاري التحميل...' : 'تحميل التقارير'}</span>
                         </button>
                         <button className="flex flex-row-reverse items-center justify-center gap-2 bg-white border border-slate-100 text-slate-600 px-5 py-2.5 rounded-xl font-black hover:bg-slate-50 transition-all shadow-sm text-xs">
                             <Filter className="w-4 h-4" />

@@ -115,12 +115,9 @@ export default function TeacherDashboard() {
             setDownloadProgress(100);
 
             if (url) {
-                // Small delay to show 100% before opening
-                setTimeout(() => {
-                    window.open(url, '_blank');
-                    setCompilingId(null);
-                    setDownloadProgress(0);
-                }, 400);
+                window.open(url, '_blank');
+                setCompilingId(null);
+                setDownloadProgress(0);
             } else {
                 setCompilingId(null);
             }
@@ -203,18 +200,6 @@ export default function TeacherDashboard() {
                             </div>
                             <div className="text-2xl font-black text-slate-800 ">{stats.notLoggedInCount}</div>
                         </div>
-                    </div>
-
-                    {/* Search Bar */}
-                    <div className="relative w-full md:max-w-xs">
-                        <input
-                            type="text"
-                            placeholder="البحث عن الطلاب هنا..."
-                            className="w-full bg-[#F5F5F5] border-none rounded-xl py-3 px-10 text-right text-sm focus:outline-none focus:ring-2 focus:ring-[#FFCB08] transition-all font-bold text-slate-600 placeholder:text-slate-300"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                        <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 w-4 h-4" />
                     </div>
 
                     <div className="flex flex-row-reverse justify-between items-center">
