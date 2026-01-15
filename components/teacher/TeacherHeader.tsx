@@ -38,7 +38,7 @@ export default function TeacherHeader() {
       goToLogin();
       setTimeout(() => {
         try {
-        } catch (err) {}
+        } catch (err) { }
       }, 100);
     } catch (err) {
       console.warn("Logout failed (context logout):", err);
@@ -156,34 +156,11 @@ export default function TeacherHeader() {
                 }}
                 className="w-full flex items-center justify-center gap-4 px-4 py-3 rounded-[10px] bg-[#FBD4D3] text-[#8D1716] font-semibold"
               >
-               
+
                 <span>تسجيل الخروج</span>
-                 <LogOut size={18} />
+                <LogOut size={18} />
               </button>
             </div>
-          </div>
-        </div>
-      </div>
-      <div className="hidden lg:flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <div className="w-10 h-10 bg-[#FFCB08] rounded-full flex items-center justify-center cursor-pointer text-[#8D1716] border border-[#DEA407]">
-                <User className="h-6 w-6" />
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
-              <DropdownMenuItem onClick={handleLogout}>
-                تسجيل الخروج
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <div className="text-left">
-            <div className="font-bold text-lg">
-              مرحبًا{" "}
-              <span className="text-[#8D1716]">{displayName}</span>
-            </div>
-            <div className="text-gray-700 font-medium">{getGreeting()}</div>
           </div>
         </div>
       </div>

@@ -214,7 +214,7 @@ export default function LanguageLearningInterface({
 
       {/* Main Layout - Centered Vertical Stack */}
       <div className="w-full flex flex-col items-center justify-center gap-8 md:gap-10">
-        
+
         {/* Character Image - Clean Card */}
         <div className="relative w-64 h-64 md:w-[400px] md:h-[320px] max-w-full flex-shrink-0">
           <div className="absolute inset-0 bg-white rounded-[32px] overflow-hidden shadow-sm border border-gray-100">
@@ -231,22 +231,22 @@ export default function LanguageLearningInterface({
         {showDiv && (
           <div className="flex flex-col items-center gap-4 text-center">
             {/* Main Phrase */}
-            <h2 className="text-4xl md:text-5xl font-black text-[#22C55E] tracking-tight">{targetPhraseChinese}</h2>
-            
+            <h2 className="text-4xl md:text-5xl font-black text-[#22C55E] tracking-tight">{targetPhrasePinyin}</h2>
+
             {/* Audio & Pinyin Row */}
             <div className="flex items-center justify-center gap-3 text-gray-500 mt-2">
-               <button
-                  onClick={handlePronunciationPlay}
-                  className={`w-10 h-10 rounded-full bg-[#35AB4E] flex items-center justify-center shadow-md hover:scale-110 active:scale-95 transition-all ${isPronunciationPlaying ? "bg-[#298E3E]" : ""} ${arabicCompleted && !chineseCompleted && !hasSubmittedSuccessfully ? "animate-guide-glow" : ""}`}
-                >
-                  {isPronunciationPlaying ? (
-                    <Pause className="w-5 h-5 text-white fill-current" />
-                  ) : (
-                    <Play className="w-5 h-5 text-white fill-current ml-0.5" />
-                  )}
-                </button>
-               <span className="text-xl md:text-2xl font-medium text-gray-600 font-sans">{targetPhrasePinyin}</span>
-               <Volume2 className="w-6 h-6 opacity-40" />
+              <button
+                onClick={handlePronunciationPlay}
+                className={`w-10 h-10 rounded-full bg-[#35AB4E] flex items-center justify-center shadow-md hover:scale-110 active:scale-95 transition-all ${isPronunciationPlaying ? "bg-[#298E3E]" : ""} ${arabicCompleted && !chineseCompleted && !hasSubmittedSuccessfully ? "animate-guide-glow" : ""}`}
+              >
+                {isPronunciationPlaying ? (
+                  <Pause className="w-5 h-5 text-white fill-current" />
+                ) : (
+                  <Play className="w-5 h-5 text-white fill-current ml-0.5" />
+                )}
+              </button>
+              <span className="text-xl md:text-2xl font-medium text-gray-600 font-sans">{targetPhraseChinese}</span>
+              <Volume2 className="w-6 h-6 opacity-40" />
             </div>
           </div>
         )}

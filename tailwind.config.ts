@@ -14,6 +14,10 @@ const config: Config = {
         'gradient-conic':
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
+      fontFamily: {
+        almarai: ['var(--font-almarai)', 'Almarai', 'sans-serif'],
+        sans: ['var(--font-almarai)', 'Almarai', 'sans-serif', 'Nunito', 'Inter', 'ui-sans-serif', 'system-ui'],
+      },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',

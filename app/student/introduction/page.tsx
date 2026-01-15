@@ -128,10 +128,10 @@ export default function SheikhPage() {
 
         {/* Topic Title Section */}
         <div className="mt-8 mb-4 text-center">
-          <h2 className="text-3xl font-black text-gray-900 font-almarai-extrabold">
+          <h2 className="text-3xl font-almarai-black text-gray-900 font-almarai-extrabold">
             {sessionUtils.getCurrentTopic()?.name || "المقدمة"}
           </h2>
-          <p className="text-gray-500 font-bold mt-2">
+          <p className="text-gray-500 font-almarai-medium mt-2">
             {sessionUtils.getCurrentTopic()?.subtitle || "استعد لبدء الدرس الجديد"}
           </p>
         </div>
@@ -160,7 +160,7 @@ export default function SheikhPage() {
             />
           ) : (
             <div className="flex flex-col justify-center items-center h-64 gap-4">
-              <p className="text-gray-500 font-medium">
+              <p className="text-gray-500 font-almarai-medium">
                 {sessionUtils.getScenarios().length > 0
                   ? "لا يوجد مقدمة لهذا الدرس."
                   : "عذراً، لا يوجد محتوى لهذا الدرس حالياً."}
@@ -168,7 +168,7 @@ export default function SheikhPage() {
               {sessionUtils.getScenarios().length > 0 && (
                 <Button
                   onClick={handleNextClick}
-                  className="bg-[#35AB4E] hover:bg-[#2f9c46] text-white px-8 py-2 rounded-xl font-bold transition-all"
+                  className="bg-[#35AB4E] hover:bg-[#2f9c46] text-white px-8 py-2 rounded-xl font-almarai-bold transition-all"
                 >
                   <span className="flex items-center gap-2">
                     ابدأ الدرس
@@ -185,7 +185,7 @@ export default function SheikhPage() {
             variant="outline"
             onClick={handleUserGuideClick}
             className="w-full bg-[#E5E5E5] hover:bg-[#E5E5E5] border-none border-b-[3px] border-b-[#B0B0B0] hover:text-[#282828] text-[#282828]
-            h-14 pt-4 pb-4 flex items-center justify-center gap-2.5 text-base sm:text-lg font-bold rounded-xl shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all"
+            h-14 pt-4 pb-4 flex items-center justify-center gap-2.5 text-base sm:text-lg font-almarai-bold rounded-xl shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all"
           >
             <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
             <span className="truncate">دليل المستخدم</span>
@@ -195,7 +195,7 @@ export default function SheikhPage() {
             onClick={handleNextClick}
             disabled={isNavigating || (!introComplete && !skipIntro)}
             className="w-full bg-[#35AB4E] h-14 hover:bg-[#35AB4E] border-b-[3px] border-b-[#454545] text-white 
-            h-14 pt-4 pb-4 flex items-center justify-center gap-2.5 text-base sm:text-lg font-bold rounded-xl shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:border-none border-none"
+            h-14 pt-4 pb-4 flex items-center justify-center gap-2.5 text-base sm:text-lg font-almarai-bold rounded-xl shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:border-none border-none"
           >
             <span className="truncate">{isNavigating ? "جاري التحميل..." : "استمر"}</span>
             {isNavigating ? (
