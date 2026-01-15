@@ -531,11 +531,11 @@ export default function ScenarioPage() {
                             title="حذف التسجيل"
                           >
                             <Image
-                              src="/images/cross.svg"
+                              src="/images/cancel.svg"
                               alt="Discard"
-                              width={48}
-                              height={48}
-                              className="w-12 h-12 sm:w-12 sm:h-12 md:w-12 md:h-12"
+                              width={80}
+                              height={80}
+                              className="w-18 h-18 sm:w-18 sm:h-18 md:w-18 md:h-18"
                             />
                           </button>
                         </div>

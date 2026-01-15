@@ -151,7 +151,7 @@ export default function Page() {
         <div className="min-h-screen bg-white" dir="rtl">
             <div className="max-w-full mx-auto px-2 sm:px-6">
                 <div className="mt-4">&nbsp;</div>
-                <h1 className="text-right font-almarai-extrabold-28 mb-8 hidden sm:block">مرحبًا بعودتك يا <span className="text-red-600">{userName}</span></h1>
+                <h1 className="text-right font-almarai mb-8 hidden sm:block" style={{ fontSize: '22px' }}>مرحبًا بعودتك يا <span className="text-red-600 font-bold">{userName}</span></h1>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 mb-8">
                     {/* Level Progress */}

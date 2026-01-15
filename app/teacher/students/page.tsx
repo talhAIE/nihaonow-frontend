@@ -171,36 +171,22 @@ export default function MyStudentsPage() {
 
     return (
         <div className="space-y-10" dir="rtl">
-
-            {/* Login Status Section - Removed Search */}
-            <div className="bg-white rounded-[32px] shadow-sm border border-slate-50 p-6 space-y-6">
-                {/* Login Status Row */}
-                <div className="flex flex-col md:flex-row-reverse justify-between items-center gap-6">
-                    <div className="flex items-center gap-8">
-                        <div className="text-center group">
-                            <div className="flex items-center gap-1.5 justify-center mb-0.5">
-                                <span className="text-slate-400 font-bold text-[10px]">تم تسجيل الدخول</span>
-                                <Users className="w-3.5 h-3.5 text-[#CA495A]" />
+            {/* Results Section */}
+            <div className="space-y-6">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-6 px-2">
+                    {/* Left Group: Title & Download */}
+                    <div className="flex items-center gap-4 w-full md:w-auto">
+                        <div className="flex items-center gap-2">
+                            <div className="bg-slate-800 p-1 rounded-md text-white">
+                                <FileText className="w-3.5 h-3.5" />
                             </div>
-                            <div className="text-2xl font-black text-slate-800 ">{analytics.loggedInCount}</div>
+                            <span className="font-black text-slate-800 text-base">نتائج</span>
                         </div>
 
-                        <div className="h-8 w-[1px] bg-slate-100 hidden md:block"></div>
-
-                        <div className="text-center group">
-                            <div className="flex items-center gap-1.5 justify-center mb-0.5">
-                                <span className="text-slate-400 font-bold text-[10px]">لم يسجل الدخول بعد</span>
-                                <Moon className="w-3.5 h-3.5 text-amber-400" />
-                            </div>
-                            <div className="text-2xl font-black text-slate-800 ">{analytics.yetToLogin}</div>
-                        </div>
-                    </div>
-
-                    <div className="flex flex-row-reverse gap-4">
                         <button
                             onClick={handleDownloadReports}
                             disabled={isDownloading || compilingId === -1}
-                            className="flex flex-row-reverse items-center justify-center gap-2 bg-white border border-slate-100 text-slate-600 px-5 py-2.5 rounded-xl font-black hover:bg-slate-50 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed text-xs relative overflow-hidden"
+                            className="flex flex-row-reverse items-center justify-center gap-2 bg-white border border-slate-100 text-slate-600 px-4 py-2 rounded-xl font-black hover:bg-slate-50 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed text-xs relative overflow-hidden h-10"
                         >
                             {isDownloading || compilingId === -1 ? (
                                 <>
@@ -208,10 +194,9 @@ export default function MyStudentsPage() {
                                         className="absolute inset-0 bg-green-50 transition-all duration-300 -z-0"
                                         style={{ width: `${downloadProgress}%` }}
                                     />
-                                    <div className="flex items-center gap-2 relative z-10">
-                                        <div className="w-4 h-4 border-2 border-slate-600 border-t-transparent rounded-full animate-spin" />
+                                    <div className="flex items-center gap-2 relative z-10 px-2">
+                                        <div className="w-3 h-3 border-2 border-slate-600 border-t-transparent rounded-full animate-spin" />
                                         <span>{downloadProgress}%</span>
-                                        <span>جاري التحميل...</span>
                                     </div>
                                 </>
                             ) : (
@@ -221,17 +206,21 @@ export default function MyStudentsPage() {
                                 </>
                             )}
                         </button>
-                        <div className="relative">
+                    </div>
+
+                    {/* Right Group: Sort & Search */}
+                    <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+                        <div className="relative w-full sm:w-auto">
                             <button
                                 onClick={() => setIsFilterOpen(!isFilterOpen)}
-                                className="flex flex-row-reverse items-center justify-center gap-2 bg-white border border-slate-100 text-slate-600 px-5 py-2.5 rounded-xl font-black hover:bg-slate-50 transition-all shadow-sm text-xs"
+                                className="w-full sm:w-auto flex flex-row-reverse items-center justify-center gap-2 bg-white border border-slate-100 text-slate-600 px-5 py-2.5 rounded-xl font-black hover:bg-slate-50 transition-all shadow-sm text-xs h-10"
                             >
                                 <Filter className="w-4 h-4" />
                                 <span>الترتيب</span>
                             </button>
 
                             {isFilterOpen && (
-                                <div className="absolute left-0 top-full mt-2 w-48 bg-white border border-slate-100 rounded-xl shadow-xl z-50 overflow-hidden font-bold text-xs" dir="rtl">
+                                <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-slate-100 rounded-xl shadow-xl z-50 overflow-hidden font-bold text-xs" dir="rtl">
                                     <div className="p-2 border-b border-slate-50 bg-slate-50/50 text-slate-400 text-[10px] uppercase">ترتيب حسب</div>
                                     <button
                                         onClick={() => { setSortBy("name"); setSortOrder("asc"); setIsFilterOpen(false); }}
@@ -260,31 +249,18 @@ export default function MyStudentsPage() {
                                 </div>
                             )}
                         </div>
-                    </div>
-                </div>
-            </div>
 
-            {/* Results Section */}
-            <div className="space-y-6">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-4 px-2">
-                    {/* Header Title */}
-                    <div className="flex items-center gap-2">
-                        <div className="bg-slate-800 p-1 rounded-md text-white">
-                            <FileText className="w-3.5 h-3.5" />
+                        {/* Search Bar */}
+                        <div className="relative w-full md:max-w-xs group">
+                            <input
+                                type="text"
+                                placeholder="البحث عن الطلاب هنا..."
+                                className="w-full bg-white border border-[#35AB4E] border-b-[3px] border-b-[#298E3E] rounded-xl py-2 px-10 text-right focus:outline-none transition-all font-bold text-slate-600 text-sm h-10"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                            <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-[#35AB4E] w-4 h-4" />
                         </div>
-                        <span className="font-black text-slate-800 text-base">نتائج</span>
-                    </div>
-
-                    {/* Search Bar - Moved Here */}
-                    <div className="relative w-full md:max-w-xs">
-                        <input
-                            type="text"
-                            placeholder="البحث عن الطلاب هنا..."
-                            className="w-full bg-white border border-[#35AB4E] rounded-xl py-3 px-10 text-right focus:outline-none focus:ring-2 focus:ring-[#35AB4E]/10 transition-all font-bold text-slate-600 text-sm"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                        <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-[#35AB4E] w-4 h-4" />
                     </div>
                 </div>
 

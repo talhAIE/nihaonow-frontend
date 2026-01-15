@@ -9,27 +9,27 @@ export const routes = {
   register: '/register',
   forgetPassword: '/forget-password',
   resetPassword: '/reset-password',
-  
+
   // Landing/Welcome
   home: '/',
   welcome: '/welcome',
   comingSoon: '/coming-soon',
   onboarding: '/onboarding',
-  
+
   // Student routes
   student: {
     dashboard: '/student/dashboard',
     units: '/student/units',
-    topics: (chapterId?: number) => 
+    topics: (chapterId?: number) =>
       chapterId ? `/student/topics?chapterId=${chapterId}` : '/student/topics',
-    introduction: (topicId?: number) => 
+    introduction: (topicId?: number) =>
       topicId ? `/student/introduction?topicId=${topicId}` : '/student/introduction',
-    scenario: (scenarioId?: number) => 
+    scenario: (scenarioId?: number) =>
       scenarioId ? `/student/scenario?scenarioId=${scenarioId}` : '/student/scenario',
     feedback: '/student/feedback',
     level: '/student/level',
   },
-  
+
   // Teacher routes
   teacher: {
     dashboard: '/teacher',
@@ -45,19 +45,19 @@ export function useNavigation() {
   return {
     // Direct router access for edge cases
     router,
-    
+
     // Auth navigation
     goToLogin: () => router.push(routes.login),
     goToRegister: () => router.push(routes.register),
     goToForgetPassword: () => router.push(routes.forgetPassword),
     goToResetPassword: () => router.push(routes.resetPassword),
-    
+
     // Landing/Welcome
     goToHome: () => router.push(routes.home),
     goToWelcome: () => router.push(routes.welcome),
     goToComingSoon: () => router.push(routes.comingSoon),
     goToOnboarding: () => router.push(routes.onboarding),
-    
+
     // Student navigation
     goToStudentDashboard: () => router.push(routes.student.dashboard),
     goToStudentUnits: () => router.push(routes.student.units),
@@ -66,10 +66,10 @@ export function useNavigation() {
     goToStudentScenario: (scenarioId?: number) => router.push(routes.student.scenario(scenarioId)),
     goToStudentFeedback: () => router.push(routes.student.feedback),
     goToStudentLevel: () => router.push(routes.student.level),
-    
+
     // Teacher navigation
     goToTeacherDashboard: () => router.push(routes.teacher.dashboard),
-    
+
     // Generic navigation with custom path
     goTo: (path: string) => router.push(path),
   };

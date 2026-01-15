@@ -213,11 +213,11 @@ export default function LeaderboardPage() {
                     >
                         <div className="hidden xl:block">
                             {/* Decorative elements */}
-                            <div className="absolute top-0 left-0 bottom-0 w-80 -translate-x-20">
+                            <div className="absolute top-0 left-0 bottom-0 w-[500px] -translate-x-24">
                                 <Image
                                     src="/images/Road Vector - 2.png"
                                     alt=""
-                                    width={320}
+                                    width={400}
                                     height={500}
                                     className="w-full h-full object-cover"
                                     style={{ height: 'auto' }}
@@ -291,14 +291,14 @@ export default function LeaderboardPage() {
 
                             {/* Rank 1 (Center) */}
                             {topThree[0] && (
-                                <div className="flex flex-col items-center order-2 w-[110px] sm:w-[150px]">
+                                <div className="flex flex-col items-center order-2 w-[130px] sm:w-[180px]">
                                     <div className="relative mb-4">
-                                        <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full overflow-hidden flex items-center justify-center aspect-square shadow-md relative">
+                                        <div className="h-24 w-24 sm:h-32 sm:w-32 rounded-full overflow-hidden flex items-center justify-center aspect-square shadow-md relative">
                                             {/* Avatar Background Circle */}
                                             <div className="absolute inset-0 z-0">
                                                 <Image src="/Leaderboardicons/circle1.svg" alt="" fill className="object-contain" />
                                             </div>
-                                            <span className="text-xl sm:text-3xl font-almarai-bold text-[#4B4B4B] relative z-10">
+                                            <span className="text-2xl sm:text-4xl font-almarai-bold text-[#4B4B4B] relative z-10">
                                                 {topThree[0].username?.charAt(0).toUpperCase()}
                                             </span>
                                         </div>
