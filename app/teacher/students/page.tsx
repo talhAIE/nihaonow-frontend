@@ -33,11 +33,18 @@ export default function MyStudentsPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [compilingId, setCompilingId] = useState<number | null>(null);
     const [downloadProgress, setDownloadProgress] = useState(0);
+    const [sortBy, setSortBy] = useState<string>("name");
+    const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     useEffect(() => {
         const fetchStudents = async () => {
             try {
-                const data = await teacherApi.getStudents({ limit: 100 }); // Fetch up to 100 students for now
+                const data = await teacherApi.getStudents({
+                    limit: 100,
+                    sort: sortBy,
+                    order: sortOrder
+                });
 
                 if (data.students) {
                     setStudents(data.students);
@@ -58,7 +65,7 @@ export default function MyStudentsPage() {
         };
 
         fetchStudents();
-    }, []);
+    }, [sortBy, sortOrder]);
 
     // Robust filtering
     const filteredStudents = students.filter(s =>
@@ -203,10 +210,45 @@ export default function MyStudentsPage() {
                                 </>
                             )}
                         </button>
-                        <button className="flex flex-row-reverse items-center justify-center gap-2 bg-white border border-slate-100 text-slate-600 px-5 py-2.5 rounded-xl font-black hover:bg-slate-50 transition-all shadow-sm text-xs">
-                            <Filter className="w-4 h-4" />
-                            <span>المرشحات</span>
-                        </button>
+                        <div className="relative">
+                            <button
+                                onClick={() => setIsFilterOpen(!isFilterOpen)}
+                                className="flex flex-row-reverse items-center justify-center gap-2 bg-white border border-slate-100 text-slate-600 px-5 py-2.5 rounded-xl font-black hover:bg-slate-50 transition-all shadow-sm text-xs"
+                            >
+                                <Filter className="w-4 h-4" />
+                                <span>الترتيب</span>
+                            </button>
+
+                            {isFilterOpen && (
+                                <div className="absolute left-0 top-full mt-2 w-48 bg-white border border-slate-100 rounded-xl shadow-xl z-50 overflow-hidden font-bold text-xs" dir="rtl">
+                                    <div className="p-2 border-b border-slate-50 bg-slate-50/50 text-slate-400 text-[10px] uppercase">ترتيب حسب</div>
+                                    <button
+                                        onClick={() => { setSortBy("name"); setSortOrder("asc"); setIsFilterOpen(false); }}
+                                        className={`w-full text-right px-4 py-2.5 hover:bg-slate-50 transition-colors ${sortBy === "name" && sortOrder === "asc" ? "text-green-600 bg-green-50/50" : "text-slate-600"}`}
+                                    >
+                                        الاسم (أ - ي)
+                                    </button>
+                                    <button
+                                        onClick={() => { setSortBy("name"); setSortOrder("desc"); setIsFilterOpen(false); }}
+                                        className={`w-full text-right px-4 py-2.5 hover:bg-slate-50 transition-colors ${sortBy === "name" && sortOrder === "desc" ? "text-green-600 bg-green-50/50" : "text-slate-600"}`}
+                                    >
+                                        الاسم (ي - أ)
+                                    </button>
+                                    <button
+                                        onClick={() => { setSortBy("level"); setSortOrder("desc"); setIsFilterOpen(false); }}
+                                        className={`w-full text-right px-4 py-2.5 hover:bg-slate-50 transition-colors ${sortBy === "level" && sortOrder === "desc" ? "text-green-600 bg-green-50/50" : "text-slate-600"}`}
+                                    >
+                                        المستوى (الأعلى أولاً)
+                                    </button>
+                                    <button
+                                        onClick={() => { setSortBy("points"); setSortOrder("desc"); setIsFilterOpen(false); }}
+                                        className={`w-full text-right px-4 py-2.5 hover:bg-slate-50 transition-colors ${sortBy === "points" && sortOrder === "desc" ? "text-green-600 bg-green-50/50" : "text-slate-600"}`}
+                                    >
+                                        النقاط (الأعلى أولاً)
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

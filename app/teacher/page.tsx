@@ -10,7 +10,9 @@ import { useAppContext } from "@/context/AppContext";
 interface TeacherDashboardStats {
     totalStudents: number;
     totalTopics: number;
-    overallUsage: number;
+    overallUsage: number; // Percentage for progress
+    totalUsageHours: number;
+    totalPoints: number;
     totalUsers: number;
     loggedInCount: number;
     notLoggedInCount: number;
@@ -37,6 +39,8 @@ export default function TeacherDashboard() {
         totalStudents: 0,
         totalTopics: 0,
         overallUsage: 0,
+        totalUsageHours: 0,
+        totalPoints: 0,
         totalUsers: 0,
         loggedInCount: 0,
         notLoggedInCount: 0
@@ -52,12 +56,18 @@ export default function TeacherDashboard() {
 
                 // Map Analytics
                 if (data.analytics) {
+                    const totalUsers = data.analytics.totalUsers || 0;
+                    const loggedInCount = data.analytics.loggedInCount || 0;
+                    const usagePercent = totalUsers > 0 ? Math.round((loggedInCount / totalUsers) * 100) : 0;
+
                     setStats({
-                        totalStudents: data.analytics.totalUsers || 0,
+                        totalStudents: totalUsers,
                         totalTopics: data.analytics.totalTopics || 0,
-                        overallUsage: Math.round(data.analytics.totalUsageHours || 0), // Assuming this is mostly hours or percentage logic needed? Usage header says %, let's assume raw hours for now or generic usage
-                        totalUsers: data.analytics.totalUsers || 0, // Seems redundant in backend response, totalUsers is students count?
-                        loggedInCount: data.analytics.loggedInCount || 0,
+                        overallUsage: usagePercent,
+                        totalUsageHours: data.analytics.totalUsageHours || 0,
+                        totalPoints: data.analytics.totalPoints || 0,
+                        totalUsers: totalUsers,
+                        loggedInCount: loggedInCount,
                         notLoggedInCount: data.analytics.yetToLogin || 0,
                         mostUsedMode: data.analytics.mostUsedMode
                     });
@@ -147,32 +157,60 @@ export default function TeacherDashboard() {
                 <div className="text-gray-700 font-medium">{getGreeting()}</div>
             </div>
             {/* Top Stats Cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                {/* Total Students */}
-                <div className="bg-[#D6F0E0] rounded-[20px] p-4 flex flex-col items-center justify-center aspect-square md:aspect-auto md:h-32 transition-transform hover:scale-[1.02]">
-                    <span className="text-[#2D9344] font-black text-xs mb-1">إجمالي الطلاب</span>
-                    <span className="text-[#2D9344] text-3xl font-black ">{stats.totalStudents}</span>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Total Students - Green */}
+                <div className="bg-[#E2F2E9] rounded-[24px] p-6 flex flex-col items-center justify-center transition-transform hover:scale-[1.02] border border-green-50">
+                    <span className="text-[#35AB4E] font-bold text-sm mb-4">إجمالي الطلاب</span>
+                    <span className="text-[#35AB4E] text-4xl font-black">{stats.totalStudents}</span>
                 </div>
 
-                {/* Total Topics */}
-                <div className="bg-[#FFF8E1] rounded-[20px] p-4 flex flex-col items-center justify-center aspect-square md:aspect-auto md:h-32 transition-transform hover:scale-[1.02]">
-                    <span className="text-[#D9A51F] font-black text-xs mb-1">مجموع المواضيع</span>
-                    <span className="text-[#D9A51F] text-3xl font-black ">{stats.totalTopics}</span>
+                {/* Total Topics - Yellow */}
+                <div className="bg-[#FFF9E1] rounded-[24px] p-6 flex flex-col items-center justify-center transition-transform hover:scale-[1.02] border border-amber-50">
+                    <span className="text-[#C69400] font-bold text-sm mb-4">مجموع المواضيع</span>
+                    <span className="text-[#C69400] text-4xl font-black">{stats.totalTopics}</span>
                 </div>
 
-                {/* Overall Usage */}
-                <div className="bg-[#FFEEDA] rounded-[20px] p-4 flex flex-col items-center justify-center aspect-square md:aspect-auto md:h-32 transition-transform hover:scale-[1.02] relative overflow-hidden">
-                    <span className="text-[#E38B29] font-black text-xs mb-3">ساعات الاستخدام</span>
-                    <div className="relative w-auto h-auto flex items-center justify-center">
-                        <span className="text-[#E38B29] text-2xl font-black ">{stats.overallUsage}</span>
-                        <span className="text-[#E38B29] text-xs font-bold mr-1">ساعة</span>
+                {/* Overall Usage - Orange with Circular Progress */}
+                <div className="bg-[#FFF0E2] rounded-[24px] p-2 flex flex-col items-center justify-center transition-transform hover:scale-[1.02] border border-orange-50 relative group">
+                    <span className="text-[#EF8D32] font-bold text-sm mb-1 mt-4">الاستخدام الإجمالي</span>
+                    <div className="relative w-24 h-24 flex items-center justify-center mb-2">
+                        {/* SVG Circular Progress */}
+                        <svg className="w-full h-full transform -rotate-90">
+                            <circle
+                                cx="48"
+                                cy="48"
+                                r="36"
+                                stroke="currentColor"
+                                strokeWidth="8"
+                                fill="transparent"
+                                className="text-orange-100"
+                            />
+                            <circle
+                                cx="48"
+                                cy="48"
+                                r="36"
+                                stroke="currentColor"
+                                strokeWidth="8"
+                                fill="transparent"
+                                strokeDasharray={226.2}
+                                strokeDashoffset={226.2 - (226.2 * stats.overallUsage) / 100}
+                                strokeLinecap="round"
+                                className="text-[#EF8D32] transition-all duration-1000 ease-out"
+                            />
+                        </svg>
+                        <span className="absolute text-2xl font-black text-[#EF8D32]">{stats.overallUsage}%</span>
                     </div>
                 </div>
 
-                {/* Most Used Mode */}
-                <div className="bg-[#FBD4D3] rounded-[20px] p-4 flex flex-col items-center justify-center aspect-square md:aspect-auto md:h-32 transition-transform hover:scale-[1.02]">
-                    <span className="text-[#BC313F] font-black text-xs mb-1">الوضع الأكثر نشاطاً</span>
-                    <span className="text-[#BC313F] text-lg font-black  text-center">{stats.mostUsedMode || "عام"}</span>
+                {/* Total Usage - Pink */}
+                <div className="bg-[#FFE4E4] rounded-[24px] p-6 flex flex-col items-center justify-center transition-transform hover:scale-[1.02] border border-red-50">
+                    <span className="text-[#BC313F] font-bold text-sm mb-4">إجمالي الاستخدام</span>
+                    <div className="flex flex-row items-center gap-1">
+                        <span className="text-[#BC313F] text-3xl font-black">
+                            {stats.totalUsageHours}
+                        </span>
+                        <span className="text-[#BC313F] text-xs font-bold mt-2">ساعة</span>
+                    </div>
                 </div>
             </div>
 
