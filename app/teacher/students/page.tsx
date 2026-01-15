@@ -41,9 +41,7 @@ export default function MyStudentsPage() {
         const fetchStudents = async () => {
             try {
                 const data = await teacherApi.getStudents({
-                    limit: 100,
-                    sort: sortBy,
-                    order: sortOrder
+                    limit: 200, // Fetch a larger batch for frontend sorting
                 });
 
                 if (data.students) {
@@ -65,12 +63,25 @@ export default function MyStudentsPage() {
         };
 
         fetchStudents();
-    }, [sortBy, sortOrder]);
+    }, []); // Only fetch once
 
-    // Robust filtering
-    const filteredStudents = students.filter(s =>
-        (s.username || '').toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // Robust filtering and sorting on frontend
+    const filteredStudents = [...students]
+        .filter(s => (s.username || '').toLowerCase().includes(searchTerm.toLowerCase()))
+        .sort((a, b) => {
+            if (sortBy === "name") {
+                const nameA = (a.username || '').toLowerCase();
+                const nameB = (b.username || '').toLowerCase();
+                return sortOrder === "asc" ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
+            }
+            if (sortBy === "level") {
+                return sortOrder === "asc" ? a.level - b.level : b.level - a.level;
+            }
+            if (sortBy === "points") {
+                return sortOrder === "asc" ? a.totalPoints - b.totalPoints : b.totalPoints - a.totalPoints;
+            }
+            return 0;
+        });
 
     const handleDownloadReports = async () => {
         let progressInterval: NodeJS.Timeout;
