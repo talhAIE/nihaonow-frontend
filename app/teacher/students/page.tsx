@@ -33,11 +33,16 @@ export default function MyStudentsPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [compilingId, setCompilingId] = useState<number | null>(null);
     const [downloadProgress, setDownloadProgress] = useState(0);
+    const [sortBy, setSortBy] = useState<string>("name");
+    const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     useEffect(() => {
         const fetchStudents = async () => {
             try {
-                const data = await teacherApi.getStudents({ limit: 100 }); // Fetch up to 100 students for now
+                const data = await teacherApi.getStudents({
+                    limit: 200, // Fetch a larger batch for frontend sorting
+                });
 
                 if (data.students) {
                     setStudents(data.students);
@@ -58,24 +63,61 @@ export default function MyStudentsPage() {
         };
 
         fetchStudents();
-    }, []);
+    }, []); // Only fetch once
 
-    // Robust filtering
-    const filteredStudents = students.filter(s =>
-        (s.username || '').toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // Robust filtering and sorting on frontend
+    const filteredStudents = [...students]
+        .filter(s => (s.username || '').toLowerCase().includes(searchTerm.toLowerCase()))
+        .sort((a, b) => {
+            if (sortBy === "name") {
+                const nameA = (a.username || '').toLowerCase();
+                const nameB = (b.username || '').toLowerCase();
+                return sortOrder === "asc" ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
+            }
+            if (sortBy === "level") {
+                return sortOrder === "asc" ? a.level - b.level : b.level - a.level;
+            }
+            if (sortBy === "points") {
+                return sortOrder === "asc" ? a.totalPoints - b.totalPoints : b.totalPoints - a.totalPoints;
+            }
+            return 0;
+        });
 
     const handleDownloadReports = async () => {
+        let progressInterval: NodeJS.Timeout;
         try {
             setIsDownloading(true);
+            setCompilingId(-1);
+            setDownloadProgress(0);
+
+            // Simulate progress
+            progressInterval = setInterval(() => {
+                setDownloadProgress(prev => {
+                    if (prev >= 92) return prev;
+                    const increment = Math.floor(Math.random() * 8) + 3;
+                    return Math.min(prev + increment, 92);
+                });
+            }, 500);
+
             const { url } = await reportsApi.getBulkReportsUrl();
+
+            clearInterval(progressInterval);
+            setDownloadProgress(100);
+
             if (url) {
                 window.open(url, '_blank');
+                setCompilingId(null);
+                setDownloadProgress(0);
+                setIsDownloading(false);
+            } else {
+                setCompilingId(null);
+                setIsDownloading(false);
             }
         } catch (error) {
+            if (progressInterval!) clearInterval(progressInterval);
             console.error("Failed to download reports", error);
             alert("فشل تحميل التقارير. يرجى المحاولة مرة أخرى.");
-        } finally {
+            setCompilingId(null);
             setIsDownloading(false);
         }
     };
@@ -107,12 +149,9 @@ export default function MyStudentsPage() {
             setDownloadProgress(100);
 
             if (url) {
-                // Small delay to show 100% before opening
-                setTimeout(() => {
-                    window.open(url, '_blank');
-                    setCompilingId(null);
-                    setDownloadProgress(0);
-                }, 400);
+                window.open(url, '_blank');
+                setCompilingId(null);
+                setDownloadProgress(0);
             } else {
                 setCompilingId(null);
             }
@@ -160,20 +199,67 @@ export default function MyStudentsPage() {
                     <div className="flex flex-row-reverse gap-4">
                         <button
                             onClick={handleDownloadReports}
-                            disabled={isDownloading}
-                            className="flex flex-row-reverse items-center justify-center gap-2 bg-white border border-slate-100 text-slate-600 px-5 py-2.5 rounded-xl font-black hover:bg-slate-50 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed text-xs"
+                            disabled={isDownloading || compilingId === -1}
+                            className="flex flex-row-reverse items-center justify-center gap-2 bg-white border border-slate-100 text-slate-600 px-5 py-2.5 rounded-xl font-black hover:bg-slate-50 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed text-xs relative overflow-hidden"
                         >
-                            {isDownloading ? (
-                                <span className="animate-spin w-4 h-4 border-2 border-slate-600 border-t-transparent rounded-full" />
+                            {isDownloading || compilingId === -1 ? (
+                                <>
+                                    <div
+                                        className="absolute inset-0 bg-green-50 transition-all duration-300 -z-0"
+                                        style={{ width: `${downloadProgress}%` }}
+                                    />
+                                    <div className="flex items-center gap-2 relative z-10">
+                                        <div className="w-4 h-4 border-2 border-slate-600 border-t-transparent rounded-full animate-spin" />
+                                        <span>{downloadProgress}%</span>
+                                        <span>جاري التحميل...</span>
+                                    </div>
+                                </>
                             ) : (
-                                <Download className="w-4 h-4" />
+                                <>
+                                    <Download className="w-4 h-4" />
+                                    <span>تحميل التقارير</span>
+                                </>
                             )}
-                            <span>{isDownloading ? 'جاري التحميل...' : 'تحميل التقارير'}</span>
                         </button>
-                        <button className="flex flex-row-reverse items-center justify-center gap-2 bg-white border border-slate-100 text-slate-600 px-5 py-2.5 rounded-xl font-black hover:bg-slate-50 transition-all shadow-sm text-xs">
-                            <Filter className="w-4 h-4" />
-                            <span>المرشحات</span>
-                        </button>
+                        <div className="relative">
+                            <button
+                                onClick={() => setIsFilterOpen(!isFilterOpen)}
+                                className="flex flex-row-reverse items-center justify-center gap-2 bg-white border border-slate-100 text-slate-600 px-5 py-2.5 rounded-xl font-black hover:bg-slate-50 transition-all shadow-sm text-xs"
+                            >
+                                <Filter className="w-4 h-4" />
+                                <span>الترتيب</span>
+                            </button>
+
+                            {isFilterOpen && (
+                                <div className="absolute left-0 top-full mt-2 w-48 bg-white border border-slate-100 rounded-xl shadow-xl z-50 overflow-hidden font-bold text-xs" dir="rtl">
+                                    <div className="p-2 border-b border-slate-50 bg-slate-50/50 text-slate-400 text-[10px] uppercase">ترتيب حسب</div>
+                                    <button
+                                        onClick={() => { setSortBy("name"); setSortOrder("asc"); setIsFilterOpen(false); }}
+                                        className={`w-full text-right px-4 py-2.5 hover:bg-slate-50 transition-colors ${sortBy === "name" && sortOrder === "asc" ? "text-green-600 bg-green-50/50" : "text-slate-600"}`}
+                                    >
+                                        الاسم (أ - ي)
+                                    </button>
+                                    <button
+                                        onClick={() => { setSortBy("name"); setSortOrder("desc"); setIsFilterOpen(false); }}
+                                        className={`w-full text-right px-4 py-2.5 hover:bg-slate-50 transition-colors ${sortBy === "name" && sortOrder === "desc" ? "text-green-600 bg-green-50/50" : "text-slate-600"}`}
+                                    >
+                                        الاسم (ي - أ)
+                                    </button>
+                                    <button
+                                        onClick={() => { setSortBy("level"); setSortOrder("desc"); setIsFilterOpen(false); }}
+                                        className={`w-full text-right px-4 py-2.5 hover:bg-slate-50 transition-colors ${sortBy === "level" && sortOrder === "desc" ? "text-green-600 bg-green-50/50" : "text-slate-600"}`}
+                                    >
+                                        المستوى (الأعلى أولاً)
+                                    </button>
+                                    <button
+                                        onClick={() => { setSortBy("points"); setSortOrder("desc"); setIsFilterOpen(false); }}
+                                        className={`w-full text-right px-4 py-2.5 hover:bg-slate-50 transition-colors ${sortBy === "points" && sortOrder === "desc" ? "text-green-600 bg-green-50/50" : "text-slate-600"}`}
+                                    >
+                                        النقاط (الأعلى أولاً)
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
