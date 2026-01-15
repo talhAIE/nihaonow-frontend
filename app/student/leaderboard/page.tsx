@@ -7,18 +7,18 @@ import { Card, CardContent } from "@/components/ui/card"
 import { leaderboardApi } from '@/lib/api'
 import type { UnifiedLeaderboardEntry, UnifiedLeaderboardResponse } from '@/lib/types'
 import { useAppContext } from '@/context/AppContext'
-const toArabicNumerals = (num: number | string | undefined) => {
-    if (num === undefined || num === null) return '';
-    const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-    return num.toString().replace(/\d/g, (d) => arabicDigits[parseInt(d)]);
-};
+const getLevelInfo = (score: number) => {
+    if (score >= 100) return { label: 'متقدم', color: 'text-[#35AB4E]' }
+    if (score >= 50) return { label: 'متوسط', color: 'text-[#00AEEF]' }
+    return { label: 'مبتدئ', color: 'text-[#35AB4E]' }
+}
 
 // --- High Fidelity Ribbon Components ---
 
 const Ribbon1st = () => (
     <div className="absolute top-0 -right-1 flex flex-col items-center">
         <div className="z-10 bg-[#F98D00] rounded-full h-10 w-10 flex items-center justify-center text-white font-almarai-bold text-lg shadow-md border-2 border-white">
-            {toArabicNumerals(1)}
+            1
         </div>
         <svg width="34" height="26" viewBox="0 0 40 30" className="-mt-2">
             <path d="M10 0L5 30L20 22L35 30L30 0" fill="#F98D00" />
@@ -31,7 +31,7 @@ const Ribbon1st = () => (
 const Ribbon2nd = () => (
     <div className="absolute -top-2 -right-1 flex flex-col items-center">
         <div className="z-10 bg-white border-2 border-[#A8D3E6] rounded-full h-8 w-8 flex items-center justify-center text-[#4B4B4B] font-almarai-bold text-base shadow-sm">
-            {toArabicNumerals(2)}
+            2
         </div>
         <svg width="28" height="22" viewBox="0 0 34 26" className="-mt-1.5">
             <path d="M8 0L4 26L17 19L30 26L26 0" fill="#A8D3E6" />
@@ -44,7 +44,7 @@ const Ribbon2nd = () => (
 const Ribbon3rd = () => (
     <div className="absolute -top-2 -right-1 flex flex-col items-center">
         <div className="z-10 bg-[#CA495A] rounded-full h-8 w-8 flex items-center justify-center text-white font-almarai-bold text-base shadow-sm border-2 border-white">
-            {toArabicNumerals(3)}
+            3
         </div>
         <svg width="28" height="22" viewBox="0 0 34 26" className="-mt-1.5">
             <path d="M8 0L4 26L17 19L30 26L26 0" fill="#CA495A" />
@@ -256,7 +256,7 @@ export default function LeaderboardPage() {
                                     className="w-full h-full object-contain"
                                 />
                             </div>
-                            <h3 className="text-lg sm:text-xl font-almarai-extrabold text-[#4B4B4B]">أفضل {toArabicNumerals(3)} طلاب</h3>
+                            <h3 className="text-lg sm:text-xl font-almarai-extrabold text-[#4B4B4B]">أفضل 3 طلاب</h3>
                         </div>
 
                         <div className="flex flex-row items-center justify-center gap-2 sm:gap-14 pt-4 sm:pt-10">
@@ -266,13 +266,9 @@ export default function LeaderboardPage() {
                                 <div className="flex flex-col items-center order-1 w-[80px] sm:w-[120px]">
                                     <div className="relative mb-4">
                                         <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full border-[6px] border-[#A8D3E6] bg-[#DCEBF4] overflow-hidden flex items-center justify-center aspect-square shadow-inner">
-                                            {topThree[1].avatarUrl ? (
-                                                <Image src={topThree[1].avatarUrl} alt="" width={112} height={112} className="w-full h-full object-cover" />
-                                            ) : (
-                                                <span className="text-xl sm:text-3xl font-almarai-bold text-[#4B4B4B]">
-                                                    {topThree[1].username?.charAt(0).toUpperCase()}
-                                                </span>
-                                            )}
+                                            <span className="text-xl sm:text-3xl font-almarai-bold text-[#4B4B4B]">
+                                                {topThree[1].username?.charAt(0).toUpperCase()}
+                                            </span>
                                         </div>
                                         <Ribbon2nd />
                                     </div>
@@ -282,8 +278,10 @@ export default function LeaderboardPage() {
                                                 {topThree[1].username}
                                             </h4>
                                         </div>
-                                        <p className="font-almarai-bold text-[#35AB4E] text-[10px] sm:text-sm mb-0.5 sm:mb-1">متقدم</p>
-                                        <p className="font-almarai-regular text-[#4B4B4B] text-[10px] sm:text-sm">{toArabicNumerals(topThree[1].metrics?.topicsCompleted || 0)} موضوع</p>
+                                        <p className={`font-almarai-bold text-[10px] sm:text-sm mb-0.5 sm:mb-1 ${getLevelInfo(topThree[1].score || 0).color}`}>
+                                            {getLevelInfo(topThree[1].score || 0).label}
+                                        </p>
+                                        <p className="font-almarai-regular text-[#4B4B4B] text-[10px] sm:text-sm">{topThree[1].metrics?.topicsCompleted || 0} موضوع</p>
                                     </div>
                                 </div>
                             )}
@@ -293,13 +291,9 @@ export default function LeaderboardPage() {
                                 <div className="flex flex-col items-center order-2 w-[110px] sm:w-[150px]">
                                     <div className="relative mb-4">
                                         <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full border-[6px] border-[#F98D00] bg-[#FFF5E6] overflow-hidden flex items-center justify-center aspect-square shadow-md">
-                                            {topThree[0].avatarUrl ? (
-                                                <Image src={topThree[0].avatarUrl} alt="" width={112} height={112} className="w-full h-full object-cover" />
-                                            ) : (
-                                                <span className="text-xl sm:text-3xl font-almarai-bold text-[#4B4B4B]">
-                                                    {topThree[0].username?.charAt(0).toUpperCase()}
-                                                </span>
-                                            )}
+                                            <span className="text-xl sm:text-3xl font-almarai-bold text-[#4B4B4B]">
+                                                {topThree[0].username?.charAt(0).toUpperCase()}
+                                            </span>
                                         </div>
                                         <Ribbon1st />
                                     </div>
@@ -309,8 +303,10 @@ export default function LeaderboardPage() {
                                                 {topThree[0].username}
                                             </h4>
                                         </div>
-                                        <p className="font-almarai-bold text-[#35AB4E] text-xs sm:text-base mb-0.5 sm:mb-1">مبتدئ</p>
-                                        <p className="font-almarai-regular text-[#4B4B4B] text-xs sm:text-base">{toArabicNumerals(topThree[0].metrics?.topicsCompleted || 0)} مواضيع</p>
+                                        <p className={`font-almarai-bold text-xs sm:text-base mb-0.5 sm:mb-1 ${getLevelInfo(topThree[0].score || 0).color}`}>
+                                            {getLevelInfo(topThree[0].score || 0).label}
+                                        </p>
+                                        <p className="font-almarai-regular text-[#4B4B4B] text-xs sm:text-base">{topThree[0].metrics?.topicsCompleted || 0} مواضيع</p>
                                     </div>
                                 </div>
                             )}
@@ -320,13 +316,9 @@ export default function LeaderboardPage() {
                                 <div className="flex flex-col items-center order-3 w-[80px] sm:w-[120px]">
                                     <div className="relative mb-4">
                                         <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full border-[6px] border-[#CA495A] bg-[#FEF2F2] overflow-hidden flex items-center justify-center aspect-square shadow-inner">
-                                            {topThree[2].avatarUrl ? (
-                                                <Image src={topThree[2].avatarUrl} alt="" width={112} height={112} className="w-full h-full object-cover" />
-                                            ) : (
-                                                <span className="text-xl sm:text-3xl font-almarai-bold text-[#4B4B4B]">
-                                                    {topThree[2].username?.charAt(0).toUpperCase()}
-                                                </span>
-                                            )}
+                                            <span className="text-xl sm:text-3xl font-almarai-bold text-[#4B4B4B]">
+                                                {topThree[2].username?.charAt(0).toUpperCase()}
+                                            </span>
                                         </div>
                                         <Ribbon3rd />
                                     </div>
@@ -336,8 +328,10 @@ export default function LeaderboardPage() {
                                                 {topThree[2].username}
                                             </h4>
                                         </div>
-                                        <p className="font-almarai-bold text-[#35AB4E] text-[10px] sm:text-sm mb-0.5 sm:mb-1">متوسط</p>
-                                        <p className="font-almarai-regular text-[#4B4B4B] text-[10px] sm:text-sm">{toArabicNumerals(topThree[2].metrics?.topicsCompleted || 0)} موضوع</p>
+                                        <p className={`font-almarai-bold text-[10px] sm:text-sm mb-0.5 sm:mb-1 ${getLevelInfo(topThree[2].score || 0).color}`}>
+                                            {getLevelInfo(topThree[2].score || 0).label}
+                                        </p>
+                                        <p className="font-almarai-regular text-[#4B4B4B] text-[10px] sm:text-sm">{topThree[2].metrics?.topicsCompleted || 0} موضوع</p>
                                     </div>
                                 </div>
                             )}
@@ -411,18 +405,14 @@ export default function LeaderboardPage() {
                                         <div className="flex items-center gap-4 overflow-hidden">
                                             {/* Rank Circle */}
                                             <div className={`h-8 w-8 rounded-full ${getRankColor(displayRank)} flex items-center justify-center text-white font-almarai-bold text-sm flex-shrink-0 shadow-sm`}>
-                                                {toArabicNumerals(displayRank)}
+                                                {displayRank}
                                             </div>
 
-                                            {/* Avatar */}
+                                            {/* Avatar (Initials only as requested) */}
                                             <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full overflow-hidden bg-gray-100 flex-shrink-0 border-2 border-white aspect-square shadow-sm">
-                                                {entry.avatarUrl ? (
-                                                    <Image src={entry.avatarUrl} alt="" width={48} height={48} className="w-full h-full object-cover" />
-                                                ) : (
-                                                    <div className="w-full h-full flex items-center justify-center bg-[#FDE68A] text-[#B45309] font-almarai-bold">
-                                                        {entry.username?.charAt(0).toUpperCase()}
-                                                    </div>
-                                                )}
+                                                <div className="w-full h-full flex items-center justify-center bg-[#FDE68A] text-[#B45309] font-almarai-bold">
+                                                    {entry.username?.charAt(0).toUpperCase()}
+                                                </div>
                                             </div>
 
                                             {/* Name and Level */}
@@ -439,10 +429,10 @@ export default function LeaderboardPage() {
                                         {/* Middle Section: Metrics (Fixed width for consistency) */}
                                         <div className="flex flex-col items-center justify-center gap-1 border-x border-gray-100 px-2 h-full">
                                             <span className="font-almarai-bold text-[#E67E22] text-sm sm:text-base whitespace-nowrap">
-                                                {toArabicNumerals(Math.round(entry.metrics?.avgCompletionTime || 0))} ساعة
+                                                {Math.round(entry.metrics?.avgCompletionTime || 0)} ساعة
                                             </span>
                                             <span className="font-almarai-bold text-[#4B4B4B] text-xs sm:text-sm whitespace-nowrap">
-                                                {toArabicNumerals(entry.metrics?.topicsCompleted || 0)} موضوع
+                                                {entry.metrics?.topicsCompleted || 0} موضوع
                                             </span>
                                         </div>
 
