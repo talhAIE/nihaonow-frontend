@@ -57,17 +57,6 @@ export default function CertificateScroll({
           </div>
         )}
 
-        {/* Title for locked scroll */}
-        {isLocked && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-8">
-            <div className="mb-4 text-center">
-              <h4 className="text-base font-black text-gray-700/80 font-almarai-extrabold line-clamp-2">{name}</h4>
-            </div>
-            <div className="w-12 h-12 bg-white/40 rounded-full flex items-center justify-center shadow-sm backdrop-blur-[2px] border border-white/50">
-              <Lock className="w-6 h-6 text-gray-400" />
-            </div>
-          </div>
-        )}
       </div>
 
       <div className="mt-8 px-4">

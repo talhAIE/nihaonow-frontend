@@ -47,13 +47,13 @@ export default function LoginPage() {
   const validate = (data: FormData) => {
     const newErrors: ValidationErrors = {};
     if (!data.username) {
-      newErrors.username = 'Username is required';
+      newErrors.username = 'اسم المستخدم مطلوب';
     }
 
     if (!data.password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = 'كلمة المرور مطلوبة';
     } else if (data.password.length < 4) {
-      newErrors.password = 'Password must be at least 4 characters';
+      newErrors.password = 'يجب أن تكون كلمة المرور 4 أحرف على الأقل';
     }
 
     return newErrors;
@@ -65,7 +65,7 @@ export default function LoginPage() {
       const validation = validate(formData);
       if (Object.keys(validation).length > 0) {
         setErrors(validation);
-        toast({ title: 'خطأ في التحقق', description: 'الرجاء تصحيح الحقول المظللة', variant: 'destructive' });
+        toast({ title: 'خطأ في التحقق', description: 'الرجاء تصحيح الحقول المظللة', variant: 'destructive', duration: 5000 });
         return;
       }
       setIsLoading(true);
@@ -89,7 +89,7 @@ export default function LoginPage() {
             username: userData.username ?? '',
             role: userRole
           });
-          toast({ title: 'تم بنجاح', description: 'مرحبًا بعودتك' });
+          toast({ title: 'تم بنجاح', description: 'مرحبًا بعودتك', duration: 5000 });
 
           // Wrap in timeout to ensure context updates propagate
           setTimeout(() => {
@@ -114,7 +114,7 @@ export default function LoginPage() {
   );
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] bg-white flex flex-col items-center justify-center px-4 py-8 overflow-hidden" dir={'ltr'}>
+    <div className="relative min-h-[calc(100vh-4rem)] bg-white flex flex-col items-center justify-center px-4 py-8 overflow-hidden" dir={'rtl'}>
 
       <div className="pointer-events-none absolute top-0 right-0 z-0 w-[60%] max-w-[220px] h-auto max-h-[225px] md:top-0">
         <Image
@@ -128,7 +128,7 @@ export default function LoginPage() {
       </div>
       <div className="pointer-events-none absolute left-0 bottom-0 z-0 w-[60%] max-w-[420px] h-auto max-h-[225px] sm:left-4 sm:bottom-0 lg:left-[5px] lg:bottom-0">
         <Image
-          src="/images/LoginLogo.png"
+          src="/images/loginLogo.png"
           alt=""
           fill
           className="object-contain"
@@ -142,18 +142,19 @@ export default function LoginPage() {
         <div className="bg-white p-6 sm:p-8 backdrop-blur-sm rounded-lg">
           <div className="mb-6 flex justify-center items-center">
             <h2 className="text-center" style={{ fontFamily: 'Nunito', fontWeight: 700, fontSize: '24px', lineHeight: '100%', letterSpacing: '0%', textAlign: 'center', color: '#282828' }}>
-              Login
+              تسجيل الدخول
             </h2>
           </div>
           <form onSubmit={handleSubmit} className="space-y-6" noValidate>
             <div className="space-y-2">
               <div className="relative">
                 <Input
-                  aria-label="Username"
+                  dir="ltr"
+                  aria-label="اسم المستخدم"
                   id="username"
                   name="username"
                   type="text"
-                  placeholder="Enter your username"
+                  placeholder="أدخل اسم المستخدم"
                   value={formData.username}
                   onChange={handleInputChange}
                   disabled={isLoading}
@@ -161,7 +162,7 @@ export default function LoginPage() {
                   aria-required="true"
                   aria-invalid={errors.username ? 'true' : 'false'}
                   aria-describedby={errors.username ? 'username-error' : undefined}
-                  className="bg-[#ECECEC] border-2 border-transparent focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none w-full h-11 sm:h-[44px] px-4 rounded-[12px] transition-all duration-200"
+                  className="text-left bg-[#ECECEC] border-2 border-transparent focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none w-full h-11 sm:h-[44px] px-4 rounded-[12px] transition-all duration-200"
                 />
               </div>
               {errors.username && (
@@ -174,7 +175,8 @@ export default function LoginPage() {
             <div className="space-y-2">
               <div className="relative">
                 <Input
-                  aria-label="Password"
+                  dir="ltr"
+                  aria-label="كلمة المرور"
                   id="password"
                   name="password"
                   type={showPassword ? 'text' : 'password'}
@@ -186,13 +188,13 @@ export default function LoginPage() {
                   aria-required="true"
                   aria-invalid={errors.password ? 'true' : 'false'}
                   aria-describedby={errors.password ? 'password-error' : undefined}
-                  className="bg-[#ECECEC] border-2 border-transparent focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none w-full h-11 sm:h-[44px] px-4 pr-12 rounded-[12px] transition-all duration-200"
+                  className="text-left bg-[#ECECEC] border-2 border-transparent focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none w-full h-11 sm:h-[44px] px-4 pr-12 rounded-[12px] transition-all duration-200"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  aria-label={showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
                 >
                   {showPassword ? (
                     <EyeOff className="h-5 w-5" />
@@ -212,11 +214,11 @@ export default function LoginPage() {
               className="transition duration-200 shadow-md w-full sm:max-w-[470.5px] h-11 sm:h-[45px] gap-[10px] rounded-[12px] border-b-[3px] border-b-[#20672F] hover:bg-[#35AB4E] bg-[#35AB4E] text-[#ECECEC]  font-bold text-[16px]">
               {isLoading ? (
                 <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Logging in...
+                  <Loader2 className="h-4 w-4 ml-2 animate-spin" />
+                  جاري تسجيل الدخول...
                 </>
               ) : (
-                'Login'
+                'تسجيل الدخول'
               )}
             </Button>
 
@@ -226,7 +228,7 @@ export default function LoginPage() {
                 className=" font-bold text-[14px] leading-[100%] text-[#35AB4E] hover:bg-transparent bg-transparent underline decoration-[#35AB4E] decoration-1"
                 style={{ textAlign: 'center' }}
               >
-                Forgot password
+                نسيت كلمة المرور
               </Link>
             </div>
 
@@ -236,8 +238,8 @@ export default function LoginPage() {
                 type="button"
                 className=" font-bold w-full h-11 sm:h-[45px] px-3 sm:px-4 rounded-[12px] hover:bg-[#DEDEDE] bg-[#E5E5E5] border-b-[3px] border-b-[rgba(0,0,0,0.08)] text-[#282828] text-[13px] sm:text-[16px] transition duration-200"
               >
-                <span className="whitespace-nowrap">Don&apos;t have an account?</span>{' '}
-                <span className="font-semibold text-brand hover:text-brand-600 transition-colors ml-1">Sign Up</span>
+                <span className="whitespace-nowrap">ليس لديك حساب؟</span>{' '}
+                <span className="font-semibold text-brand hover:text-brand-600 transition-colors mr-1">إنشاء حساب جديد</span>
               </Button>
             </Link>
 

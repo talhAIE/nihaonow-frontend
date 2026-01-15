@@ -61,7 +61,7 @@ export default function ProgressBar({
                         </div>
 
                         <div className="mt-3 text-center flex items-center justify-between">
-                            <span className="text-extrabold-56 text-gray-800">{`تم إنجاز %${progress}`}</span>
+                            <span className="text-gray-800 font-bold" style={{ fontSize: '14px' }}>{`تم إنجاز %${progress}`}</span>
                             <span className="text-sm text-gray-600 mr-2">{`100%`}</span>
                         </div>
                     </div>

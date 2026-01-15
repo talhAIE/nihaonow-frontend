@@ -149,13 +149,6 @@ export default function TeacherDashboard() {
 
     return (
         <div className="space-y-6" dir="rtl">
-            <div className="text-right">
-                <div className="font-bold text-lg">
-                    مرحبًا{" "}
-                    <span className="text-[#8D1716]">{displayName}</span>
-                </div>
-                <div className="text-gray-700 font-medium">{getGreeting()}</div>
-            </div>
             {/* Top Stats Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* Total Students - Green */}

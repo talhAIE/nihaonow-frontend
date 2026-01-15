@@ -42,9 +42,11 @@ axiosInstance.interceptors.response.use(
         if (error.response) {
             if (error.response.status === 401) {
                 // If we get a 401, the token is likely invalid or user doesn't exist.
-                // Clear the token and redirect to login.
+                // Clear the token and redirect to login, BUT ONLY if we are not already there.
                 deleteCookie('authToken');
-                if (typeof window !== 'undefined') {
+                if (typeof window !== 'undefined' &&
+                    !window.location.pathname.includes('/login') &&
+                    !window.location.pathname.includes('/register')) {
                     window.location.href = '/login';
                 }
             }
