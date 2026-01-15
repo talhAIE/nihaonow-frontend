@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useNavigation } from '@/lib/navigation';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,18 @@ import { authApi } from '@/lib/api';
 import Image from 'next/image';
 
 export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen w-full items-center justify-center bg-white">
+        <Loader2 className="h-8 w-8 animate-spin text-[#35AB4E]" />
+      </div>
+    }>
+      <ResetPasswordContent />
+    </Suspense>
+  );
+}
+
+function ResetPasswordContent() {
   const { goToLogin } = useNavigation();
   const searchParams = useSearchParams();
   const { toast } = useToast();
