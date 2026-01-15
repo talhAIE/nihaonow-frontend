@@ -92,10 +92,10 @@ export default function StudentReportContent() {
     }
 
     return (
-        <div className="bg-white min-h-screen flex flex-col" dir="rtl">
+        <div className="bg-transparent min-h-screen flex flex-col" dir="rtl">
             {/* Content Area */}
             <div
-                className="flex-1 w-full bg-slate-100 flex justify-center py-8 px-4 min-h-[500px]"
+                className="flex-1 w-full bg-transparent flex justify-center py-4 px-2 sm:px-4 min-h-[500px]"
                 ref={containerRef}
             >
                 {/* PDF Document */}
