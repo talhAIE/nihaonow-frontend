@@ -19,7 +19,7 @@ export default function Page() {
     const [loading, setLoading] = useState(true)
     const [initialLoad, setInitialLoad] = useState(true)
     const [error, setError] = useState<string | null>(null)
-    const [active, setActive] = useState('daily')
+    const [active, setActive] = useState('weekly')
     const [startingSession, setStartingSession] = useState<number | null>(null)
     const [userLevel, setUserLevel] = useState<UserLevelResponse | null>(null)
     const [levelDefinitions, setLevelDefinitions] = useState<LevelDefinition[]>([])
@@ -190,13 +190,16 @@ export default function Page() {
                             </div>
 
                             {/* Level Icon/Placeholder Square from design */}
-                            <div className="relative w-20 h-20 lg:w-28 lg:h-28 bg-[#F0FDF4] rounded-[24px] flex-shrink-0 flex flex-col items-center justify-center">
+                            <div className="relative w-20 h-20 lg:w-28 lg:h-28 bg-[#F0FDF4] rounded-[24px] flex-shrink-0 flex flex-col items-center justify-center overflow-hidden">
                                 <Image
-                                    src="/images/PANDA.png"
-                                    alt="decor"
-                                    width={70}
-                                    height={56}
-                                    className="object-contain w-auto h-auto"
+                                    src={userLevel?.level?.level && userLevel.level.level >= 1 && userLevel.level.level <= 6
+                                        ? `/Levels/${userLevel.level.level}.svg`
+                                        : "/images/PANDA.png"
+                                    }
+                                    alt={`Level ${userLevel?.level?.level || 'icon'}`}
+                                    width={90}
+                                    height={90}
+                                    className="object-contain w-full h-full p-2"
                                 />
                             </div>
                         </div>
@@ -215,7 +218,7 @@ export default function Page() {
                         <div className="flex-1 flex flex-col items-center justify-center w-full">
                             <div className="flex flex-row items-center justify-center gap-6 mb-6">
                                 <div className="flex flex-col items-center">
-                                    <p className="text-5xl font-black text-[#35AB4E] mb-2 font-nunito">{wordOfTheWeek?.chinese || "مرحباً"}</p>
+                                    <p className="text-5xl font-black text-[#35AB4E] mb-2 ">{wordOfTheWeek?.chinese || "مرحباً"}</p>
                                     <p className="text-slate-600 font-bold text-lg mb-1">{wordOfTheWeek?.pinyin || "Nǐ hǎo"}</p>
                                     <p className="text-slate-400 text-sm">{wordOfTheWeek?.english || "Hello"}</p>
                                 </div>
@@ -325,9 +328,9 @@ export default function Page() {
                         <Image
                             src="/images/start.png"
                             alt="decor"
-                            width={70}
+                            width={56}
                             height={56}
-                            className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-auto sm:w-[70px] sm:h-auto w-auto h-auto"
+                            className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-auto sm:w-[70px] sm:h-auto"
                         />
                         <div className="relative z-10">
                             <p className="text-sm sm:text-base font-bold mb-1">أطول خط</p>
@@ -340,9 +343,9 @@ export default function Page() {
                         <Image
                             src="/images/fire.png"
                             alt="decor"
-                            width={70}
+                            width={56}
                             height={56}
-                            className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-auto sm:w-[70px] sm:h-auto w-auto h-auto"
+                            className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-auto sm:w-[70px] sm:h-auto"
                         />
                         <div className="relative z-10">
                             <p className="text-sm sm:text-base font-bold mb-1">الخط الحالي</p>

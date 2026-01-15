@@ -88,7 +88,7 @@ export default function StudentAccountPage() {
     return (
         <div className="max-w-4xl mx-auto space-y-8 p-4 sm:p-8 pt-6" dir="rtl">
             <div>
-                <h2 className="text-2xl font-black text-slate-800 font-nunito">إعدادات الحساب</h2>
+                <h2 className="text-2xl font-black text-slate-800 ">إعدادات الحساب</h2>
                 <p className="text-slate-500 font-bold text-sm">تحديث ملفك الشخصي وإعدادات الأمان</p>
             </div>
 

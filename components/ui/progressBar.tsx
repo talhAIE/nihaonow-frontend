@@ -44,7 +44,7 @@ export default function ProgressBar({
                     >
                         {title} ←
                     </button>
-                    <div className="font-inter-semibold-20 align-middle text-xs sm:text-sm md:text-base break-words">
+                    <div className="text-semibold-16 align-middle text-xs sm:text-sm md:text-base break-words">
                         {mounted ? `${unit} ${lesson}` : "\u00A0"}
                     </div>
                 </div>
@@ -61,7 +61,7 @@ export default function ProgressBar({
                         </div>
 
                         <div className="mt-3 text-center flex items-center justify-between">
-                            <span className="text-sm font-medium text-gray-800">{`تم إنجاز %${progress}`}</span>
+                            <span className="text-extrabold-56 text-gray-800">{`تم إنجاز %${progress}`}</span>
                             <span className="text-sm text-gray-600 mr-2">{`100%`}</span>
                         </div>
                     </div>

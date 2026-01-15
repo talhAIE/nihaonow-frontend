@@ -107,7 +107,7 @@ export default function RegisterPage() {
         });
 
 
-          toast({ title: 'تم بنجاح', description: 'مرحبًا بعودتك' });
+        toast({ title: 'تم بنجاح', description: 'مرحبًا بعودتك' });
         goToStudentDashboard();
       } catch (error: any) {
         console.error('Registration error:', error);
@@ -235,7 +235,7 @@ export default function RegisterPage() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="transition duration-200 shadow-md w-full sm:max-w-[470.5px] h-11 sm:h-[45px] gap-[10px] rounded-[12px] border-b-[3px] border-b-[#20672F] hover:bg-[#35AB4E] bg-[#35AB4E] text-[#ECECEC] font-nunito font-bold text-[16px]"
+              className="transition duration-200 shadow-md w-full sm:max-w-[470.5px] h-11 sm:h-[45px] gap-[10px] rounded-[12px] border-b-[3px] border-b-[#20672F] hover:bg-[#35AB4E] bg-[#35AB4E] text-[#ECECEC]  font-bold text-[16px]"
             >
               {isLoading ? (
                 <>
@@ -248,7 +248,7 @@ export default function RegisterPage() {
             </Button>
 
             <Button
-              className="font-nunito font-bold w-full sm:max-w-[470.5px] h-11 sm:h-[45px] gap-[10px] rounded-[12px] hover:bg-[#E5E5E5] bg-[#E5E5E5] border-b-[3px] border-b-[rgba(0,0,0,0.08)] text-[#282828] text-[16px] transition duration-200"
+              className=" font-bold w-full sm:max-w-[470.5px] h-11 sm:h-[45px] gap-[10px] rounded-[12px] hover:bg-[#E5E5E5] bg-[#E5E5E5] border-b-[3px] border-b-[rgba(0,0,0,0.08)] text-[#282828] text-[16px] transition duration-200"
             >
               Already have an account?{' '}
               <Link href="/login" className="font-semibold text-green-600 hover:text-green-700 transition-colors">

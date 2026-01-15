@@ -209,7 +209,7 @@ export default function LoginPage() {
             </div>
 
             <Button type="submit" disabled={isLoading}
-              className="transition duration-200 shadow-md w-full sm:max-w-[470.5px] h-11 sm:h-[45px] gap-[10px] rounded-[12px] border-b-[3px] border-b-[#20672F] hover:bg-[#35AB4E] bg-[#35AB4E] text-[#ECECEC] font-nunito font-bold text-[16px]">
+              className="transition duration-200 shadow-md w-full sm:max-w-[470.5px] h-11 sm:h-[45px] gap-[10px] rounded-[12px] border-b-[3px] border-b-[#20672F] hover:bg-[#35AB4E] bg-[#35AB4E] text-[#ECECEC]  font-bold text-[16px]">
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -223,7 +223,7 @@ export default function LoginPage() {
             <div className="mt-2 text-center">
               <Link
                 href="/forget-password"
-                className="font-nunito font-bold text-[14px] leading-[100%] text-[#35AB4E] hover:bg-transparent bg-transparent underline decoration-[#35AB4E] decoration-1"
+                className=" font-bold text-[14px] leading-[100%] text-[#35AB4E] hover:bg-transparent bg-transparent underline decoration-[#35AB4E] decoration-1"
                 style={{ textAlign: 'center' }}
               >
                 Forgot password
@@ -234,7 +234,7 @@ export default function LoginPage() {
             <Link href="/register" className="block w-full">
               <Button
                 type="button"
-                className="font-nunito font-bold w-full h-11 sm:h-[45px] px-3 sm:px-4 rounded-[12px] hover:bg-[#DEDEDE] bg-[#E5E5E5] border-b-[3px] border-b-[rgba(0,0,0,0.08)] text-[#282828] text-[13px] sm:text-[16px] transition duration-200"
+                className=" font-bold w-full h-11 sm:h-[45px] px-3 sm:px-4 rounded-[12px] hover:bg-[#DEDEDE] bg-[#E5E5E5] border-b-[3px] border-b-[rgba(0,0,0,0.08)] text-[#282828] text-[13px] sm:text-[16px] transition duration-200"
               >
                 <span className="whitespace-nowrap">Don&apos;t have an account?</span>{' '}
                 <span className="font-semibold text-brand hover:text-brand-600 transition-colors ml-1">Sign Up</span>
