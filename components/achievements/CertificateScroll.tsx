@@ -71,7 +71,7 @@ export default function CertificateScroll({
       </div>
 
       {/* Action Area Below Scroll */}
-      <div className="mt-6 flex flex-col items-center gap-3">
+      <div className="mt-4 flex flex-col items-center gap-3">
         <div className="text-center mb-1">
           <h3 className={`text-lg font-black ${isLocked ? "text-gray-400" : "text-gray-900"}`}>{name}</h3>
           {isLocked && <p className="text-xs font-bold text-gray-400 mt-1 italic">أكمل المهام لفتح الشهادة</p>}
@@ -80,12 +80,12 @@ export default function CertificateScroll({
         <Button
           onClick={onDownload}
           disabled={isLocked || isDownloading}
-          className={`h-12 px-8 rounded-full font-black text-sm flex items-center gap-2 transition-all shadow-lg border-b-4 tracking-tight ${isLocked
-              ? "bg-gray-100 text-gray-300 border-none opacity-50"
-              : "bg-[#35AB4E] hover:bg-[#2f9c46] text-white border-[#298E3E] active:border-b-0 active:translate-y-1"
+          className={`h-10 px-4 w-fit rounded-full font-black text-xs flex items-center gap-1.5 transition-all shadow-lg border-b-4 tracking-tight ${isLocked
+            ? "bg-gray-100 text-gray-300 border-none opacity-50"
+            : "bg-[#35AB4E] hover:bg-[#2f9c46] text-white border-[#298E3E] active:border-b-0 active:translate-y-1"
             }`}
         >
-          {isDownloading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
+          {isDownloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
           <span>تحميل الشهادة</span>
         </Button>
       </div>
