@@ -14,9 +14,6 @@ const navItems = [
   { href: '/student/units', label: 'الوحدات', Icon: BookCheck },
   { href: '/student/leaderboard', label: 'المتصدرين', Icon: Trophy },
   { href: '/student/achievements', label: 'الإنجازات', Icon: Medal },
-  { href: '/student/reports', label: 'إصدار التقرير', Icon: FileBarChart },
-  //{ href: '/teacher', label: 'لوحة المعلم', Icon: Users },
-  { href: '/student/level', label: 'مستوى الطلاب', Icon: Award },
   { href: '/student/account', label: 'حساب المستخدم', Icon: User },
 ];
 

@@ -392,18 +392,27 @@ export interface DashboardMetrics {
     sessionsCompleted: number;
     timeSpent: number;
     averageScore: number | null;
+    pronunciationScore: number | null;
+    accuracyScore: number | null;
+    fluencyScore: number | null;
   };
   weekly: {
     week: string;
     sessionsCompleted: number;
     timeSpent: number;
     averageScore: number | null;
+    pronunciationScore: number | null;
+    accuracyScore: number | null;
+    fluencyScore: number | null;
   };
   monthly: {
     month: string;
     sessionsCompleted: number;
     timeSpent: number;
     averageScore: number | null;
+    pronunciationScore: number | null;
+    accuracyScore: number | null;
+    fluencyScore: number | null;
   };
 }
 

@@ -436,7 +436,6 @@ export default function ScenarioPage() {
   return (
     <div className="top-4 h-screen flex flex-col md:pb-0 pb-8 w-full md:px-8 px-8" dir="rtl">
       <audio ref={audioPlayerRef} className="hidden" />
-
       <div className="mt-4">
         <ProgressBar
           unit={sessionUtils.getCurrentTopic()?.chapter?.name || ""}
@@ -448,43 +447,164 @@ export default function ScenarioPage() {
           }}
         />
       </div>
-
-      {/* Main Scrollable Content */}
-      <div className="flex-1 overflow-y-auto md:px-4 px-0 pb-4">
-        <div className="flex flex-col items-center justify-center space-y-6 pt-4">
+      <div className="flex-1 overflow-y-auto md:px-4 px-0 pb-24">
+        <div className="flex flex-col items-center justify-center space-y-6">
           {isLoadingScenario ? (
             <div className="flex flex-col items-center justify-center space-y-4 py-12">
               <Loader2 className="h-12 w-12 animate-spin text-green-500" />
               <div className="text-center">
-                <p className="text-lg font-medium text-gray-700">جاري تحميل السيناريو التالي...</p>
-                <p className="text-sm text-gray-500 mt-1">Loading next scenario...</p>
+                <p className="text-lg font-medium text-gray-700">
+                  جاري تحميل السيناريو التالي...
+                </p>
+                <p className="text-sm text-gray-500 mt-1">
+                  Loading next scenario...
+                </p>
               </div>
             </div>
           ) : (
-            currentScenario && (
-              <AudioSheikh
-                scenarioImageUrl={currentScenario.scenarioImageUrl}
-                arabicAudioUrl={currentScenario.arabicAudioUrl}
-                chineseAudioUrl={currentScenario.chineseAudioUrl}
-                targetPhraseChinese={currentScenario.targetPhraseChinese}
-                targetPhrasePinyin={currentScenario.targetPhrasePinyin}
-                onRecordingCompleted={handleRecordingCompleted}
-                onProgressUpdate={(p) => setAudioProgress(p)}
-                arabicCompleted={arabicCompleted}
-                chineseCompleted={chineseCompleted}
-                showChineseRecording={!currentScenario.isIntroduction}
-                showDiv={true}
-                imageWidth={360}
-                imageHeight={360}
-                forceStopAudio={isVideoModalOpen}
-                hasSubmittedSuccessfully={hasSubmittedSuccessfully}
-              />
-            )
+            <>
+              {currentScenario && (
+                <AudioSheikh
+                  scenarioImageUrl={currentScenario.scenarioImageUrl}
+                  arabicAudioUrl={currentScenario.arabicAudioUrl}
+                  chineseAudioUrl={currentScenario.chineseAudioUrl}
+                  targetPhraseChinese={currentScenario.targetPhraseChinese}
+                  targetPhrasePinyin={currentScenario.targetPhrasePinyin}
+                  onRecordingCompleted={handleRecordingCompleted}
+                  onProgressUpdate={(p) => setAudioProgress(p)}
+                  arabicCompleted={arabicCompleted}
+                  chineseCompleted={chineseCompleted}
+                  showChineseRecording={!currentScenario.isIntroduction}
+                  showDiv={true}
+                  imageWidth={360}
+                  imageHeight={360}
+                  forceStopAudio={isVideoModalOpen}
+                  hasSubmittedSuccessfully={hasSubmittedSuccessfully}
+                />
+              )}
+            </>
+          )}
+
+          {!isLoadingScenario && (
+            <>
+              {!currentScenario?.isIntroduction && (
+                <div className="w-full flex justify-center items-center py-4 sm:py-6 md:py-8">
+                  <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 w-full max-w-full overflow-hidden">
+
+                    {recordedAudio ? (
+                      <>
+                        {/* Playback Controls with Waveform */}
+                        <div className="flex flex-row gap-3 md:gap-3 flex-row-reverse items-center justify-center px-2">
+                          <Image
+                            src="/images/audioWave.png"
+                            alt="Waveform"
+                            width={310}
+                            height={27}
+                            className="max-w-[150px] xs:max-w-[150px] sm:max-w-[200px] md:max-w-[310px] h-10 sm:h-10 md:h-12"
+                          />
+                          <button
+                            onClick={handlePlayClick}
+                            className="rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 active:border-b-0 active:translate-y-[2px] flex-shrink-0"
+                            title={isPlaying ? "إيقاف" : "تشغيل"}
+                          >
+                            {isPlaying ? (
+                              <Image
+                                src="/images/pause.svg"
+                                alt="Pause"
+                                width={48}
+                                height={48}
+                                className="w-12 h-12 sm:w-12 sm:h-12 md:w-12 md:h-12"
+                              />
+                            ) : (
+                              <Image
+                                src="/images/play.svg"
+                                alt="Play"
+                                width={48}
+                                height={48}
+                                className="w-12 h-12 sm:w-12 sm:h-12 md:w-12 md:h-12"
+                              />
+                            )}
+                          </button>
+                          <button
+                            onClick={handleDiscardClick}
+                            className="rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 flex-shrink-0"
+                            title="حذف التسجيل"
+                          >
+                            <Image
+                              src="/images/cross.svg"
+                              alt="Discard"
+                              width={48}
+                              height={48}
+                              className="w-12 h-12 sm:w-12 sm:h-12 md:w-12 md:h-12"
+                            />
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-full max-w-full px-2">
+                          <div className="w-full">
+                            {
+                              <button
+                                onClick={handleRecordClick}
+                                disabled={!arabicCompleted}
+                                className={`relative rounded-full flex items-center justify-center transition-all duration-300 w-full ${!arabicCompleted
+                                  ? " cursor-not-allowed"
+                                  : isRecording
+                                    ? ""
+                                    : arabicCompleted && chineseCompleted && !recordedAudio && !hasSubmittedSuccessfully
+                                      ? "animate-guide-glow"
+                                      : "active:scale-95 active:border-b-0 active:translate-y-[2px]"
+                                  }`}
+                                title={
+                                  !arabicCompleted
+                                    ? "الرجاء الاستماع للصوت أولاً"
+                                    : isRecording
+                                      ? "انقر لإيقاف التسجيل"
+                                      : "انقر للتسجيل"
+                                }
+                              >
+                                {isRecording ? (
+                                  <div className="flex flex-row gap-2 md:gap-3 flex-row-reverse items-center justify-center w-full">
+                                    <div className="flex-1 min-w-0 max-w-[150px] xs:max-w-[150px] sm:max-w-[200px] md:max-w-[310px] h-10 sm:h-10 md:h-12 flex items-center">
+                                      <AnimatedWaveform />
+                                    </div>
+                                    <div className="w-12 h-12 md:w-12 md:h-12 rounded-full bg-white border-[3px] border-[#FFCB08] flex items-center justify-center shadow-lg animate-pulse flex-shrink-0">
+                                      <Square className="w-6 h-6 text-red-500" />
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="flex flex-row gap-2 md:gap-3 flex-row-reverse items-center justify-center w-full">
+                                    <Image
+                                      src="/images/audioWave.png"
+                                      alt="Record"
+                                      width={310}
+                                      height={67}
+                                      className="max-w-[150px] xs:max-w-[150px] sm:max-w-[200px] md:max-w-[310px] w-full h-10 sm:h-10 md:h-12 flex-1 min-w-0"
+                                    />
+                                    <Image
+                                      src="/images/audio.svg"
+                                      alt="Record"
+                                      width={48}
+                                      height={48}
+                                      className="w-14 h-14 sm:w-10 sm:h-10 md:w-12 md:h-12 flex-shrink-0"
+                                    />
+                                  </div>
+                                )}
+                              </button>
+                            }
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
-
         {showFeedbackWidget && (
-          <div className="w-full max-w-4xl mx-auto px-4 mt-8">
+          <div className="w-full max-w-4xl mx-auto px-4 mb-6">
             {(() => {
               const score = feedbackScore || 0;
               const config = score >= 80 ? {
@@ -510,135 +630,68 @@ export default function ScenarioPage() {
                     {config.icon}
                   </div>
                   <div className="flex-1 text-right">
-                    <p className={`text-sm font-bold ${config.label} mb-1`}>تعليق</p>
-                    <p className="text-base text-gray-800 leading-relaxed font-nunito">{feedback}</p>
+                    <p className={`text-sm font-almarai-bold ${config.label} mb-1`}>تعليق</p>
+                    <p className="text-base text-gray-800 leading-relaxed font-almarai">{feedback}</p>
                   </div>
                 </div>
               );
             })()}
           </div>
         )}
-      </div>
+        <div
+          className="px-4 pb-20 md:pb-24"
+        >
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 w-full max-w-full mx-auto">
+            {/* Yellow User Guide Button */}
+            <Button
+              onClick={() => setIsVideoModalOpen(true)}
+              className="w-full bg-[#FFCB08] h-14 hover:bg-[#FFCB08] text-[#1F1F1F] py-4 rounded-2xl flex items-center justify-center gap-2 md:gap-3 text-sm md:text-lg font-almarai-bold border-b-[4px] border-b-[#DEA407] shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all font-almarai"
+            >
+              <BookOpen className="h-4 w-4 md:h-5 md:w-5 stroke-[2.5px] flex-shrink-0" />
+              <span>دليل المستخدم</span>
+            </Button>
 
-      {/* Sticky Action Footer */}
-      <div className="sticky bottom-0 bg-white/90 backdrop-blur-md pt-4 pb-8 px-4 z-20 space-y-4 border-t border-gray-100">
-        {!isLoadingScenario && currentScenario && !currentScenario.isIntroduction && (
-          <div className="w-full flex justify-center items-center">
-            <div className="flex items-center justify-center gap-4 w-full max-w-md">
-              {recordedAudio ? (
-                <div className="flex flex-row gap-3 items-center justify-center w-full bg-gray-50 p-2 rounded-2xl border border-gray-100">
-                  <Image
-                    src="/images/audioWave.png"
-                    alt="Waveform"
-                    width={200}
-                    height={27}
-                    className="flex-1 h-10 object-contain"
-                  />
-                  <button
-                    onClick={handlePlayClick}
-                    className="w-12 h-12 rounded-full flex items-center justify-center bg-white shadow-sm hover:scale-110 active:scale-95 transition-all"
-                  >
-                    <Image
-                      src={isPlaying ? "/images/pause.svg" : "/images/play.svg"}
-                      alt={isPlaying ? "Pause" : "Play"}
-                      width={32}
-                      height={32}
-                    />
-                  </button>
-                  <button
-                    onClick={handleDiscardClick}
-                    className="w-12 h-12 rounded-full flex items-center justify-center bg-white shadow-sm hover:scale-110 active:scale-95 transition-all"
-                  >
-                    <Image
-                      src="/images/cross.svg"
-                      alt="Discard"
-                      width={32}
-                      height={32}
-                    />
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={handleRecordClick}
-                  disabled={!arabicCompleted}
-                  className={`relative rounded-full flex items-center justify-center transition-all duration-300 w-full h-16 ${!arabicCompleted
-                      ? "opacity-50 cursor-not-allowed bg-gray-200"
-                      : "bg-white border-2 border-brand-100 hover:border-brand-300 shadow-sm px-6"
-                    }`}
-                >
-                  {isRecording ? (
-                    <div className="flex flex-row gap-4 items-center justify-center w-full">
-                      <div className="flex-1 h-12 flex items-center">
-                        <AnimatedWaveform />
-                      </div>
-                      <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center animate-pulse">
-                        <Square className="w-5 h-5 text-red-500 fill-red-500" />
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex flex-row gap-4 items-center justify-between w-full">
-                      <Image
-                        src="/images/audioWave.png"
-                        alt="Wave"
-                        width={150}
-                        height={40}
-                        className="h-8 object-contain opacity-30"
-                      />
-                      <div className="flex items-center gap-3">
-                        <span className="text-brand font-bold">ابدأ التسجيل</span>
-                        <Image
-                          src="/images/audio.svg"
-                          alt="Record"
-                          width={40}
-                          height={40}
-                          className="w-10 h-10"
-                        />
-                      </div>
-                    </div>
-                  )}
-                </button>
+            {/* Grey Feedback Button */}
+            <Button
+              onClick={() => setIsFeedbackOpen(true)}
+              disabled={!lastAttemptScores}
+              className="w-full bg-[#E5E5E5] h-14 hover:bg-[#E5E5E5] text-[#1F1F1F] py-4 rounded-2xl flex items-center justify-center gap-2 md:gap-3 text-sm md:text-lg font-almarai-bold border-b-[4px] border-b-[#C4C4C4] disabled:opacity-50 disabled:border-none shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all font-almarai"
+            >
+              <div className='relative flex-shrink-0'>
+                {lastAttemptScores && <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>}
+                <MessageSquare className="h-4 w-4 md:h-5 md:w-5 stroke-[2.5px]" />
+              </div>
+              <span>تغذية راجعة</span>
+            </Button>
+
+
+            {/* Green Continue Button */}
+            <Button
+              onClick={handleContinueClick}
+              disabled={
+                (!currentScenario?.isIntroduction && !recordedAudio && !hasSubmittedSuccessfully) ||
+                isSubmitting ||
+                (!currentScenario?.isIntroduction && !arabicCompleted)
+              }
+              className="w-full col-span-2 md:col-span-1 bg-[#35AB4E] h-14 hover:bg-[#35AB4E] text-white py-4 flex items-center justify-center gap-3 text-lg font-almarai-bold rounded-2xl border-b-[4px] border-b-[#298E3E] disabled:opacity-50 disabled:cursor-not-allowed disabled:border-none shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all font-almarai"
+            >
+              <span className="truncate">
+                {isSubmitting
+                  ? "جاري الإرسال..."
+                  : hasSubmittedSuccessfully
+                    ? "استمر"
+                    : "إرسال"}
+              </span>
+              {!isSubmitting && (
+                <ChevronLeft className="h-6 w-6" />
               )}
-            </div>
+              {isSubmitting && <Loader2 className="h-5 w-5 animate-spin" />}
+            </Button>
           </div>
-        )}
-
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 w-full max-w-4xl mx-auto">
-          <Button
-            onClick={() => setIsVideoModalOpen(true)}
-            className="w-full bg-[#FFCB08] h-14 hover:bg-[#FFCB08] text-[#1F1F1F] rounded-2xl flex items-center justify-center gap-2 text-base font-bold border-b-[4px] border-b-[#E5B607] shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all font-nunito"
-          >
-            <BookOpen className="h-5 w-5 flex-shrink-0" />
-            <span className="truncate">دليل المستخدم</span>
-          </Button>
-
-          <Button
-            onClick={() => setIsFeedbackOpen(true)}
-            disabled={!lastAttemptScores}
-            className="w-full bg-[#E5E5E5] h-14 hover:bg-[#E5E5E5] text-[#1F1F1F] rounded-2xl flex items-center justify-center gap-2 text-base font-bold border-b-[4px] border-b-[#C4C4C4] disabled:opacity-50 disabled:border-none shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all font-nunito"
-          >
-            <div className="relative flex-shrink-0">
-              {lastAttemptScores && <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />}
-              <MessageSquare className="h-5 w-5" />
-            </div>
-            <span className="truncate">تغذية راجعة</span>
-          </Button>
-
-          <Button
-            onClick={handleContinueClick}
-            disabled={
-              isSubmitting ||
-              (!currentScenario?.isIntroduction && !recordedAudio && !hasSubmittedSuccessfully)
-            }
-            className="w-full col-span-2 md:col-span-1 bg-brand h-14 hover:bg-brand-600 text-white flex items-center justify-center gap-3 text-lg font-black rounded-2xl border-b-[4px] border-b-brand-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:border-none shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all font-nunito"
-          >
-            <span className="truncate">
-              {isSubmitting ? "جاري الإرسال..." : hasSubmittedSuccessfully ? "استمر" : "إرسال"}
-            </span>
-            {!isSubmitting && <ChevronLeft className="h-6 w-6" />}
-            {isSubmitting && <Loader2 className="h-5 w-5 animate-spin" />}
-          </Button>
         </div>
       </div>
+
+
 
       <FeedbackPopup
         isOpen={isFeedbackOpen}

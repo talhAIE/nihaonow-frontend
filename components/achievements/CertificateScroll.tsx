@@ -70,24 +70,47 @@ export default function CertificateScroll({
         )}
       </div>
 
-      {/* Action Area Below Scroll */}
-      <div className="mt-4 flex flex-col items-center gap-3">
-        <div className="text-center mb-1">
-          <h3 className={`text-lg font-black ${isLocked ? "text-gray-400" : "text-gray-900"}`}>{name}</h3>
-          {isLocked && <p className="text-xs font-bold text-gray-400 mt-1 italic">أكمل المهام لفتح الشهادة</p>}
-        </div>
-
-        <Button
-          onClick={onDownload}
-          disabled={isLocked || isDownloading}
-          className={`h-10 px-4 w-fit rounded-full font-black text-xs flex items-center gap-1.5 transition-all shadow-lg border-b-4 tracking-tight ${isLocked
-            ? "bg-gray-100 text-gray-300 border-none opacity-50"
-            : "bg-[#35AB4E] hover:bg-[#2f9c46] text-white border-[#298E3E] active:border-b-0 active:translate-y-1"
-            }`}
+      <div className="mt-8 px-4">
+        <div
+          onClick={(!isLocked && !isDownloading) ? onDownload : undefined}
+          className={`bg-white border border-[#E5E5E5] rounded-[20px] px-5 py-3.5 flex items-center justify-between shadow-sm w-full min-h-[64px] transition-all ${isLocked ? "opacity-75 cursor-not-allowed" : isDownloading ? "opacity-50 cursor-wait" : "hover:border-slate-300 cursor-pointer active:scale-[0.99]"}`}
         >
-          {isDownloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-          <span>تحميل الشهادة</span>
-        </Button>
+          {/* Left: Download Icon (Only for Earned) */}
+          <div className="flex items-center">
+            {!isLocked && (
+              <div className="p-2.5 bg-slate-50 rounded-xl transition-colors text-slate-600">
+                {isDownloading ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <Download className="w-5 h-5" />
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Right: Name + Icon */}
+          <div className="flex items-center gap-2.5">
+            <h3 className={`text-base sm:text-lg font-almarai-bold ${isLocked ? "text-gray-400" : "text-[#4B4B4B]"}`}>
+              {name}
+            </h3>
+
+            {/* Category Icons based on name/status */}
+            {!isLocked ? (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-600">
+                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                <path d="M5 3v4" /><path d="M3 5h4" /><path d="M21 17v4" /><path d="M19 19h4" />
+              </svg>
+            ) : name.includes("الخطوات الأولى") ? (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M21 8V5a2 2 0 0 0-2-2h-3" /><path d="M3 16v3a2 2 0 0 0 2 2h3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" /><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" />
+              </svg>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+              </svg>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

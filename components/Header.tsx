@@ -40,7 +40,7 @@ export default function Header() {
       setTimeout(() => {
         try {
           // This will be handled by the login page loading
-        } catch (err) {}
+        } catch (err) { }
       }, 100);
     } catch (err) {
       console.warn("Logout failed (context logout):", err);
@@ -70,8 +70,6 @@ export default function Header() {
     { href: '/student/units', label: 'الوحدات', Icon: BookCheck },
     { href: '/student/achievements', label: 'الإنجازات', Icon: TrophyIcon },
     { href: '/student/leaderboard', label: 'المتصدرين', Icon: Medal },
-    { href: '/student/reports', label: 'التقارير', Icon: FileBarChart },
-    { href: '/student/level', label: 'مستوى الطلاب', Icon: Award },
     { href: '/student/account', label: 'حساب المستخدم', Icon: User },
   ];
 
@@ -162,9 +160,9 @@ export default function Header() {
                 }}
                 className="w-full flex items-center justify-center gap-4 px-4 py-3 rounded-[10px] bg-[#FBD4D3] text-[#8D1716] font-semibold"
               >
-               
+
                 <span>تسجيل الخروج</span>
-                 <LogOut size={18} />
+                <LogOut size={18} />
               </button>
             </div>
           </div>

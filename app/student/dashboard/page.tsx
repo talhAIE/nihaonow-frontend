@@ -152,7 +152,7 @@ export default function Page() {
             <div className="max-w-full mx-auto px-2 sm:px-6">
                 <div className="mt-4">&nbsp;</div>
                 <h1 className="text-right font-almarai-extrabold-28 mb-8 hidden sm:block">مرحبًا بعودتك يا <span className="text-red-600">{userName}</span></h1>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 mb-8">
                     {/* Level Progress */}
                     <div className="bg-white rounded-[24px] lg:rounded-[32px] border border-slate-100 p-0 shadow-sm flex flex-col sm:flex-row-reverse items-stretch overflow-hidden h-full">
@@ -162,11 +162,11 @@ export default function Page() {
                             <div className="absolute top-6 right-8 z-10 w-10 opacity-80">
                                 <Image src="/images/clouddd.png" alt="cloud" width={40} height={20} className="object-contain w-auto h-auto" />
                             </div>
-                            
-                            <Image 
-                                src="/images/Object.png" 
-                                alt="Level Decoration" 
-                                width={110} 
+
+                            <Image
+                                src="/images/Object.png"
+                                alt="Level Decoration"
+                                width={110}
                                 height={110}
                                 priority
                                 className="object-contain relative z-0 mt-4 w-auto h-auto"
@@ -182,22 +182,22 @@ export default function Page() {
                                 <p className="text-[#35AB4E] font-bold text-sm mb-4">
                                     {`مبتدئ`}
                                 </p>
-                                
-                                <button 
-                                    onClick={goToStudentLevel}
-                                    className="h-10 px-4 bg-[#35AB4E] hover:bg-[#2f9c46] text-white text-sm font-bold rounded-lg border-b-2 border-[#20672F] flex items-center gap-2 transition active:translate-y-[2px] active:border-b-0"
-                                >
-                                     <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" strokeWidth={3} />
-                                     <span>مستواي</span>
-                                </button>
+
+                                <div className="h-10 px-4 bg-[#35AB4E] text-white text-sm font-bold rounded-lg border-b-2 border-[#20672F] flex items-center gap-2 w-fit">
+                                    <ChevronLeft className="w-4 h-4" strokeWidth={3} />
+                                    <span>مستواي</span>
+                                </div>
                             </div>
-                            
+
                             {/* Level Icon/Placeholder Square from design */}
-                            <div className="w-20 h-20 lg:w-28 lg:h-28 bg-[#F0FDF4] rounded-[24px] flex-shrink-0 flex flex-col items-center justify-center border-2 border-green-50 shadow-inner">
-                                <span className="text-[10px] lg:text-xs font-black text-[#35AB4E] uppercase tracking-wider mb-0.5">المستوى</span>
-                                <span className="text-3xl lg:text-5xl font-black text-[#35AB4E] leading-none">
-                                    {userLevel?.level.level || level || '1'}
-                                </span>
+                            <div className="relative w-20 h-20 lg:w-28 lg:h-28 bg-[#F0FDF4] rounded-[24px] flex-shrink-0 flex flex-col items-center justify-center">
+                                <Image
+                                    src="/images/PANDA.png"
+                                    alt="decor"
+                                    width={70}
+                                    height={56}
+                                    className="object-contain w-auto h-auto"
+                                />
                             </div>
                         </div>
                     </div>
@@ -209,7 +209,7 @@ export default function Page() {
                         </div>
 
                         <div className="w-full text-right mb-2">
-                             <h4 className="font-almarai-extrabold text-[#4B4B4B] text-sm lg:text-base">كلمة الأسبوع</h4>
+                            <h4 className="font-almarai-extrabold text-[#4B4B4B] text-sm lg:text-base">كلمة الأسبوع</h4>
                         </div>
 
                         <div className="flex-1 flex flex-col items-center justify-center w-full">
@@ -219,7 +219,7 @@ export default function Page() {
                                     <p className="text-slate-600 font-bold text-lg mb-1">{wordOfTheWeek?.pinyin || "Nǐ hǎo"}</p>
                                     <p className="text-slate-400 text-sm">{wordOfTheWeek?.english || "Hello"}</p>
                                 </div>
-                                
+
                                 <button
                                     onClick={handlePronunciationPlay}
                                     disabled={!wordOfTheWeek?.audioUrl}
@@ -233,10 +233,10 @@ export default function Page() {
                                 </button>
                             </div>
 
-                            <button 
+                            <button
                                 onClick={async () => {
                                     if (!wordOfTheWeek?.id) return;
-                                    
+
                                     try {
                                         // Fetch topics for this word
                                         const topics = await wordOfWeekApi.getWordTopics();
@@ -258,29 +258,27 @@ export default function Page() {
                                 }}
                                 className="h-10 px-4 bg-[#35AB4E] hover:bg-[#2f9c46] text-white text-sm font-bold rounded-lg border-b-2 border-[#20672F] flex items-center gap-2 transition active:translate-y-[2px] active:border-b-0"
                             >
-                                 <span>ابدأ التعلم</span>
-                                 <div className="w-5 h-5 bg-white/20 rounded-md flex items-center justify-center">
-                                     <Play className="w-3 h-3 text-white fill-current ml-0.5" />
-                                 </div>
+                                <span>ابدأ التعلم</span>
+                                <div className="w-5 h-5 bg-white/20 rounded-md flex items-center justify-center">
+                                    <Play className="w-3 h-3 text-white fill-current ml-0.5" />
+                                </div>
                             </button>
                         </div>
                     </div>
                 </div>
 
                 <div className="mt-4 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-8 items-stretch">
-                    <div className="flex flex-col w-full col-span-2 sm:col-span-2 lg:col-span-1 h-auto sm:h-56 md:h-60 lg:h-64 px-4 py-6 gap-6 rounded-2xl border-2 border-slate-200 bg-white shadow-lg overflow-hidden">
-                        <div className="text-right flex md:flex-row flex-col flex-shrink-0 justify-between items-start md:items-center w-full gap-3">
-                            <div>
-                                <h4 className="font-almarai-extrabold text-base">المقاييس الرئيسية</h4>
-                            </div>
+                    <div className="flex flex-col w-full col-span-2 sm:col-span-2 lg:col-span-1 h-auto sm:h-64 md:h-72 lg:h-80 px-6 py-6 gap-6 rounded-[24px] border border-slate-100 bg-white shadow-sm overflow-hidden">
+                        <div className="flex flex-row items-center justify-between w-full">
+                            <h4 className="font-almarai-extrabold text-[#4B4B4B] text-base lg:text-lg">المقاييس الرئيسية</h4>
                             <div className="flex gap-2">
-                                {tabs.map((tab) => (
+                                {tabs.filter(t => t.key !== 'daily').map((tab) => (
                                     <button
                                         key={tab.key}
                                         onClick={() => setActive(tab.key)}
-                                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${active === tab.key
-                                            ? 'bg-[#35AB4E] text-white'
-                                            : 'bg-[#E5E5E5] text-slate-700'
+                                        className={`px-6 py-1.5 rounded-[8px] text-sm font-bold transition-all border-2 ${active === tab.key
+                                            ? 'bg-[#35AB4E] border-[#35AB4E] text-white shadow-[0_2px_0_0_#20672F]'
+                                            : 'bg-white border-[#4B4B4B] text-[#4B4B4B]'
                                             }`}
                                     >
                                         {tab.label}
@@ -297,21 +295,24 @@ export default function Page() {
                             const chartData = [
                                 {
                                     name: 'النطق',
-                                    value: currentMetrics?.averageScore || 0,
-                                    color: '#FF9800',
-                                    label: `${Math.round(currentMetrics?.averageScore || 0)}%`
+                                    value: currentMetrics?.pronunciationScore || 0,
+                                    color: '#F98D00',
+                                    labelColor: '#F98D00',
+                                    label: `${Math.round(currentMetrics?.pronunciationScore || 0)}%`
                                 },
                                 {
                                     name: 'الطلاقة',
-                                    value: currentMetrics?.averageScore || 0,
-                                    color: '#D05872',
-                                    label: `${Math.round(currentMetrics?.averageScore || 0)}%`
+                                    value: currentMetrics?.fluencyScore || 0,
+                                    color: '#CA495A',
+                                    labelColor: '#00AEEF',
+                                    label: `${Math.round(currentMetrics?.fluencyScore || 0)}%`
                                 },
                                 {
                                     name: 'الدقة',
-                                    value: currentMetrics?.averageScore || 0,
+                                    value: currentMetrics?.accuracyScore || 0,
                                     color: '#8BD9B7',
-                                    label: `${Math.round(currentMetrics?.averageScore || 0)}%`
+                                    labelColor: '#35AB4E',
+                                    label: `${Math.round(currentMetrics?.accuracyScore || 0)}%`
                                 }
                             ];
                             return <ArabicStatsChart data={chartData} />;
