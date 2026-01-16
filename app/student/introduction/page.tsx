@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, BookOpen, Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, BookOpen, Loader2 } from "lucide-react";
 import Header from "@/components/Header";
 import VideoModal from "@/components/VideoModal";
 import LanguageLearningInterface from "@/components/AudioSheikh";
@@ -28,7 +28,7 @@ export default function SheikhPage() {
   const [progress, setProgress] = useState(0);
   const [skipIntro, setSkipIntro] = useState(false);
 
-  const { goToStudentScenario } = useNavigation();
+  const { goToStudentScenario, goToStudentUnits } = useNavigation();
   const searchParams = useSearchParams();
   const topicIdParam = searchParams.get("topicId");
 
@@ -61,6 +61,11 @@ export default function SheikhPage() {
 
   const handleUserGuideClick = () => {
     setIsVideoModalOpen(true);
+  };
+
+  const handleBackClick = () => {
+    // Navigate back to units page to avoid skipping scenarios
+    goToStudentUnits();
   };
 
   // intro shows only Arabic recording — change this if the intro scenario requires Chinese as well
@@ -180,7 +185,17 @@ export default function SheikhPage() {
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full px-4 max-w-full mx-auto">
+        <div className="grid grid-cols-3 gap-3 sm:gap-4 w-full px-4 max-w-full mx-auto">
+          <Button
+            variant="outline"
+            onClick={handleBackClick}
+            className="w-full bg-[#E5E5E5] hover:bg-[#E5E5E5] border-none border-b-[3px] border-b-[#B0B0B0] hover:text-[#282828] text-[#282828]
+            h-14 pt-4 pb-4 flex items-center justify-center gap-2.5 text-base sm:text-lg font-almarai-bold rounded-xl shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all"
+          >
+            <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+            <span className="truncate">رجوع</span>
+          </Button>
+
           <Button
             variant="outline"
             onClick={handleUserGuideClick}

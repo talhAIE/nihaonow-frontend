@@ -2,7 +2,6 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Lock, CheckCircle, Loader2, AlertCircle } from "lucide-react";
-import Header from "@/components/Header";
 import { useNavigation } from '@/lib/navigation';
 import { useChapters } from "@/hooks/useChapters";
 import { ChapterUI } from "@/lib/api";

@@ -44,6 +44,7 @@ export default function AchievementsPage() {
   const [syncing, setSyncing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'awards' | 'certificates'>('awards');
+  const [claimedAchievements, setClaimedAchievements] = useState<Set<string>>(new Set());
 
   // State for frontend PDF generation
   const [certToGenerate, setCertToGenerate] = useState<{
@@ -190,14 +191,23 @@ export default function AchievementsPage() {
       const authUserId = state.authUser?.id;
       if (!authUserId) return;
 
+      // Optimistic update - add to local state immediately
+      setClaimedAchievements(prev => new Set(prev).add(badgeKey));
+
       await achievementsApi.claimBadge(Number(authUserId), badgeKey);
       toast({
         title: "تم استلام المكافأة!",
         description: `لقد حصلت على مكافأة ${badgeName} بنجاح.`,
       });
-      fetchData(); // Refresh data
+      // Note: Removed fetchData() call to prevent full page reload
     } catch (err: any) {
       console.error("Error claiming badge:", err);
+      // Revert optimistic update on error
+      setClaimedAchievements(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(badgeKey);
+        return newSet;
+      });
       toast({
         title: "فشل استلام المكافأة",
         description: err.response?.data?.message || "حدث خطأ أثناء استلام المكافأة.",
@@ -296,7 +306,7 @@ export default function AchievementsPage() {
           <div className="bg-white rounded-[32px] sm:rounded-[48px] p-4 sm:p-10 shadow-xl border-4 sm:border-8 border-[#F3F4F6]">
             {/* Unified Awards Map for all viewports */}
             <div className="w-full">
-              <AwardsMap achievements={mapData} onClaim={handleClaimBadge} />
+              <AwardsMap achievements={mapData} onClaim={handleClaimBadge} claimedAchievements={claimedAchievements} />
             </div>
           </div>
         </div>

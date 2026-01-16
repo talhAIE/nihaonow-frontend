@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useCallback } from "react";
 import Image from "next/image";
 import { CheckCircle2, Lock, Star } from "lucide-react";
 
@@ -18,6 +18,7 @@ interface AchievementNode {
 interface AwardsMapProps {
   achievements: AchievementNode[];
   onClaim?: (key: string, name: string) => void;
+  claimedAchievements?: Set<string>; // Add prop for claimed achievements
 }
 
 interface MapNode {
@@ -79,7 +80,21 @@ const TRI_PATH_NODES: MapNode[] = [
   { x: 90, mdX: 90, y: 84, pathId: "right", variant: "green", size: "medium" },
 ];
 
-export default function AwardsMap({ achievements, onClaim }: AwardsMapProps) {
+export default function AwardsMap({ achievements, onClaim, claimedAchievements = new Set() }: AwardsMapProps) {
+  // Local state for claimed achievements to show immediate UI feedback
+  const [localClaimed, setLocalClaimed] = useState<Set<string>>(claimedAchievements);
+
+  // Optimistic claim handler - updates UI immediately
+  const handleOptimisticClaim = useCallback((key: string, name: string) => {
+    if (localClaimed.has(key)) return; // Prevent double claims
+    
+    // Update local state immediately for instant UI feedback
+    setLocalClaimed(prev => new Set(prev).add(key));
+    
+    // Call parent handler for backend update
+    onClaim?.(key, name);
+  }, [localClaimed, onClaim]);
+
   // Find the last earned achievement's position
   const earnedIndices = achievements
     .map((a, i) => (a.status === "earned" ? i : -1))
@@ -94,6 +109,12 @@ export default function AwardsMap({ achievements, onClaim }: AwardsMapProps) {
     achievement: AchievementNode | null
   ) => {
     const isLocked = !achievement || achievement.status === "locked";
+
+    const lockedAssetByPath: Record<MapNode["pathId"], string> = {
+      left: "/achievements/LockedRed 1.png",
+      center: "/achievements/LockedYellow 1.png",
+      right: "/achievements/LockedGreen 1.png",
+    };
 
     switch (node.variant) {
       case "read":
@@ -329,8 +350,8 @@ export default function AwardsMap({ achievements, onClaim }: AwardsMapProps) {
 
             <div
               onClick={() => {
-                if (isEarned && !achievement?.rewardClaimed && onClaim) {
-                  onClaim(achievement.key, achievement.name);
+                if (isEarned && !achievement?.rewardClaimed && !localClaimed.has(achievement.key)) {
+                  handleOptimisticClaim(achievement.key, achievement.name);
                 }
               }}
               className={`relative flex items-center justify-center transition-all duration-500 hover:scale-110 active:scale-95 ${sizeClasses} ${
@@ -352,12 +373,6 @@ export default function AwardsMap({ achievements, onClaim }: AwardsMapProps) {
                       : "grayscale opacity-60"
                   }`}
                 />
-                {/* Star overlay for star variants - Always show for testing */}
-                {(node.variant.includes('star') || node.variant === 'star_gold') && (
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-                    <Star className={`w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 ${isEarned ? "text-yellow-300 fill-yellow-300 drop-shadow-lg animate-pulse" : "text-gray-400 fill-gray-400 opacity-50"}`} />
-                  </div>
-                )}
               </div>
 
               {isEarned && (

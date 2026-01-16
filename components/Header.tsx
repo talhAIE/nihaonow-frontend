@@ -76,7 +76,7 @@ export default function Header() {
   return (
     <div className="px-4 py-4 md:px-6" dir={dir}>
 
-      <div className="lg:hidden">
+      <div className="xl:hidden">
         <div
           className="flex items-center justify-between h-[84px] px-[16px] py-[14px] rounded-[13px] bg-[#35AB4E]"
           style={{ boxShadow: "0px 4px 0px 0px #20672F" }}
@@ -120,7 +120,7 @@ export default function Header() {
 
         {/* Mobile dropdown panel */}
         <div
-          className={`fixed inset-0 z-30 lg:hidden ${mobileMenuOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
+          className={`fixed inset-0 z-30 xl:hidden ${mobileMenuOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
           aria-hidden={!mobileMenuOpen}
         >
           <div
@@ -168,7 +168,7 @@ export default function Header() {
           </div>
         </div>
       </div>
-      <div className="hidden lg:flex items-center justify-between">
+      <div className="hidden xl:flex items-center justify-between">
         <div className="flex items-center gap-3">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
