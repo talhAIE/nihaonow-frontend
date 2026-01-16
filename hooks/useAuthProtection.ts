@@ -7,6 +7,7 @@ import { useNavigation } from '@/lib/navigation';
 interface UseAuthProtectionOptions {
   redirectTo?: string;
   allowedRoles?: string[];
+  unauthorizedRedirectTo?: string;
 }
 
 /**
@@ -25,7 +26,7 @@ interface UseAuthProtectionOptions {
 export function useAuthProtection(options: UseAuthProtectionOptions = {}) {
   const { goTo, goToLogin } = useNavigation();
   const { state } = useAppContext();
-  const { redirectTo } = options;
+  const { redirectTo, allowedRoles, unauthorizedRedirectTo } = options;
 
   useEffect(() => {
     // Only check after state is initialized
@@ -33,18 +34,39 @@ export function useAuthProtection(options: UseAuthProtectionOptions = {}) {
     const checkAuth = () => {
       if (!state.isAuthenticated) {
         redirectTo ? goTo(redirectTo) : goToLogin();
+        return;
+      }
+
+      if (allowedRoles && allowedRoles.length > 0) {
+        const userRole = String(state.authUser?.role || '').toLowerCase();
+        const normalizedAllowed = allowedRoles.map((r) => String(r).toLowerCase());
+        const isAllowed = normalizedAllowed.includes(userRole);
+
+        if (!isAllowed) {
+          if (unauthorizedRedirectTo) {
+            goTo(unauthorizedRedirectTo);
+          } else {
+            goToLogin();
+          }
+        }
       }
     };
 
     // Small delay to ensure AppContext has loaded
     const timer = setTimeout(checkAuth, 100);
     return () => clearTimeout(timer);
-  }, [state.isAuthenticated, redirectTo, goTo, goToLogin]);
+  }, [state.isAuthenticated, state.authUser, redirectTo, allowedRoles, unauthorizedRedirectTo, goTo, goToLogin]);
+
+  const userRole = String(state.authUser?.role || '').toLowerCase();
+  const normalizedAllowed = (allowedRoles || []).map((r) => String(r).toLowerCase());
+  const isAuthorized =
+    state.isAuthenticated && (normalizedAllowed.length === 0 || normalizedAllowed.includes(userRole));
 
   return {
     isAuthenticated: state.isAuthenticated,
     isLoading: !state.isInitialized, // Check initialization status
     user: state.authUser,
+    isAuthorized,
   };
 }
 

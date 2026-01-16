@@ -1,19 +1,24 @@
 "use client";
 
-import { Loader2 } from 'lucide-react';
+import { Download, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { reportsApi } from '@/lib/api';
 import { useSearchParams } from 'next/navigation';
 import './StudentReport.css';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 export default function StudentReportContent() {
     const searchParams = useSearchParams();
     const studentId = searchParams.get('studentId');
 
+    const reportRef = useRef<HTMLDivElement | null>(null);
+
     const [report, setReport] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [isDownloading, setIsDownloading] = useState(false);
 
     useEffect(() => {
         if (!studentId) {
@@ -66,10 +71,64 @@ export default function StudentReportContent() {
     const achievements = report.achievements || [];
     const certificates = report.certificates || [];
 
+    const downloadPdf = async () => {
+        if (!reportRef.current || isDownloading) return;
+        setIsDownloading(true);
+
+        try {
+            const canvas = await html2canvas(reportRef.current, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+            });
+
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'mm', 'a4');
+
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
+
+            const imgWidth = pageWidth;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            let heightLeft = imgHeight;
+            let position = 0;
+
+            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
+            heightLeft -= pageHeight;
+
+            while (heightLeft > 0) {
+                position -= pageHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
+                heightLeft -= pageHeight;
+            }
+
+            const safeName = String(report.username || 'report').trim() || 'report';
+            pdf.save(`${safeName}-report.pdf`);
+        } catch (err) {
+            console.error('Failed to generate PDF:', err);
+        } finally {
+            setIsDownloading(false);
+        }
+    };
+
     return (
-        <div className="report-container" dir="rtl">
+        <div className={`report-container ${isDownloading ? 'is-exporting' : ''}`} dir="rtl" ref={reportRef}>
             {/* HEADER */}
             <div className="report-header">
+                <div className="report-actions">
+                    <button
+                        type="button"
+                        className="report-download-btn"
+                        onClick={downloadPdf}
+                        disabled={isDownloading}
+                        aria-label="Download PDF"
+                        title="تحميل PDF"
+                    >
+                        {isDownloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                    </button>
+                </div>
                 <svg width="84" height="84" viewBox="0 0 84 84" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect width="84" height="84" rx="42" fill="#DF929C" />
                     <path d="M51.6497 50.6251C51.5838 50.7391 51.4891 50.8338 51.3751 50.8997C51.261 50.9655 51.1316 51.0001 51 51.0001H33C32.8684 51 32.7391 50.9652 32.6252 50.8993C32.5113 50.8335 32.4168 50.7388 32.351 50.6248C32.2853 50.5108 32.2507 50.3815 32.2507 50.2499C32.2508 50.1183 32.2854 49.9891 32.3512 49.8751C33.779 47.4067 35.9793 45.6367 38.5472 44.7976C37.277 44.0415 36.2902 42.8893 35.7382 41.518C35.1862 40.1468 35.0997 38.6322 35.4918 37.207C35.8839 35.7818 36.733 34.5247 37.9087 33.6287C39.0845 32.7328 40.5218 32.2476 42 32.2476C43.4781 32.2476 44.9155 32.7328 46.0912 33.6287C47.2669 34.5247 48.116 35.7818 48.5081 37.207C48.9003 38.6322 48.8137 40.1468 48.2617 41.518C47.7098 42.8893 46.7229 44.0415 45.4528 44.7976C48.0206 45.6367 50.2209 47.4067 51.6487 49.8751C51.7147 49.989 51.7495 50.1183 51.7497 50.25C51.7498 50.3816 51.7153 50.511 51.6497 50.6251Z" fill="#F4DBDE" />

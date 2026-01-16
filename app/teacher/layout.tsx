@@ -4,35 +4,18 @@ import { useAuthProtection } from "@/hooks/useAuthProtection";
 import TeacherSidebar from "@/components/teacher/TeacherSidebar";
 import TeacherHeader from "@/components/teacher/TeacherHeader";
 import { Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useNavigation } from '@/lib/navigation';
-import { useAppContext } from "@/context/AppContext";
+import { routes } from "@/lib/navigation";
 
 export default function TeacherLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { isAuthenticated, isLoading, user } = useAuthProtection({
+  const { isAuthenticated, isLoading, isAuthorized } = useAuthProtection({
     redirectTo: "/login",
+    allowedRoles: ["teacher"],
+    unauthorizedRedirectTo: routes.student.dashboard,
   });
-  const { goToStudentDashboard } = useNavigation();
-  const [isAuthorized, setIsAuthorized] = useState(false);
-
-  useEffect(() => {
-    if (!isLoading) {
-       if (!isAuthenticated) {
-          return;
-       }
-       
-       const userRole = String(user?.role || '').toLowerCase();
-       if (userRole === 'student' && localStorage.getItem('userRole') !== 'teacher') {
-           goToStudentDashboard();
-       } else {
-          setIsAuthorized(true);
-       }
-    }
-  }, [isLoading, isAuthenticated, user, goToStudentDashboard]);
 
   if (isLoading || !isAuthenticated) {
     return (
@@ -42,8 +25,9 @@ export default function TeacherLayout({
     );
   }
 
-  // Optional: Block rendering if not authorized (student trying to access)
-//   if (!isAuthorized) return null; 
+  if (!isAuthorized) {
+    return null;
+  }
 
     return (
         <div className="flex min-h-screen bg-white" dir="rtl">
