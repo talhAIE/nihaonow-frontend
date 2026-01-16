@@ -281,7 +281,7 @@ export default function Page() {
                                     <button
                                         key={tab.key}
                                         onClick={() => setActive(tab.key)}
-                                        className={`px-3 sm:px-6 py-1.5 rounded-[8px] text-xs sm:text-sm font-bold transition-all border-2 ${active === tab.key
+                                        className={`w-[80px] sm:w-[100px] px-3 sm:px-6 py-1.5 rounded-[8px] text-xs sm:text-sm font-bold transition-all border-2 ${active === tab.key
                                             ? 'bg-[#35AB4E] border-[#35AB4E] text-white shadow-[0_2px_0_0_#20672F]'
                                             : 'bg-white border-[#4B4B4B] text-[#4B4B4B]'
                                             }`}
