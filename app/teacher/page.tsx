@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, FileText, User, Search, Users, Moon } from 'lucide-react'; // Removing unused icons
+import { ChevronLeft, FileText, User, Search, Users, Moon, BookOpen } from 'lucide-react'; // Removing unused icons
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { reportsApi, teacherApi } from '@/lib/api'; // Use reportsApi and teacherApi
@@ -163,44 +163,18 @@ export default function TeacherDashboard() {
                     <span className="text-[#C69400] text-4xl font-black">{stats.totalTopics}</span>
                 </div>
 
-                {/* Overall Usage - Orange with Circular Progress */}
-                <div className="bg-[#FFF0E2] rounded-[24px] p-2 flex flex-col items-center justify-center transition-transform hover:scale-[1.02] border border-orange-50 relative group">
-                    <span className="text-[#EF8D32] font-bold text-sm mb-1 mt-4">الاستخدام الإجمالي</span>
-                    <div className="relative w-24 h-24 flex items-center justify-center mb-2">
-                        {/* SVG Circular Progress */}
-                        <svg className="w-full h-full transform -rotate-90">
-                            <circle
-                                cx="48"
-                                cy="48"
-                                r="36"
-                                stroke="currentColor"
-                                strokeWidth="8"
-                                fill="transparent"
-                                className="text-orange-100"
-                            />
-                            <circle
-                                cx="48"
-                                cy="48"
-                                r="36"
-                                stroke="currentColor"
-                                strokeWidth="8"
-                                fill="transparent"
-                                strokeDasharray={226.2}
-                                strokeDashoffset={226.2 - (226.2 * stats.overallUsage) / 100}
-                                strokeLinecap="round"
-                                className="text-[#EF8D32] transition-all duration-1000 ease-out"
-                            />
-                        </svg>
-                        <span className="absolute text-2xl font-black text-[#EF8D32]">{stats.overallUsage}%</span>
-                    </div>
+                {/* loggedInCount - Green */}
+                <div className="bg-[#E2F2E9] rounded-[24px] p-6 flex flex-col items-center justify-center transition-transform hover:scale-[1.02] border border-green-50">
+                    <span className="text-[#35AB4E] font-bold text-sm mb-4">تم تسجيل الدخول</span>
+                    <span className="text-[#35AB4E] text-4xl font-black">{stats.loggedInCount}</span>
                 </div>
 
-                {/* Total Usage - Pink */}
+                {/* notLoggedInCount - Pink */}
                 <div className="bg-[#FFE4E4] rounded-[24px] p-6 flex flex-col items-center justify-center transition-transform hover:scale-[1.02] border border-red-50">
-                    <span className="text-[#BC313F] font-bold text-sm mb-4">إجمالي الاستخدام</span>
+                    <span className="text-[#BC313F] font-bold text-sm mb-4">لم يسجل الدخول بعد</span>
                     <div className="flex flex-row items-center gap-1">
                         <span className="text-[#BC313F] text-3xl font-black">
-                            {stats.totalUsageHours}
+                            {stats.notLoggedInCount}
                         </span>
                         <span className="text-[#BC313F] text-xs font-bold mt-2">ساعة</span>
                     </div>
@@ -212,25 +186,6 @@ export default function TeacherDashboard() {
                 {/* Login Status Row */}
                 <div className="flex flex-col md:flex-row-reverse justify-between items-center gap-6">
                     <div className="flex items-center gap-8">
-                        {/* Logged In */}
-                        <div className="text-center group">
-                            <div className="flex items-center gap-1.5 justify-center mb-0.5">
-                                <span className="text-slate-400 font-bold text-[10px] group-hover:text-[#CA495A] transition-colors">تم تسجيل الدخول</span>
-                                <Users className="w-3.5 h-3.5 text-[#CA495A]" />
-                            </div>
-                            <div className="text-2xl font-black text-slate-800 ">{stats.loggedInCount}</div>
-                        </div>
-
-                        <div className="h-8 w-[1px] bg-slate-100 hidden md:block"></div>
-
-                        {/* Not Logged In */}
-                        <div className="text-center group">
-                            <div className="flex items-center gap-1.5 justify-center mb-0.5">
-                                <span className="text-slate-400 font-bold text-[10px] group-hover:text-amber-400 transition-colors">لم يسجل الدخول بعد</span>
-                                <Moon className="w-3.5 h-3.5 text-amber-400" />
-                            </div>
-                            <div className="text-2xl font-black text-slate-800 ">{stats.notLoggedInCount}</div>
-                        </div>
                     </div>
 
                     <div className="flex flex-row-reverse justify-between items-center">
@@ -254,7 +209,7 @@ export default function TeacherDashboard() {
                             filteredStudents.map((student) => (
                                 <div
                                     key={student.id}
-                                    onClick={() => handleReportDownload(student.id)}
+                                    onClick={() => window.location.href = `/teacher/reports/view?studentId=${student.id}`}
                                     className="group bg-white border border-slate-50 rounded-[20px] p-4 flex flex-col md:flex-row items-center justify-between hover:shadow-lg hover:shadow-slate-100 transition-all duration-300 gap-4 w-full cursor-pointer"
                                 >
                                     {/* Student Info */}
@@ -275,39 +230,25 @@ export default function TeacherDashboard() {
                                     </div>
 
                                     {/* Actions */}
-                                    <div className="w-full md:w-1/3 flex justify-end">
-                                        <div className="flex flex-row items-center gap-1.5 px-4 py-2 bg-white border border-slate-100 rounded-xl text-slate-700 text-xs font-black group-hover:bg-slate-50 transition-all relative overflow-hidden">
-                                            {compilingId === student.id ? (
-                                                <>
-                                                    <div
-                                                        className="absolute inset-0 bg-green-50 transition-all duration-300 -z-1"
-                                                        style={{ width: `${downloadProgress}%` }}
-                                                    />
-                                                    <div className="flex items-center gap-2 relative z-10">
-                                                        <div className="w-3.5 h-3.5 border-2 border-slate-700 border-t-transparent rounded-full animate-spin"></div>
-                                                        <span className="">{downloadProgress}%</span>
-                                                        <span>جاري التجهيز...</span>
-                                                    </div>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <span>عرض التقرير</span>
-                                                    <ChevronLeft className="w-3.5 h-3.5" />
-                                                </>
-                                            )}
-                                        </div>
-                                    </div>
+                                    <div className="flex flex-row-reverse gap-3 w-full md:w-1/3 justify-start">
+                                    <Link href={`/teacher/reports/view?studentId=${student.id}&view=topics`} className="flex-1">
+                                        <button className="w-5/6 h-full flex flex-row-reverse items-center justify-center gap-1.5 px-3 py-2 bg-[#FBD4D3] hover:bg-[#F9C3C2] text-[#8D1716] rounded-xl text-xs font-black transition-all">
+                                            <BookOpen className="w-3.5 h-3.5" />
+                                            <span className="truncate">عرض المواضيع</span>
+                                        </button>
+                                    </Link>
+                                </div>
                                 </div>
                             ))
                         )}
                     </div>
 
                     {/* View All */}
-                    <div className="pt-2">
+                    <div className="pt-2 flex justify-center">
                         <Link href="/teacher/students">
-                            <button className="w-full flex items-center justify-center gap-1.5 py-3 bg-white border border-slate-100 rounded-[20px] text-slate-700 text-sm font-black hover:bg-slate-50 transition-all group">
-                                <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                            <button className="w-full flex border-[2px] border-[#20672F] items-center justify-center gap-1.5 py-3 bg-white rounded-[20px] text-slate-700 text-sm font-black hover:bg-slate-50 transition-all group">
                                 <span>عرض الكل</span>
+                                <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                             </button>
                         </Link>
                     </div>

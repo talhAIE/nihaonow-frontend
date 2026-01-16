@@ -184,6 +184,12 @@ export default function AwardsMap({ achievements, onClaim }: AwardsMapProps) {
                   style={{ objectFit: "contain" }}
                   className={`transition-all duration-700 ${isEarned ? "brightness-110 contrast-125 scale-110" : "grayscale opacity-60"}`}
                 />
+                {/* Star overlay for star variants - Always show for testing */}
+                {(node.variant.includes('star') || node.variant === 'star_gold') && (
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                    <Star className={`w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 ${isEarned ? "text-yellow-300 fill-yellow-300 drop-shadow-lg animate-pulse" : "text-gray-400 fill-gray-400 opacity-50"}`} />
+                  </div>
+                )}
               </div>
 
               {isEarned && (

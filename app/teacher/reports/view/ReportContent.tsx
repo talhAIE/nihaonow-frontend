@@ -75,6 +75,9 @@ export default function StudentReportContent() {
         if (!reportRef.current || isDownloading) return;
         setIsDownloading(true);
 
+        // Small delay to ensure UI updates before canvas capture
+        await new Promise(resolve => setTimeout(resolve, 100));
+
         try {
             const canvas = await html2canvas(reportRef.current, {
                 scale: 2,
@@ -120,13 +123,14 @@ export default function StudentReportContent() {
                 <div className="report-actions">
                     <button
                         type="button"
-                        className="report-download-btn"
+                        className="report-download-btn 5/6 h-full flex flex-row-reverse items-center justify-center gap-1.5 px-3 py-2 bg-[#FFFFFF] hover:bg-[#F9C3C2] text-[#8D1716] rounded-xl text-xs font-sans transition-all"
                         onClick={downloadPdf}
                         disabled={isDownloading}
                         aria-label="Download PDF"
                         title="تحميل PDF"
                     >
                         {isDownloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                        <span>تحميل</span>
                     </button>
                 </div>
                 <svg width="84" height="84" viewBox="0 0 84 84" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -237,6 +241,8 @@ export default function StudentReportContent() {
                                     <ellipse cx="42" cy="35.4768" rx="38" ry="26.5" fill="#FFCB08" />
                                     <path d="M42 9.10581C36.7586 8.57333 30.7774 9.81578 28.3023 10.5258C21.8962 16.383 4 33.3878 4 36.7956C4 41.0546 7.09302 46.3944 8.86047 47.9768L42 9.10581Z" fill="#FFD539" />
                                     <path d="M71.4999 19.4768C66.9999 12.9771 50.2277 8.3202 47.8047 9.04716C41.5335 15.0446 11.8756 50.1374 13.5 52.9768C15.6628 56.7575 31.5 61.977 39.1257 61.977C39.1257 61.977 45.6785 49.2755 51.9999 40.9768C58.3214 32.6781 71.4999 19.4768 71.4999 19.4768Z" fill="#FFD539" />
+                                    {/* Star overlay */}
+                                    <path d="M41.5 15L44.5 25L55 25L46.5 32L49.5 42L41.5 35L33.5 42L36.5 32L28 25L38.5 25L41.5 15Z" fill="#FFFFFF" stroke="#FFD700" strokeWidth="1" />
                                 </svg>
                                 <div className="achievement-name">{achievement.name || 'إنجاز'}</div>
                             </div>
