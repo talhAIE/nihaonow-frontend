@@ -25,41 +25,21 @@
 }
 
 .report-download-btn {
-  min-width: auto;
-  height: 40px;
-  padding: 8px 16px;
-  border-radius: 12px;
-  border: 2px solid #35AB4E;
-  background: #35AB4E;
-  color: #ffffff;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid #DDEEC7;
+  background: #ffffff;
+  color: #15441F;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
   cursor: pointer;
-  font-weight: 600;
-  font-size: 14px;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(53, 171, 78, 0.2);
-}
-
-.report-download-btn:hover:not(:disabled) {
-  background: #2f9c46;
-  border-color: #2f9c46;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(53, 171, 78, 0.3);
-}
-
-.report-download-btn:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(53, 171, 78, 0.2);
 }
 
 .report-download-btn:disabled {
-  opacity: 0.7;
+  opacity: 0.6;
   cursor: not-allowed;
-  transform: none;
-  box-shadow: 0 2px 4px rgba(53, 171, 78, 0.1);
 }
 
 .report-container.is-exporting .report-actions {
@@ -78,7 +58,7 @@
 .header-top-right {
   width: 353px;
   max-width: 100%;
-  min-height: 44px;
+  height: 44px;
   padding: 10px 16px;
   border-radius: 32px;
   border-width: 1px 1px 3px 1px;
@@ -93,14 +73,14 @@
   align-items: center;
   justify-content: center;
   white-space: nowrap;
-  overflow: visible;
+  overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .header-top-left {
   width: 353px;
   max-width: 100%;
-  min-height: 44px;
+  height: 44px;
   padding: 10px 16px;
   border-radius: 32px;
   border-width: 1px 1px 3px 1px;
@@ -115,24 +95,8 @@
   align-items: center;
   justify-content: center;
   white-space: nowrap;
-  overflow: visible;
+  overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.header-top-left svg,
-.header-top-right svg {
-  flex: 0 0 auto;
-  display: block;
-}
-
-.white-card,
-.stats-row,
-.interaction-box,
-.certificate-card,
-.achievement-badge,
-.report-header {
-  break-inside: avoid;
-  page-break-inside: avoid;
 }
 
 .report-title {
