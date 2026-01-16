@@ -8,7 +8,9 @@ import {
     LogOut,
     Lock,
     Save,
-    Loader2
+    Loader2,
+    Eye,
+    EyeOff
 } from "lucide-react";
 import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
@@ -28,6 +30,9 @@ export default function TeacherAccountPage() {
     const [resetEmail, setResetEmail] = useState(user?.email || "");
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+    const [showOldPassword, setShowOldPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const { toast } = useToast();
 
@@ -147,40 +152,64 @@ export default function TeacherAccountPage() {
                                 <div className="space-y-1.5">
                                     <label className="text-xs font-black text-slate-600">كلمة المرور الحالية</label>
                                     <div className="relative">
-                                        <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowOldPassword(!showOldPassword)}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                                        >
+                                            {showOldPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                        </button>
                                         <input
-                                            type="password"
+                                            type={showOldPassword ? "text" : "password"}
                                             value={oldPassword}
                                             onChange={(e) => setOldPassword(e.target.value)}
-                                            className="w-full pl-4 pr-10 py-3 bg-white rounded-xl border border-slate-200 text-slate-700 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#FFCB08] transition-all placeholder:text-slate-300"
+                                            dir="ltr"
+                                            className="w-full pl-10 pr-12 py-3 bg-white rounded-xl border border-slate-200 text-slate-700 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#FFCB08] transition-all placeholder:text-slate-300"
                                             placeholder="••••••••"
                                         />
+                                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                                     </div>
                                 </div>
                                 <div className="space-y-1.5">
                                     <label className="text-xs font-black text-slate-600">كلمة المرور الجديدة</label>
                                     <div className="relative">
-                                        <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowNewPassword(!showNewPassword)}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                                        >
+                                            {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                        </button>
                                         <input
-                                            type="password"
+                                            type={showNewPassword ? "text" : "password"}
                                             value={newPassword}
                                             onChange={(e) => setNewPassword(e.target.value)}
-                                            className="w-full pl-4 pr-10 py-3 bg-white rounded-xl border border-slate-200 text-slate-700 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#FFCB08] transition-all placeholder:text-slate-300"
+                                            dir="ltr"
+                                            className="w-full pl-10 pr-12 py-3 bg-white rounded-xl border border-slate-200 text-slate-700 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#FFCB08] transition-all placeholder:text-slate-300"
                                             placeholder="••••••••"
                                         />
+                                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                                     </div>
                                 </div>
                                 <div className="space-y-1.5">
                                     <label className="text-xs font-black text-slate-600">تأكيد كلمة المرور</label>
                                     <div className="relative">
-                                        <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                                        >
+                                            {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                        </button>
                                         <input
-                                            type="password"
+                                            type={showConfirmPassword ? "text" : "password"}
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
-                                            className="w-full pl-4 pr-10 py-3 bg-white rounded-xl border border-slate-200 text-slate-700 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#FFCB08] transition-all placeholder:text-slate-300"
+                                            dir="ltr"
+                                            className="w-full pl-10 pr-12 py-3 bg-white rounded-xl border border-slate-200 text-slate-700 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#FFCB08] transition-all placeholder:text-slate-300"
                                             placeholder="••••••••"
                                         />
+                                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                                     </div>
                                 </div>
                             </div>
