@@ -185,6 +185,27 @@ export default function AchievementsPage() {
     }
   };
 
+  const handleClaimBadge = async (badgeKey: string, badgeName: string) => {
+    try {
+      const authUserId = state.authUser?.id;
+      if (!authUserId) return;
+
+      await achievementsApi.claimBadge(Number(authUserId), badgeKey);
+      toast({
+        title: "تم استلام المكافأة!",
+        description: `لقد حصلت على مكافأة ${badgeName} بنجاح.`,
+      });
+      fetchData(); // Refresh data
+    } catch (err: any) {
+      console.error("Error claiming badge:", err);
+      toast({
+        title: "فشل استلام المكافأة",
+        description: err.response?.data?.message || "حدث خطأ أثناء استلام المكافأة.",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center p-8 h-[80vh]">
@@ -211,20 +232,28 @@ export default function AchievementsPage() {
     );
   }
 
-  // Pre-process achievements for the map view
-  const mapData = achievements.flatMap(group => [
-    ...group.earned.map((b: any) => ({ ...b, status: 'earned', category: group.category })),
-    ...group.available.map((b: any) => ({ ...b, status: 'locked', category: group.category }))
-  ]).sort((a, b) => {
-    if (a.status === 'earned' && b.status === 'locked') return -1;
-    if (a.status === 'locked' && b.status === 'earned') return 1;
-    return (b.pointValue || 0) - (a.pointValue || 0);
-  });
+  // Pre-process achievements for the map view - Filter out certificates to show only rewards
+  const mapData = achievements
+    .filter(group => group.category !== 'certificates')
+    .flatMap(group => [
+      ...group.earned.map((b: any) => ({ ...b, status: 'earned', category: group.category })),
+      ...group.available.map((b: any) => ({ ...b, status: 'locked', category: group.category }))
+    ])
+    .filter(a => !a.key.startsWith('cert_'))
+    .sort((a, b) => {
+      if (a.status === 'earned' && b.status === 'locked') return -1;
+      if (a.status === 'locked' && b.status === 'earned') return 1;
+      return (b.pointValue || 0) - (a.pointValue || 0);
+    });
 
-  const allAchievements = achievements.flatMap(group => [
-    ...group.earned.map((b: any) => ({ ...b, status: 'earned', category: group.category })),
-    ...group.available.map((b: any) => ({ ...b, status: 'locked', category: group.category }))
-  ]);
+  const allAchievements = achievements
+    .filter(group => group.category !== 'certificates')
+    .flatMap(group => [
+      ...group.earned.map((b: any) => ({ ...b, status: 'earned', category: group.category })),
+      ...group.available.map((b: any) => ({ ...b, status: 'locked', category: group.category }))
+    ])
+    .filter(a => !a.key.startsWith('cert_'));
+
   const earnedAchievementsCount = allAchievements.filter(a => a.status === 'earned').length;
   const totalAchievementsCount = allAchievements.length;
   const progressPercentage = totalAchievementsCount > 0 ? (earnedAchievementsCount / totalAchievementsCount) * 100 : 0;
@@ -255,20 +284,6 @@ export default function AchievementsPage() {
             </button>
           </div>
         </div>
-
-        <Button
-          onClick={handleSync}
-          disabled={syncing}
-          variant="outline"
-          className="rounded-2xl border-slate-200 font-bold hover:bg-slate-50 gap-2 h-11"
-        >
-          {syncing ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <RefreshCw className="w-4 h-4" />
-          )}
-          تحديث الإنجازات
-        </Button>
       </div>
 
       {activeTab === 'awards' ? (
@@ -277,7 +292,7 @@ export default function AchievementsPage() {
           <div className="bg-white rounded-[32px] sm:rounded-[48px] p-4 sm:p-10 shadow-xl border-4 sm:border-8 border-[#F3F4F6]">
             {/* Unified Awards Map for all viewports */}
             <div className="w-full">
-              <AwardsMap achievements={mapData} />
+              <AwardsMap achievements={mapData} onClaim={handleClaimBadge} />
             </div>
           </div>
         </div>

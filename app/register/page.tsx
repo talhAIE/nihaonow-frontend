@@ -47,6 +47,8 @@ export default function RegisterPage() {
         error = 'يجب أن تكون كلمة المرور 4 أحرف على الأقل';
       }
       if (field === 'email') {
+      }
+      if (field === 'email') {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(value)) error = 'الرجاء إدخال عنوان بريد إلكتروني صالح';
       }
@@ -60,7 +62,7 @@ export default function RegisterPage() {
     const fieldResults = fields.map(f => validateField(f));
     const ok = fieldResults.every(Boolean);
     if (!ok) {
-      // toast({ title: 'Validation Error', description: 'Please fix the highlighted fields', variant: 'destructive' });
+      // toast({ title: 'خطأ في التحقق', description: 'يرجى تصحيح الحقول المظللة', variant: 'destructive' });
     }
     return ok;
   }, [validateField]);
