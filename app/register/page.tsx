@@ -106,6 +106,7 @@ export default function RegisterPage() {
           id: user.id?.toString?.() ?? '',
           email: user.email ?? '',
           username: user.username ?? user.name ?? '',
+          role: user.role ?? 'student', // Ensure role is set to 'student' if not provided
         });
 
 

@@ -1,6 +1,5 @@
 "use client";
 
-import Header from "@/components/Header";
 import AudioSheikh from "@/components/AudioSheikh";
 import { Button } from "@/components/ui/button";
 import {

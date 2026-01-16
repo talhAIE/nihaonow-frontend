@@ -391,14 +391,6 @@ export default function LeaderboardPage() {
                                 }
                                 const levelInfo = getLevelInfo(entry.score || 0)
 
-                                // Mock trend for design compliance
-                                const getTrend = (rank: number) => {
-                                    if (rank === 4) return { icon: <span className="text-[#35AB4E] text-xl">↑</span>, type: 'up' }
-                                    if (rank === 7) return { icon: <span className="text-[#CA495A] text-xl">↓</span>, type: 'down' }
-                                    return { icon: <span className="text-gray-400 text-xl">—</span>, type: 'neutral' }
-                                }
-                                const trend = getTrend(displayRank)
-
                                 // Rank circle color
                                 const getRankColor = (rank: number) => {
                                     if (rank === 4) return 'bg-[#8BD9B7]'
@@ -410,7 +402,7 @@ export default function LeaderboardPage() {
                                 return (
                                     <div
                                         key={entry.userId || entry.rank || idx}
-                                        className={`grid grid-cols-[1fr_85px_30px] sm:grid-cols-[1fr_100px_40px] gap-2 sm:gap-4 items-center p-3 sm:p-4 rounded-[16px] transition-colors border border-transparent ${isRank4 ? 'bg-[#EAF5ED]' : isCurrentUser ? 'bg-green-50' : 'bg-[#FFFFFF] border-[#F0F0F0]'}`}
+                                        className={`grid grid-cols-[1fr_auto] sm:grid-cols-[1fr_auto] gap-2 sm:gap-4 items-center p-3 sm:p-4 rounded-[16px] transition-colors border border-transparent ${isRank4 ? 'bg-[#EAF5ED]' : isCurrentUser ? 'bg-green-50' : 'bg-[#FFFFFF] border-[#F0F0F0]'}`}
                                     >
                                         {/* Right Section: Rank, Avatar, Name */}
                                         <div className="flex items-center gap-4 overflow-hidden">
@@ -420,7 +412,7 @@ export default function LeaderboardPage() {
                                             </div>
 
                                             {/* Avatar (Initials only as requested) */}
-                                            <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full overflow-hidden bg-gray-100 flex-shrink-0 border-2 border-white aspect-square shadow-sm">
+                                            <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full overflow-hidden bg-gray-100 flex-shrink-0 border-2 border-white aspect-square shadow-sm hidden xl:block">
                                                 <div className="w-full h-full flex items-center justify-center bg-[#FDE68A] text-[#B45309] font-almarai-bold">
                                                     {entry.username?.charAt(0).toUpperCase()}
                                                 </div>
@@ -437,7 +429,7 @@ export default function LeaderboardPage() {
                                             </div>
                                         </div>
 
-                                        {/* Middle Section: Metrics (Fixed width for consistency) */}
+                                        {/* Far Right Section: Metrics */}
                                         <div className="flex flex-col items-center justify-center gap-1 border-x border-gray-100 px-2 h-full">
                                             <span className="font-almarai-bold text-[#E67E22] text-sm sm:text-base whitespace-nowrap">
                                                 {Math.round(entry.metrics?.avgCompletionTime || 0)} ساعة
@@ -445,11 +437,6 @@ export default function LeaderboardPage() {
                                             <span className="font-almarai-bold text-[#4B4B4B] text-xs sm:text-sm whitespace-nowrap">
                                                 {entry.metrics?.topicsCompleted || 0} موضوع
                                             </span>
-                                        </div>
-
-                                        {/* Left Section: Trend Indicator (Fixed width) */}
-                                        <div className="flex items-center justify-center h-full">
-                                            {trend.icon}
                                         </div>
                                     </div>
                                 )
