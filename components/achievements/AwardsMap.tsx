@@ -101,20 +101,8 @@ export default function AwardsMap({ achievements, onClaim, claimedAchievements =
     .filter((i) => i !== -1);
   const lastEarnedIndex =
     earnedIndices.length > 0 ? Math.max(...earnedIndices) : -1;
-
-  const nextTargetIndex = (() => {
-    if (TRI_PATH_NODES.length === 0) return -1;
-
-    const startIndex = Math.max(0, lastEarnedIndex + 1);
-    for (let i = startIndex; i < TRI_PATH_NODES.length; i++) {
-      const a = achievements[i];
-      if (!a || a.status !== "earned") return i;
-    }
-
-    return -1;
-  })();
-
-  const progressNode = nextTargetIndex !== -1 ? TRI_PATH_NODES[nextTargetIndex] : null;
+  const progressNode =
+    lastEarnedIndex !== -1 ? TRI_PATH_NODES[lastEarnedIndex] : null;
 
   const getAssetForNode = (
     node: MapNode,
@@ -130,17 +118,11 @@ export default function AwardsMap({ achievements, onClaim, claimedAchievements =
 
     switch (node.variant) {
       case "read":
-        return isLocked
-          ? lockedAssetByPath[node.pathId]
-          : "/achievements/ReadingGreenArabic 1.png";
+        return "/achievements/ReadingGreenArabic 1.png";
       case "speak":
-        return isLocked
-          ? lockedAssetByPath[node.pathId]
-          : "/achievements/SpeakYellow 1.png";
+        return "/achievements/SpeakYellow 1.png";
       case "star_gold":
-        return isLocked
-          ? lockedAssetByPath[node.pathId]
-          : "/achievements/StarYellowAward 1.png";
+        return "/achievements/StarYellowAward 1.png";
       case "red":
         return isLocked
           ? "/achievements/LockedRed 1.png"
@@ -397,14 +379,12 @@ export default function AwardsMap({ achievements, onClaim, claimedAchievements =
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none translate-y-5 sm:translate-y-7">
                   <div
                     className={`${
-                      localClaimed.has(achievement.key) || achievement?.rewardClaimed
+                      achievement?.rewardClaimed
                         ? "bg-green-600/95"
                         : "bg-yellow-500/95"
                     } text-white text-[7px] sm:text-[10px] font-black px-2 sm:px-3 py-0.5 sm:py-1 rounded-full shadow-lg border border-white/20 uppercase`}
                   >
-                    {localClaimed.has(achievement.key) || achievement?.rewardClaimed
-                      ? (achievement.name || "")
-                      : "Claim (مطالبة / ادعاء)"}
+                    {achievement?.rewardClaimed ? "تم الاستلام" : "استلم الآن"}
                   </div>
                 </div>
               )}
