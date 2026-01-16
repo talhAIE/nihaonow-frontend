@@ -36,7 +36,19 @@ export default function ForgetPasswordPage() {
       goToLogin();
     } catch (err: any) {
       console.error('Forget password error:', err);
-      toast({ title: 'خطأ', description: err?.message ?? 'حدث خطأ أثناء طلب إعادة تعيين كلمة المرور', variant: 'destructive', duration: 5000 });
+      let description = err?.message ?? 'حدث خطأ أثناء طلب إعادة تعيين كلمة المرور';
+
+      // Fallback translation for common English error message from backend
+      if (description === 'Failed to send password reset email. Please try again later.') {
+        description = 'فشل إرسال بريد إلكتروني لإعادة تعيين كلمة المرور. يرجى المحاولة مرة أخرى لاحقاً.';
+      }
+
+      toast({
+        title: 'خطأ',
+        description: description,
+        variant: 'destructive',
+        duration: 5000
+      });
     } finally {
       setIsLoading(false);
     }

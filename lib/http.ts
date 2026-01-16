@@ -67,23 +67,19 @@ export const apiClient = {
     axiosInstance,
     // accept an optional third `config` param so callers can pass axios options (eg. signal)
     async get<T = any>(endpoint: string, params?: any, config: any = {}): Promise<T> {
-        const url = `${API_BASE_URL}${endpoint}`;
-        const resp = await axiosInstance.get<T>(url, { params, ...config });
+        const resp = await axiosInstance.get<T>(endpoint, { params, ...config });
         return resp.data as unknown as T;
     },
     async post<T = any>(endpoint: string, data?: any, config: any = {}): Promise<T> {
-        const url = `${API_BASE_URL}${endpoint}`;
-        const resp = await axiosInstance.post<T>(url, data, config);
+        const resp = await axiosInstance.post<T>(endpoint, data, config);
         return resp.data as unknown as T;
     },
     async put<T = any>(endpoint: string, data?: any): Promise<T> {
-        const url = `${API_BASE_URL}${endpoint}`;
-        const resp = await axiosInstance.put<T>(url, data);
+        const resp = await axiosInstance.put<T>(endpoint, data);
         return resp.data as unknown as T;
     },
     async delete<T = any>(endpoint: string): Promise<T> {
-        const url = `${API_BASE_URL}${endpoint}`;
-        const resp = await axiosInstance.delete<T>(url);
+        const resp = await axiosInstance.delete<T>(endpoint);
         return resp.data as unknown as T;
     },
 };
