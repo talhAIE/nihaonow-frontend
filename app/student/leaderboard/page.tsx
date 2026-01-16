@@ -169,11 +169,11 @@ export default function LeaderboardPage() {
         <div className="min-h-screen w-[90%] bg-white mx-auto pt-4 sm:pt-6 pb-16" dir='rtl'>
             <div className="mx-auto w-full">
                 {/* Tabs */}
-                <div className="flex gap-3 justify-start mb-6 px-4 sm:px-0">
+                <div className="grid grid-cols-3 gap-2 mb-6 px-4 sm:px-0 sm:flex sm:gap-3 sm:justify-start">
                     <button
                         type="button"
                         onClick={() => setSelectedTab('all')}
-                        className={`px-6 py-2.5 rounded-full text-sm sm:text-base font-medium transition-all ${selectedTab === 'all'
+                        className={`w-full px-1 sm:px-6 py-2.5 rounded-full text-sm sm:text-base font-medium transition-all ${selectedTab === 'all'
                             ? 'bg-[#35AB4E] text-white shadow-md'
                             : 'bg-[#F5F5F5] text-gray-700 hover:bg-gray-100'
                             }`}
@@ -183,7 +183,7 @@ export default function LeaderboardPage() {
                     <button
                         type="button"
                         onClick={() => setSelectedTab('monthly')}
-                        className={`px-6 py-2.5 rounded-full text-sm sm:text-base font-medium transition-all ${selectedTab === 'monthly'
+                        className={`w-full px-1 sm:px-6 py-2.5 rounded-full text-sm sm:text-base font-medium transition-all ${selectedTab === 'monthly'
                             ? 'bg-[#35AB4E] text-white shadow-md'
                             : 'bg-[#F5F5F5] text-gray-700 hover:bg-gray-100'
                             }`}
@@ -193,7 +193,7 @@ export default function LeaderboardPage() {
                     <button
                         type="button"
                         onClick={() => setSelectedTab('weekly')}
-                        className={`px-6 py-2.5 rounded-full text-sm sm:text-base font-medium transition-all ${selectedTab === 'weekly'
+                        className={`w-full px-1 sm:px-6 py-2.5 rounded-full text-sm sm:text-base font-medium transition-all ${selectedTab === 'weekly'
                             ? 'bg-[#35AB4E] text-white shadow-md'
                             : 'bg-[#F5F5F5] text-gray-700 hover:bg-gray-100'
                             }`}
