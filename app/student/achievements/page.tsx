@@ -271,8 +271,8 @@ export default function AchievementsPage() {
             <button
               onClick={() => setActiveTab('awards')}
               className={`flex-1 sm:flex-none px-12 py-3 rounded-xl font-almarai-bold text-base transition-all duration-200 ${activeTab === 'awards'
-                ? "bg-[#35AB4E] text-white border-b-[4px] border-b-[#298E3E] shadow-md"
-                : "bg-transparent text-[#4B4B4B] hover:bg-slate-50"
+                ? "bg-[#35AB4E] text-white border-b-[4px] border-b-[#298E3E] shadow-md border border-[#35AB4E]"
+                : "bg-transparent text-[#4B4B4B] hover:bg-slate-50 border border-slate-200/60"
                 }`}
             >
               المكافآت
@@ -280,8 +280,8 @@ export default function AchievementsPage() {
             <button
               onClick={() => setActiveTab('certificates')}
               className={`flex-1 sm:flex-none px-12 py-3 rounded-xl font-almarai-bold text-base transition-all duration-200 ${activeTab === 'certificates'
-                ? "bg-[#35AB4E] text-white border-b-[4px] border-b-[#298E3E] shadow-md"
-                : "bg-transparent text-[#4B4B4B] hover:bg-slate-50"
+                ? "bg-[#35AB4E] text-white border-b-[4px] border-b-[#298E3E] shadow-md border border-[#35AB4E]"
+                : "bg-transparent text-[#4B4B4B] hover:bg-slate-50 border border-slate-200/60"
                 }`}
             >
               الشهادات

@@ -15,6 +15,9 @@ import {
 import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
 import { authApi } from "@/lib/services/auth";
+import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export default function StudentAccountPage() {
     const { state } = useAppContext();
@@ -25,8 +28,11 @@ export default function StudentAccountPage() {
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [resetEmail, setResetEmail] = useState(user?.email || "");
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+
+    const { toast } = useToast();
 
     const [showOldPassword, setShowOldPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
@@ -71,15 +77,35 @@ export default function StudentAccountPage() {
     };
 
     const handleSendResetLink = async () => {
+        const trimmedEmail = resetEmail.trim();
+        if (!trimmedEmail) {
+            toast({ title: 'خطأ في التحقق', description: 'يرجى إدخال بريدك الإلكتروني', variant: 'destructive', duration: 5000 });
+            return;
+        }
+
         setIsLoading(true);
-        setMessage(null);
         try {
-            await authApi.forgetPassword({ email: userEmail.trim() });
-            setMessage({ type: 'success', text: 'تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني' });
+            const res = await authApi.forgetPassword({ email: trimmedEmail });
+            toast({
+                title: 'تم بنجاح',
+                description: res?.message || 'إذا كان هذا البريد الإلكتروني موجوداً، فقد تم إرسال رابط إعادة التعيين.',
+                duration: 5000
+            });
         } catch (error: any) {
             console.error('Reset link error:', error);
-            const errorMsg = error.message || error?.response?.data?.message || 'فشل إرسال الرابط. حاول مرة أخرى.';
-            setMessage({ type: 'error', text: errorMsg });
+            let description = error.message || error?.response?.data?.message || 'فشل إرسال الرابط. حاول مرة أخرى.';
+
+            // Fallback translation for common English error message from backend
+            if (description === 'Failed to send password reset email. Please try again later.') {
+                description = 'فشل إرسال بريد إلكتروني لإعادة تعيين كلمة المرور. يرجى المحاولة مرة أخرى لاحقاً.';
+            }
+
+            toast({
+                title: 'خطأ',
+                description: description,
+                variant: 'destructive',
+                duration: 5000
+            });
         } finally {
             setIsLoading(false);
         }
@@ -210,17 +236,46 @@ export default function StudentAccountPage() {
                                     {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                                     <span>حفظ كلمة المرور</span>
                                 </button>
-
-                                <button
-                                    type="button"
-                                    onClick={handleSendResetLink}
-                                    disabled={isLoading}
-                                    className="flex items-center justify-center gap-2 bg-white border border-slate-200 text-slate-600 px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-50 transition-all disabled:opacity-50"
-                                >
-                                    <span>إرسال رابط إعادة تعيين</span>
-                                </button>
                             </div>
                         </form>
+                    </section>
+
+                    <hr className="border-slate-100" />
+
+                    {/* Separate Forget Password Section to match main screen flow */}
+                    <section className="space-y-6">
+                        <div className="space-y-1">
+                            <h4 className="text-lg font-black text-slate-800">إعادة تعيين كلمة المرور</h4>
+                            <p className="text-slate-400 text-xs font-bold">سنرسل لك رابطاً لإعادة تعيين كلمة المرور عبر البريد الإلكتروني.</p>
+                        </div>
+
+                        <div className="space-y-4 max-w-xl">
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-black text-slate-600">البريد الإلكتروني</label>
+                                <div className="relative">
+                                    <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                    <Input
+                                        dir="ltr"
+                                        type="email"
+                                        value={resetEmail}
+                                        onChange={(e) => setResetEmail(e.target.value)}
+                                        disabled={isLoading}
+                                        className="w-full pl-4 pr-10 py-3 bg-white rounded-xl border border-slate-200 text-slate-700 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#35AB4E] transition-all placeholder:text-slate-300"
+                                        placeholder="your-email@example.com"
+                                    />
+                                </div>
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={handleSendResetLink}
+                                disabled={isLoading}
+                                className="flex items-center justify-center gap-2 bg-white border border-slate-200 text-slate-600 px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-50 transition-all disabled:opacity-50"
+                            >
+                                {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                                <span>إرسال رابط إعادة تعيين</span>
+                            </button>
+                        </div>
                     </section>
                 </div>
             </div>
