@@ -489,7 +489,7 @@ export default function ScenarioPage() {
             <>
               {!currentScenario?.isIntroduction && (
                 <div className="w-full flex justify-center items-center py-4 sm:py-6 md:py-8">
-                  <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 w-full max-w-full overflow-hidden">
+                  <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 max-w-full">
 
                     {recordedAudio ? (
                       <>
