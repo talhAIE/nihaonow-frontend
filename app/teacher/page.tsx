@@ -244,7 +244,7 @@ export default function TeacherDashboard() {
                     </div>
 
                     {/* View All */}
-                    <div className="pt-2 flex justify-center">
+                    <div className="pt-2 flex w-full justify-center">
                         <Link href="/teacher/students">
                             <button className="w-full flex border-[2px] border-[#20672F] items-center justify-center gap-1.5 py-3 bg-white rounded-[20px] text-slate-700 text-sm font-black hover:bg-slate-50 transition-all group">
                                 <span>عرض الكل</span>

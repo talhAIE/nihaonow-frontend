@@ -260,6 +260,7 @@ export default function StudentAccountPage() {
                                         value={resetEmail}
                                         onChange={(e) => setResetEmail(e.target.value)}
                                         disabled={isLoading}
+                                        readOnly
                                         className="w-full pl-4 pr-10 py-3 bg-white rounded-xl border border-slate-200 text-slate-700 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#35AB4E] transition-all placeholder:text-slate-300"
                                         placeholder="your-email@example.com"
                                     />
