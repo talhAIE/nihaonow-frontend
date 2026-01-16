@@ -1,24 +1,22 @@
 "use client";
 
 import React from 'react';
-import { usePathname } from 'next/navigation';
-import AuthSidebar from '@/components/AuthSidebar'; // We will repurpose or import Sidebar directly
 import Sidebar from '@/components/Sidebar';
 import ConditionalHeader from '@/components/ConditionalHeader';
-import { useAppContext } from '@/context/AppContext';
 import { useAuthProtection } from '@/hooks/useAuthProtection';
 import { Loader2 } from 'lucide-react';
+import { routes } from '@/lib/navigation';
 
 export default function StudentLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { state } = useAppContext();
-  
   // Protect Student Routes
-  const { isAuthenticated, isLoading } = useAuthProtection({
+  const { isAuthenticated, isLoading, isAuthorized } = useAuthProtection({
     redirectTo: "/login",
+    allowedRoles: ["student"],
+    unauthorizedRedirectTo: routes.teacher.dashboard,
   });
 
   if (isLoading) {
@@ -27,6 +25,10 @@ export default function StudentLayout({
           <Loader2 className="h-8 w-8 animate-spin text-green-500" />
         </div>
       );
+  }
+
+  if (!isAuthenticated || !isAuthorized) {
+    return null;
   }
 
   // We can render Sidebar directly here since we know it's the student area

@@ -31,6 +31,11 @@ export const reportsApi = {
     return apiClient.get<{ url: string; expiresAt?: string }>(url, undefined, config);
   },
 
+  getStudentReportDetails: async (studentId: number | string, config: any = {}) => {
+    const url = apiEndpoints.teacher.studentReportDetails(studentId);
+    return apiClient.get<any>(url, undefined, config);
+  },
+
   getBulkReportsUrl: async (config: any = {}) => {
     const url = apiEndpoints.teacher.bulkReports;
     return apiClient.get<{ url: string; expiresAt?: string }>(url, undefined, config);

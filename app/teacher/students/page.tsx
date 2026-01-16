@@ -294,32 +294,9 @@ export default function MyStudentsPage() {
                                     <p className="font-black text-slate-800  text-base">{student.usageLabel}</p>
                                 </div>
 
-                                <div className="flex flex-row-reverse gap-3 w-full md:w-1/3 justify-end">
-                                    <button
-                                        onClick={() => handleReportDownload(student.id)}
-                                        disabled={compilingId === student.id}
-                                        className="flex-1 flex flex-row-reverse items-center justify-center gap-1.5 px-4 py-2 bg-white border border-slate-100 rounded-xl text-slate-700 text-xs font-black hover:bg-slate-50 transition-all disabled:opacity-70 disabled:cursor-not-allowed relative overflow-hidden"
-                                    >
-                                        {compilingId === student.id ? (
-                                            <>
-                                                <div
-                                                    className="absolute inset-0 bg-green-50 transition-all duration-300 -z-1"
-                                                    style={{ width: `${downloadProgress}%` }}
-                                                />
-                                                <div className="flex items-center gap-2 relative z-10">
-                                                    <div className="w-3.5 h-3.5 border-2 border-slate-700 border-t-transparent rounded-full animate-spin"></div>
-                                                    <span className="">{downloadProgress}%</span>
-                                                </div>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <span>عرض التقرير</span>
-                                                <ChevronLeft className="w-3.5 h-3.5" />
-                                            </>
-                                        )}
-                                    </button>
+                                <div className="flex flex-row-reverse gap-3 w-full md:w-1/3 justify-start">
                                     <Link href={`/teacher/reports/view?studentId=${student.id}&view=topics`} className="flex-1">
-                                        <button className="w-full h-full flex flex-row-reverse items-center justify-center gap-1.5 px-3 py-2 bg-[#FBD4D3] hover:bg-[#F9C3C2] text-[#8D1716] rounded-xl text-xs font-black transition-all">
+                                        <button className="w-5/6 h-full flex flex-row-reverse items-center justify-center gap-1.5 px-3 py-2 bg-[#FBD4D3] hover:bg-[#F9C3C2] text-[#8D1716] rounded-xl text-xs font-black transition-all">
                                             <BookOpen className="w-3.5 h-3.5" />
                                             <span className="truncate">عرض المواضيع</span>
                                         </button>
