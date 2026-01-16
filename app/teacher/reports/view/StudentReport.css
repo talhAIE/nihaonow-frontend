@@ -78,7 +78,7 @@
 .header-top-right {
   width: 353px;
   max-width: 100%;
-  height: 44px;
+  min-height: 44px;
   padding: 10px 16px;
   border-radius: 32px;
   border-width: 1px 1px 3px 1px;
@@ -93,14 +93,14 @@
   align-items: center;
   justify-content: center;
   white-space: nowrap;
-  overflow: hidden;
+  overflow: visible;
   text-overflow: ellipsis;
 }
 
 .header-top-left {
   width: 353px;
   max-width: 100%;
-  height: 44px;
+  min-height: 44px;
   padding: 10px 16px;
   border-radius: 32px;
   border-width: 1px 1px 3px 1px;
@@ -115,8 +115,24 @@
   align-items: center;
   justify-content: center;
   white-space: nowrap;
-  overflow: hidden;
+  overflow: visible;
   text-overflow: ellipsis;
+}
+
+.header-top-left svg,
+.header-top-right svg {
+  flex: 0 0 auto;
+  display: block;
+}
+
+.white-card,
+.stats-row,
+.interaction-box,
+.certificate-card,
+.achievement-badge,
+.report-header {
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 .report-title {
