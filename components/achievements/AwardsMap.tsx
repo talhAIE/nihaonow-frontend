@@ -28,31 +28,26 @@ interface MapNode {
   size: "small" | "medium" | "large";
 }
 
-// 6-6-6 (Red-Yellow-Green) = 18 Nodes Total
+// 4-4-4 (Streak-Usage-Topics) = 12 Nodes Total
+// Order: Usage (Center 0-3), Streak (Left 4-7), Topics (Right 8-11)
 const TRI_PATH_NODES: MapNode[] = [
-  // --- CENTER PATH (Yellow - Straight) ---
-  { x: 50, y: 24, pathId: "center", variant: "yellow", size: "small" },
-  { x: 50, y: 36, pathId: "center", variant: "yellow", size: "small" },
-  { x: 50, y: 48, pathId: "center", variant: "yellow", size: "medium" },
-  { x: 50, y: 60, pathId: "center", variant: "star_gold", size: "large" },
-  { x: 50, y: 72, pathId: "center", variant: "yellow", size: "medium" },
-  { x: 50, y: 84, pathId: "center", variant: "yellow", size: "small" },
+  // --- CENTER PATH (Usage - Yellow) ---
+  { x: 50, y: 24, pathId: "center", variant: "yellow", size: "medium" },
+  { x: 50, y: 44, pathId: "center", variant: "yellow", size: "medium" },
+  { x: 50, y: 64, pathId: "center", variant: "star_gold", size: "medium" },
+  { x: 50, y: 84, pathId: "center", variant: "yellow", size: "medium" },
 
-  // --- LEFT PATH (Red - Curved Away) ---
-  { x: 42, y: 24, pathId: "left", variant: "red", size: "small" },
-  { x: 39, y: 36, pathId: "left", variant: "red", size: "small" },
-  { x: 35, y: 48, pathId: "left", variant: "red", size: "medium" },
-  { x: 26, y: 60, pathId: "left", variant: "speak", size: "large" },
-  { x: 18, y: 72, pathId: "left", variant: "red", size: "medium" },
-  { x: 10, y: 84, pathId: "left", variant: "red", size: "small" },
+  // --- LEFT PATH (Streak - Red) ---
+  { x: 40, y: 23, pathId: "left", variant: "red", size: "medium" },
+  { x: 36, y: 44, pathId: "left", variant: "red", size: "medium" },
+  { x: 24, y: 64, pathId: "left", variant: "speak", size: "medium" },
+  { x: 10, y: 84, pathId: "left", variant: "red", size: "medium" },
 
-  // --- RIGHT PATH (Green - Curved Away) ---
-  { x: 58, y: 24, pathId: "right", variant: "green", size: "small" },
-  { x: 61, y: 36, pathId: "right", variant: "green", size: "small" },
-  { x: 65, y: 48, pathId: "right", variant: "green", size: "medium" },
-  { x: 74, y: 60, pathId: "right", variant: "read", size: "large" },
-  { x: 82, y: 72, pathId: "right", variant: "green", size: "medium" },
-  { x: 90, y: 84, pathId: "right", variant: "green", size: "small" },
+  // --- RIGHT PATH (Topics - Green) ---
+  { x: 60, y: 23, pathId: "right", variant: "green", size: "medium" },
+  { x: 64, y: 44, pathId: "right", variant: "green", size: "medium" },
+  { x: 76, y: 64, pathId: "right", variant: "read", size: "medium" },
+  { x: 90, y: 84, pathId: "right", variant: "green", size: "medium" },
 ];
 
 export default function AwardsMap({ achievements, onClaim }: AwardsMapProps) {
@@ -91,7 +86,7 @@ export default function AwardsMap({ achievements, onClaim }: AwardsMapProps) {
       </svg>
 
       {/* Single Starting Flag at the Top Apex - Enlarged and moved higher */}
-      <div className="absolute left-[50%] top-4 sm:top-6 -translate-x-1/2 drop-shadow-2xl z-30 transition-transform duration-500 hover:scale-110">
+      <div className="absolute left-[50%] top-4 sm:top-6 -translate-x-1/2 drop-shadow-2xl z-0 transition-transform duration-500 hover:scale-110">
         <div className="relative w-24 h-20 sm:w-32 sm:h-24 md:w-44 md:h-32">
           <Image src="/achievements/Flag 1.png" alt="Start" fill className="object-contain drop-shadow-lg" />
         </div>
@@ -172,8 +167,8 @@ export default function AwardsMap({ achievements, onClaim }: AwardsMapProps) {
                 }
               }}
               className={`relative flex items-center justify-center transition-all duration-500 hover:scale-110 active:scale-95 ${sizeClasses} ${isEarned ? "cursor-pointer" : "cursor-default opacity-90"} ${coloredShadows}`}>
-              {/* Claimed Status Indicator */}
-              {isEarned && (
+              {/* Claimed Status Indicator - Only show if actually claimed in DB */}
+              {isEarned && achievement?.rewardClaimed && (
                 <div className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 z-30 bg-green-500 text-white rounded-full p-1 sm:p-1.5 shadow-2xl border-2 border-white animate-bounce-subtle">
                   <CheckCircle2 className="w-5 h-5 sm:w-7 sm:h-7" />
                 </div>
