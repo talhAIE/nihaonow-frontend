@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useCallback } from "react";
 import Image from "next/image";
 import { CheckCircle2, Lock, Star } from "lucide-react";
 
@@ -18,6 +18,7 @@ interface AchievementNode {
 interface AwardsMapProps {
   achievements: AchievementNode[];
   onClaim?: (key: string, name: string) => void;
+  claimedAchievements?: Set<string>; // Add prop for claimed achievements
 }
 
 interface MapNode {
@@ -79,7 +80,21 @@ const TRI_PATH_NODES: MapNode[] = [
   { x: 90, mdX: 90, y: 84, pathId: "right", variant: "green", size: "medium" },
 ];
 
-export default function AwardsMap({ achievements, onClaim }: AwardsMapProps) {
+export default function AwardsMap({ achievements, onClaim, claimedAchievements = new Set() }: AwardsMapProps) {
+  // Local state for claimed achievements to show immediate UI feedback
+  const [localClaimed, setLocalClaimed] = useState<Set<string>>(claimedAchievements);
+
+  // Optimistic claim handler - updates UI immediately
+  const handleOptimisticClaim = useCallback((key: string, name: string) => {
+    if (localClaimed.has(key)) return; // Prevent double claims
+    
+    // Update local state immediately for instant UI feedback
+    setLocalClaimed(prev => new Set(prev).add(key));
+    
+    // Call parent handler for backend update
+    onClaim?.(key, name);
+  }, [localClaimed, onClaim]);
+
   // Find the last earned achievement's position
   const earnedIndices = achievements
     .map((a, i) => (a.status === "earned" ? i : -1))
@@ -329,8 +344,8 @@ export default function AwardsMap({ achievements, onClaim }: AwardsMapProps) {
 
             <div
               onClick={() => {
-                if (isEarned && !achievement?.rewardClaimed && onClaim) {
-                  onClaim(achievement.key, achievement.name);
+                if (isEarned && !achievement?.rewardClaimed && !localClaimed.has(achievement.key)) {
+                  handleOptimisticClaim(achievement.key, achievement.name);
                 }
               }}
               className={`relative flex items-center justify-center transition-all duration-500 hover:scale-110 active:scale-95 ${sizeClasses} ${
@@ -358,12 +373,12 @@ export default function AwardsMap({ achievements, onClaim }: AwardsMapProps) {
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none translate-y-5 sm:translate-y-7">
                   <div
                     className={`${
-                      achievement?.rewardClaimed
+                      localClaimed.has(achievement.key) || achievement?.rewardClaimed
                         ? "bg-green-600/95"
                         : "bg-yellow-500/95"
                     } text-white text-[7px] sm:text-[10px] font-black px-2 sm:px-3 py-0.5 sm:py-1 rounded-full shadow-lg border border-white/20 uppercase`}
                   >
-                    {achievement?.rewardClaimed ? "تم الاستلام" : "استلم الآن"}
+                    {localClaimed.has(achievement.key) || achievement?.rewardClaimed ? "تم الاستلام" : "استلم الآن"}
                   </div>
                 </div>
               )}
