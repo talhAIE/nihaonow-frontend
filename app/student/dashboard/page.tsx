@@ -62,37 +62,39 @@ export default function Page() {
         { key: 'monthly', label: 'شهري' },
     ]
 
-    useEffect(() => {
-        async function fetchDashboardData() {
-            try {
-                setError(null)
-
-                // Single API call instead of multiple
-                const data = await dashboardApi.getDashboard()
-                setDashboardData(data)
-
-                // Sync username to localStorage so other pages have the latest
-                if (data.overview?.userName) {
-                    localStorage.setItem('userName', data.overview.userName)
-                }
-
-                // Fetch named level and definitions
-                const [levelData, defs] = await Promise.all([
-                    levelsApi.evaluateMe(), // Force fresh evaluation
-                    levelsApi.getDefinitions()
-                ])
-                setUserLevel(levelData)
-                setLevelDefinitions(defs)
-            } catch (err) {
-                console.error('Failed to fetch dashboard data:', err)
-                setError('Failed to load dashboard data')
-            } finally {
-                setLoading(false)
-                setInitialLoad(false)
+    const fetchData = async () => {
+        try {
+            setError(null)
+            const data = await dashboardApi.getDashboard(); // Always fresh
+            setDashboardData(data)
+            if (data.overview?.userName) {
+                localStorage.setItem('userName', data.overview.userName)
             }
+            // Fetch named level and definitions only if missing? Or always? Let's check complexity.
+            // Usually infrequent changes, but let's keep it safe.
+            const [levelData, defs] = await Promise.all([
+                levelsApi.evaluateMe(),
+                levelsApi.getDefinitions() // Usually static, could be optimized
+            ])
+            setUserLevel(levelData)
+            setLevelDefinitions(defs)
+        } catch (err) {
+            console.error('Failed to fetch dashboard data:', err)
+            setError('Failed to load dashboard data')
+        } finally {
+            setLoading(false)
+            setInitialLoad(false)
         }
+    };
 
-        fetchDashboardData()
+    useEffect(() => {
+        fetchData();
+        // Add listener for focus to refetch data
+        const onFocus = () => {
+            fetchData();
+        }
+        window.addEventListener('focus', onFocus)
+        return () => window.removeEventListener('focus', onFocus)
     }, [])
 
     if (loading && initialLoad) {
@@ -273,13 +275,13 @@ export default function Page() {
                 <div className="mt-4 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-8 items-stretch">
                     <div className="flex flex-col w-full col-span-2 sm:col-span-2 lg:col-span-1 h-auto sm:h-64 md:h-72 lg:h-80 px-6 py-6 gap-6 rounded-[24px] border border-slate-100 bg-white shadow-sm overflow-hidden">
                         <div className="flex flex-row items-center justify-between w-full">
-                            <h4 className="font-almarai-extrabold text-[#4B4B4B] text-base lg:text-lg">المقاييس الرئيسية</h4>
-                            <div className="flex gap-2">
+                            <h4 className="font-almarai-extrabold text-[#4B4B4B] text-base lg:text-lg mb-2 sm:mb-0">المقاييس الرئيسية</h4>
+                            <div className="flex gap-1 sm:gap-2 flex-wrap justify-center sm:justify-end">
                                 {tabs.filter(t => t.key !== 'daily').map((tab) => (
                                     <button
                                         key={tab.key}
                                         onClick={() => setActive(tab.key)}
-                                        className={`px-6 py-1.5 rounded-[8px] text-sm font-bold transition-all border-2 ${active === tab.key
+                                        className={`px-3 sm:px-6 py-1.5 rounded-[8px] text-xs sm:text-sm font-bold transition-all border-2 ${active === tab.key
                                             ? 'bg-[#35AB4E] border-[#35AB4E] text-white shadow-[0_2px_0_0_#20672F]'
                                             : 'bg-white border-[#4B4B4B] text-[#4B4B4B]'
                                             }`}
@@ -399,7 +401,7 @@ export default function Page() {
                                         <button
                                             onClick={() => handleContinue(topic.id)}
                                             disabled={startingSession === topic.id}
-                                            className={`h-10 px-4 bg-[#35AB4E] hover:bg-[#2f9c46] text-white text-sm font-bold rounded-lg border-b-2 border-[#20672F] flex items-center gap-2 transition active:translate-y-[1px] active:border-b-0 ${startingSession === topic.id ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                            className={`h-10 px-4 bg-[#35AB4E] hover:bg-[#2f9c46] text-white text-sm font-bold rounded-lg border-b-2 border-[#20672F] flex items-center gap-2 transition active:translate-y-[1px] active:border-b-0 disabled:opacity-70 disabled:cursor-not-allowed`}
                                         >
                                             {startingSession === topic.id ? 'جاري التحميل...' : 'متابعة'}
                                             <ChevronLeft className="w-4 h-4 mr-[-4px]" />

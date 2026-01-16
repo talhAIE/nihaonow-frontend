@@ -17,20 +17,21 @@ export default function ForgetPasswordPage() {
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) {
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
       toast({ title: 'خطأ في التحقق', description: 'يرجى إدخال بريدك الإلكتروني', variant: 'destructive', duration: 5000 });
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(trimmedEmail)) {
       toast({ title: 'خطأ في التحقق', description: 'يرجى إدخال عنوان بريد إلكتروني صالح', variant: 'destructive', duration: 5000 });
       return;
     }
 
     setIsLoading(true);
     try {
-      const res = await authApi.forgetPassword({ email });
+      const res = await authApi.forgetPassword({ email: trimmedEmail });
       toast({ title: 'تم بنجاح', description: res?.message || 'إذا كان هذا البريد الإلكتروني موجوداً، فقد تم إرسال رابط إعادة التعيين.', duration: 5000 });
       goToLogin();
     } catch (err: any) {
@@ -82,7 +83,7 @@ export default function ForgetPasswordPage() {
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="name@example.com"
+                  placeholder="your-email@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isLoading}

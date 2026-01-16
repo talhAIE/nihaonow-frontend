@@ -185,6 +185,27 @@ export default function AchievementsPage() {
     }
   };
 
+  const handleClaimBadge = async (badgeKey: string, badgeName: string) => {
+    try {
+      const authUserId = state.authUser?.id;
+      if (!authUserId) return;
+
+      await achievementsApi.claimBadge(Number(authUserId), badgeKey);
+      toast({
+        title: "تم استلام المكافأة!",
+        description: `لقد حصلت على مكافأة ${badgeName} بنجاح.`,
+      });
+      fetchData(); // Refresh data
+    } catch (err: any) {
+      console.error("Error claiming badge:", err);
+      toast({
+        title: "فشل استلام المكافأة",
+        description: err.response?.data?.message || "حدث خطأ أثناء استلام المكافأة.",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center p-8 h-[80vh]">
@@ -211,20 +232,32 @@ export default function AchievementsPage() {
     );
   }
 
-  // Pre-process achievements for the map view
-  const mapData = achievements.flatMap(group => [
-    ...group.earned.map((b: any) => ({ ...b, status: 'earned', category: group.category })),
-    ...group.available.map((b: any) => ({ ...b, status: 'locked', category: group.category }))
-  ]).sort((a, b) => {
-    if (a.status === 'earned' && b.status === 'locked') return -1;
-    if (a.status === 'locked' && b.status === 'earned') return 1;
-    return (b.pointValue || 0) - (a.pointValue || 0);
-  });
+  // Pre-process achievements for the map view - Filter out certificates to show only rewards
+  // We strictly show 4 nodes per category as requested: Usage (Center), Streak (Left), Topics (Right)
+  const usageGroup = achievements.find(g => g.category === 'time') || { earned: [], available: [] };
+  const streakGroup = achievements.find(g => g.category === 'streak') || { earned: [], available: [] };
+  const topicsGroup = achievements.find(g => g.category === 'topics') || { earned: [], available: [] };
 
-  const allAchievements = achievements.flatMap(group => [
-    ...group.earned.map((b: any) => ({ ...b, status: 'earned', category: group.category })),
-    ...group.available.map((b: any) => ({ ...b, status: 'locked', category: group.category }))
-  ]);
+  const getCategorizedData = (group: any, category: string) => [
+    ...group.earned.map((b: any) => ({ ...b, status: 'earned', category })),
+    ...group.available.map((b: any) => ({ ...b, status: 'locked', category }))
+  ].slice(0, 4);
+
+  // Combine in order: Center path (Usage 0-3), Left path (Streak 4-7), Right path (Topics 8-11)
+  const mapData = [
+    ...getCategorizedData(usageGroup, 'time'),
+    ...getCategorizedData(streakGroup, 'streak'),
+    ...getCategorizedData(topicsGroup, 'topics')
+  ];
+
+  const allAchievements = achievements
+    .filter(group => group.category !== 'certificates')
+    .flatMap(group => [
+      ...group.earned.map((b: any) => ({ ...b, status: 'earned', category: group.category })),
+      ...group.available.map((b: any) => ({ ...b, status: 'locked', category: group.category }))
+    ])
+    .filter(a => !a.key.startsWith('cert_'));
+
   const earnedAchievementsCount = allAchievements.filter(a => a.status === 'earned').length;
   const totalAchievementsCount = allAchievements.length;
   const progressPercentage = totalAchievementsCount > 0 ? (earnedAchievementsCount / totalAchievementsCount) * 100 : 0;
@@ -234,12 +267,12 @@ export default function AchievementsPage() {
       {/* Refined Header & Tab Switcher */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
         <div className="flex-1 w-full sm:w-auto flex justify-center sm:justify-start">
-          <div className="bg-white p-2 rounded-2xl flex items-center gap-3 shadow-sm border border-slate-100 w-full sm:w-auto">
+          <div className="bg-slate-50/50 p-1 rounded-2xl flex items-center gap-1.5 shadow-inner border border-slate-100 w-full sm:w-auto overflow-hidden">
             <button
               onClick={() => setActiveTab('awards')}
               className={`flex-1 sm:flex-none px-12 py-3 rounded-xl font-almarai-bold text-base transition-all duration-200 ${activeTab === 'awards'
-                ? "bg-[#35AB4E] text-white border-b-[4px] border-b-[#298E3E] shadow-sm scale-[1.02]"
-                : "bg-white text-[#4B4B4B] border border-[#E5E5E5] border-b-[4px] border-b-[#C4C4C4] hover:bg-slate-50"
+                ? "bg-[#35AB4E] text-white border-b-[4px] border-b-[#298E3E] shadow-md"
+                : "bg-transparent text-[#4B4B4B] hover:bg-slate-50"
                 }`}
             >
               المكافآت
@@ -247,28 +280,14 @@ export default function AchievementsPage() {
             <button
               onClick={() => setActiveTab('certificates')}
               className={`flex-1 sm:flex-none px-12 py-3 rounded-xl font-almarai-bold text-base transition-all duration-200 ${activeTab === 'certificates'
-                ? "bg-[#35AB4E] text-white border-b-[4px] border-b-[#298E3E] shadow-sm scale-[1.02]"
-                : "bg-white text-[#4B4B4B] border border-[#E5E5E5] border-b-[4px] border-b-[#C4C4C4] hover:bg-slate-50"
+                ? "bg-[#35AB4E] text-white border-b-[4px] border-b-[#298E3E] shadow-md"
+                : "bg-transparent text-[#4B4B4B] hover:bg-slate-50"
                 }`}
             >
               الشهادات
             </button>
           </div>
         </div>
-
-        <Button
-          onClick={handleSync}
-          disabled={syncing}
-          variant="outline"
-          className="rounded-2xl border-slate-200 font-bold hover:bg-slate-50 gap-2 h-11"
-        >
-          {syncing ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <RefreshCw className="w-4 h-4" />
-          )}
-          تحديث الإنجازات
-        </Button>
       </div>
 
       {activeTab === 'awards' ? (
@@ -277,7 +296,7 @@ export default function AchievementsPage() {
           <div className="bg-white rounded-[32px] sm:rounded-[48px] p-4 sm:p-10 shadow-xl border-4 sm:border-8 border-[#F3F4F6]">
             {/* Unified Awards Map for all viewports */}
             <div className="w-full">
-              <AwardsMap achievements={mapData} />
+              <AwardsMap achievements={mapData} onClaim={handleClaimBadge} />
             </div>
           </div>
         </div>
