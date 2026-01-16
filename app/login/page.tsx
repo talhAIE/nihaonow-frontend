@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAppContext } from '@/context/AppContext';
 import { authApi } from '@/lib/api';
-import { setAuthToken } from '@/lib/authUtils';
+import { setAuthToken, setUserRole } from '@/lib/authUtils';
 import { useToast } from '@/hooks/use-toast';
 import { useDirection } from '@/hooks/useDirection';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
@@ -82,6 +82,8 @@ export default function LoginPage() {
           if (formData.username.toLowerCase().includes('teacher') || formData.username.toLowerCase().includes('admin')) {
             userRole = 'teacher';
           }
+
+          setUserRole(userRole);
 
           login({
             id: String(userData.id ?? ''),

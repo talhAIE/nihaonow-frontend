@@ -24,6 +24,33 @@ export function setAuthToken(token: string, options?: { maxAge?: number }) {
   }
 }
 
+export function getUserRole(): string | null {
+  try {
+    const val = getCookie('userRole');
+    if (typeof val === 'string') return val;
+    return val ?? null;
+  } catch (err) {
+    return null;
+  }
+}
+
+export function setUserRole(role: string, options?: { maxAge?: number }) {
+  const maxAge = options?.maxAge ?? 7 * 24 * 60 * 60;
+  try {
+    setCookie('userRole', role, { path: '/', maxAge });
+  } catch (err) {
+    // ignore
+  }
+}
+
+export function clearUserRole() {
+  try {
+    deleteCookie('userRole', { path: '/' });
+  } catch (err) {
+    // ignore
+  }
+}
+
 export function clearAuthToken() {
   try {
     deleteCookie('authToken', { path: '/' });

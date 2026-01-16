@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { getAuthToken, setAuthToken, clearAuthToken } from '@/lib/authUtils';
+import { getAuthToken, setAuthToken, clearAuthToken, clearUserRole } from '@/lib/authUtils';
 
 export interface User {
   id?: string;
@@ -24,10 +24,10 @@ interface AppState {
 interface AppContextType {
   state: AppState;
   setState: React.Dispatch<React.SetStateAction<AppState>>;
-    sidebarOpen: boolean;
-    setSidebarOpen: (v: boolean) => void;
-    mobileMenuOpen: boolean;
-    setMobileMenuOpen: (v: boolean) => void;
+  sidebarOpen: boolean;
+  setSidebarOpen: (v: boolean) => void;
+  mobileMenuOpen: boolean;
+  setMobileMenuOpen: (v: boolean) => void;
   completeOnboarding: (userName: string) => void;
   resetOnboarding: () => void;
   login: (user: User) => void;
@@ -66,8 +66,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   });
 
   const setDir = (d: "ltr" | "rtl") => {
-      // ... (keep existing implementation) ...
-      try {
+    // ... (keep existing implementation) ...
+    try {
       if (typeof window !== 'undefined') {
         localStorage.setItem('dir', d)
         document.documentElement.dir = d
@@ -227,13 +227,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       // Force redirect based on role to ensure consistent behavior
       if (String(user.role).toLowerCase() === 'teacher') {
-         // Use window.location for hard redirect if router fails or use router if available in context
-         // Since we can't easily access router here without passing it, we rely on the component calling this updates
-         // layout. But effectively, the protected routes should handle it.
-         // However, let's persist the role in a separate key if needed for middleware/layouts
-         localStorage.setItem('userRole', 'teacher');
+        // Use window.location for hard redirect if router fails or use router if available in context
+        // Since we can't easily access router here without passing it, we rely on the component calling this updates
+        // layout. But effectively, the protected routes should handle it.
+        // However, let's persist the role in a separate key if needed for middleware/layouts
+        localStorage.setItem('userRole', 'teacher');
       } else {
-         localStorage.removeItem('userRole');
+        localStorage.removeItem('userRole');
       }
 
       try {
