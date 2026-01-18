@@ -25,6 +25,17 @@ export default function Page() {
     const [levelDefinitions, setLevelDefinitions] = useState<LevelDefinition[]>([])
     const [isPronunciationPlaying, setIsPronunciationPlaying] = useState(false)
     const [audioInstance, setAudioInstance] = useState<HTMLAudioElement | null>(null)
+    const [is1024Width, setIs1024Width] = useState(false)
+
+    useEffect(() => {
+        const checkWidth = () => {
+            setIs1024Width(window.innerWidth >= 1024 && window.innerWidth < 1280)
+        }
+        
+        checkWidth()
+        window.addEventListener('resize', checkWidth)
+        return () => window.removeEventListener('resize', checkWidth)
+    }, [])
 
     const { startSession, startWordSession } = useSession();
 
@@ -272,11 +283,12 @@ export default function Page() {
                     </div>
                 </div>
 
-                <div className="mt-4 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-8 items-stretch">
-                    <div className="flex flex-col w-full col-span-2 sm:col-span-2 lg:col-span-1 h-auto sm:h-64 md:h-72 lg:h-80 px-6 py-6 gap-6 rounded-[24px] border border-slate-100 bg-white shadow-sm overflow-hidden">
-                        <div className="flex flex-row items-center justify-between w-full">
-                            <h4 className="font-almarai-extrabold text-[#4B4B4B] text-base lg:text-lg mb-2 sm:mb-0">المقاييس الرئيسية</h4>
-                            <div className="flex gap-1 sm:gap-2 flex-wrap justify-center sm:justify-end">
+                <div className={`mt-4 grid gap-4 lg:gap-6 mb-8 items-stretch ${is1024Width ? 'grid-cols-1' : 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3'}`}>
+                    {/* Metrics Card - Always first */}
+                    <div className={`flex flex-col w-full min-h-[350px] sm:h-72 md:h-80 lg:h-88 px-6 py-6 gap-6 rounded-[24px] border border-slate-100 bg-white shadow-sm overflow-hidden ${is1024Width ? 'max-w-2xl mx-auto' : 'col-span-2 sm:col-span-2 lg:col-span-1'}`}>
+                        <div className="flex flex-col items-start w-full">
+                            <h4 className="font-almarai-extrabold text-[#4B4B4B] text-base lg:text-lg mb-3">المقاييس الرئيسية</h4>
+                            <div className="flex gap-1 sm:gap-2 flex-wrap justify-start w-full">
                                 {tabs.filter(t => t.key !== 'daily').map((tab) => (
                                     <button
                                         key={tab.key}
@@ -326,35 +338,75 @@ export default function Page() {
 
                     </div>
 
-                    <div className="relative flex flex-col items-center justify-center text-center w-full h-[140px] sm:h-56 md:h-60 lg:h-64 py-4 gap-3 rounded-[16px] border-2 border-transparent bg-[#FBD4D3] shadow-sm pl-0">
-                        <Image
-                            src="/images/start.png"
-                            alt="decor"
-                            width={56}
-                            height={56}
-                            className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-auto sm:w-[70px] sm:h-auto"
-                        />
-                        <div className="relative z-10">
-                            <p className="text-sm sm:text-base font-bold mb-1">أطول خط</p>
-                            <h3 className="text-4xl sm:text-5xl font-extrabold mb-1">{longestStreak}</h3>
-                            <p className="text-sm sm:text-base">أيام</p>
-                        </div>
-                    </div>
+                    {/* Streak Cards - Show after metrics for all screen sizes */}
+                    {!is1024Width && (
+                        <>
+                            <div className="relative flex flex-col items-center justify-center text-center w-full h-[140px] sm:h-56 md:h-60 lg:h-64 py-4 gap-3 rounded-[16px] border-2 border-transparent bg-[#FBD4D3] shadow-sm pl-0">
+                                <Image
+                                    src="/images/start.png"
+                                    alt="decor"
+                                    width={56}
+                                    height={56}
+                                    className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-auto sm:w-[70px] sm:h-auto"
+                                />
+                                <div className="relative z-10">
+                                    <p className="text-sm sm:text-base font-bold mb-1">أطول خط</p>
+                                    <h3 className="text-4xl sm:text-5xl font-extrabold mb-1">{longestStreak}</h3>
+                                    <p className="text-sm sm:text-base">أيام</p>
+                                </div>
+                            </div>
 
-                    <div className="relative flex flex-col items-center justify-center text-center w-full h-[140px] sm:h-56 md:h-60 lg:h-64 py-4 gap-3 rounded-[16px] border-2 border-transparent bg-[#FFF5CE] shadow-sm pl-0">
-                        <Image
-                            src="/images/fire.png"
-                            alt="decor"
-                            width={56}
-                            height={56}
-                            className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-auto sm:w-[70px] sm:h-auto"
-                        />
-                        <div className="relative z-10">
-                            <p className="text-sm sm:text-base font-bold mb-1">الخط الحالي</p>
-                            <h3 className="text-4xl sm:text-5xl font-extrabold mb-1">{currentStreak}</h3>
-                            <p className="text-sm sm:text-base">أيام</p>
+                            <div className="relative flex flex-col items-center justify-center text-center w-full h-[140px] sm:h-56 md:h-60 lg:h-64 py-4 gap-3 rounded-[16px] border-2 border-transparent bg-[#FFF5CE] shadow-sm pl-0">
+                                <Image
+                                    src="/images/fire.png"
+                                    alt="decor"
+                                    width={56}
+                                    height={56}
+                                    className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-auto sm:w-[70px] sm:h-auto"
+                                />
+                                <div className="relative z-10">
+                                    <p className="text-sm sm:text-base font-bold mb-1">الخط الحالي</p>
+                                    <h3 className="text-4xl sm:text-5xl font-extrabold mb-1">{currentStreak}</h3>
+                                    <p className="text-sm sm:text-base">أيام</p>
+                                </div>
+                            </div>
+                        </>
+                    )}
+
+                    {/* Streak Cards - Show after metrics at 1024px width */}
+                    {is1024Width && (
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                            <div className="relative flex flex-col items-center justify-center text-center w-full h-[140px] sm:h-56 md:h-60 lg:h-64 py-4 gap-3 rounded-[16px] border-2 border-transparent bg-[#FBD4D3] shadow-sm pr-0">
+                                <Image
+                                    src="/images/start.png"
+                                    alt="decor"
+                                    width={56}
+                                    height={56}
+                                    className="absolute right-0 top-1/2 -translate-y-1/2 w-12 h-auto sm:w-[70px] sm:h-auto"
+                                />
+                                <div className="relative z-10">
+                                    <p className="text-sm sm:text-base font-bold mb-1">أطول خط</p>
+                                    <h3 className="text-4xl sm:text-5xl font-extrabold mb-1">{longestStreak}</h3>
+                                    <p className="text-sm sm:text-base">أيام</p>
+                                </div>
+                            </div>
+
+                            <div className="relative flex flex-col items-center justify-center text-center w-full h-[140px] sm:h-56 md:h-60 lg:h-64 py-4 gap-3 rounded-[16px] border-2 border-transparent bg-[#FFF5CE] shadow-sm pr-0">
+                                <Image
+                                    src="/images/fire.png"
+                                    alt="decor"
+                                    width={56}
+                                    height={56}
+                                    className="absolute right-0 top-1/2 -translate-y-1/2 w-12 h-auto sm:w-[70px] sm:h-auto"
+                                />
+                                <div className="relative z-10">
+                                    <p className="text-sm sm:text-base font-bold mb-1">الخط الحالي</p>
+                                    <h3 className="text-4xl sm:text-5xl font-extrabold mb-1">{currentStreak}</h3>
+                                    <p className="text-sm sm:text-base">أيام</p>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
 
                 <div className="bg-transparent sm:bg-white sm:shadow-sm h-auto py-[10px] px-0 sm:px-[16px] gap-[12px] rounded-[13px] overflow-y-auto sm:border-2 sm:border-[#E5E5E5] flex flex-col justify-start">

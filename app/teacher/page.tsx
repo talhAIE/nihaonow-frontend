@@ -150,33 +150,33 @@ export default function TeacherDashboard() {
     return (
         <div className="space-y-6" dir="rtl">
             {/* Top Stats Cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 {/* Total Students - Green */}
-                <div className="bg-[#E2F2E9] rounded-[24px] p-6 flex flex-col items-center justify-center transition-transform hover:scale-[1.02] border border-green-50">
-                    <span className="text-[#35AB4E] font-bold text-sm mb-4">إجمالي الطلاب</span>
-                    <span className="text-[#35AB4E] text-4xl font-black">{stats.totalStudents}</span>
+                <div className="bg-[#E2F2E9] rounded-[24px] p-4 sm:p-6 flex flex-col items-center justify-center transition-transform hover:scale-[1.02] border border-green-50">
+                    <span className="text-[#35AB4E] font-bold text-xs sm:text-sm mb-2 sm:mb-4">إجمالي الطلاب</span>
+                    <span className="text-[#35AB4E] text-2xl sm:text-3xl lg:text-4xl font-black">{stats.totalStudents}</span>
                 </div>
 
                 {/* Total Topics - Yellow */}
-                <div className="bg-[#FFF9E1] rounded-[24px] p-6 flex flex-col items-center justify-center transition-transform hover:scale-[1.02] border border-amber-50">
-                    <span className="text-[#C69400] font-bold text-sm mb-4">مجموع المواضيع</span>
-                    <span className="text-[#C69400] text-4xl font-black">{stats.totalTopics}</span>
+                <div className="bg-[#FFF9E1] rounded-[24px] p-4 sm:p-6 flex flex-col items-center justify-center transition-transform hover:scale-[1.02] border border-amber-50">
+                    <span className="text-[#C69400] font-bold text-xs sm:text-sm mb-2 sm:mb-4">مجموع المواضيع</span>
+                    <span className="text-[#C69400] text-2xl sm:text-3xl lg:text-4xl font-black">{stats.totalTopics}</span>
                 </div>
 
                 {/* loggedInCount - Green */}
-                <div className="bg-[#E2F2E9] rounded-[24px] p-6 flex flex-col items-center justify-center transition-transform hover:scale-[1.02] border border-green-50">
-                    <span className="text-[#35AB4E] font-bold text-sm mb-4">تم تسجيل الدخول</span>
-                    <span className="text-[#35AB4E] text-4xl font-black">{stats.loggedInCount}</span>
+                <div className="bg-[#E2F2E9] rounded-[24px] p-4 sm:p-6 flex flex-col items-center justify-center transition-transform hover:scale-[1.02] border border-green-50">
+                    <span className="text-[#35AB4E] font-bold text-xs sm:text-sm mb-2 sm:mb-4">تم تسجيل الدخول</span>
+                    <span className="text-[#35AB4E] text-2xl sm:text-3xl lg:text-4xl font-black">{stats.loggedInCount}</span>
                 </div>
 
                 {/* notLoggedInCount - Pink */}
-                <div className="bg-[#FFE4E4] rounded-[24px] p-6 flex flex-col items-center justify-center transition-transform hover:scale-[1.02] border border-red-50">
-                    <span className="text-[#BC313F] font-bold text-sm mb-4">لم يسجل الدخول بعد</span>
+                <div className="bg-[#FFE4E4] rounded-[24px] p-4 sm:p-6 flex flex-col items-center justify-center transition-transform hover:scale-[1.02] border border-red-50">
+                    <span className="text-[#BC313F] font-bold text-xs sm:text-sm mb-2 sm:mb-4">لم يسجل الدخول بعد</span>
                     <div className="flex flex-row items-center gap-1">
-                        <span className="text-[#BC313F] text-3xl font-black">
+                        <span className="text-[#BC313F] text-xl sm:text-2xl lg:text-3xl font-black">
                             {stats.notLoggedInCount}
                         </span>
-                        <span className="text-[#BC313F] text-xs font-bold mt-2">ساعة</span>
+                        <span className="text-[#BC313F] text-xs font-bold mt-1 sm:mt-2">ساعة</span>
                     </div>
                 </div>
             </div>
@@ -208,32 +208,32 @@ export default function TeacherDashboard() {
                     ) : (
                         <div className="flex flex-col space-y-4">
                             {filteredStudents.map((student) => (
-                                <div key={student.id} className="group bg-white border border-slate-50 rounded-[20px] p-4 flex flex-col hover:shadow-lg hover:shadow-slate-100 transition-all duration-300 gap-4">
-                                    <div className="flex flex-row items-center justify-between gap-4 w-full overflow-x-auto" dir="rtl">
+                                <div key={student.id} className="group bg-white border border-slate-50 rounded-[20px] p-3 sm:p-4 flex flex-col hover:shadow-lg hover:shadow-slate-100 transition-all duration-300 gap-3 sm:gap-4">
+                                    <div className="flex flex-row items-center justify-between gap-3 sm:gap-4 w-full overflow-x-auto" dir="rtl">
                                         {/* Name and Level */}
-                                        <div className="flex flex-row items-center gap-3 flex-1 min-w-0">
-                                            <div className="w-12 h-12 rounded-[18px] bg-[#FBD4D3] border-2 border-white shadow-sm flex items-center justify-center text-[#BC313F] overflow-hidden relative rotate-3 group-hover:rotate-0 transition-transform">
-                                                <User className="w-6 h-6 opacity-50" />
+                                        <div className="flex flex-row items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-[18px] bg-[#FBD4D3] border-2 border-white shadow-sm flex items-center justify-center text-[#BC313F] overflow-hidden relative rotate-3 group-hover:rotate-0 transition-transform">
+                                                <User className="w-5 h-5 sm:w-6 sm:h-6 opacity-50" />
                                             </div>
                                             <div className="text-right">
-                                                <h4 className="font-black text-slate-800 text-sm truncate max-w-[10rem] sm:max-w-none">{student.username}</h4>
-                                                <span className={`text-[10px] font-bold ${getStatusColor(student.level)}`}>{getLevelLabel(student.level)}</span>
+                                                <h4 className="font-black text-slate-800 text-xs sm:text-sm truncate max-w-[8rem] sm:max-w-[10rem]">{student.username}</h4>
+                                                <span className={`text-[9px] sm:text-[10px] font-bold ${getStatusColor(student.level)}`}>{getLevelLabel(student.level)}</span>
                                             </div>
                                         </div>
 
-                                        <div className="flex flex-row items-center gap-4 flex-shrink-0 whitespace-nowrap">
+                                        <div className="flex flex-row items-center gap-2 sm:gap-4 flex-shrink-0 whitespace-nowrap">
                                             {/* Points */}
-                                            <div className="flex flex-row items-center gap-3 whitespace-nowrap">
-                                                <p className="text-[9px] text-slate-400 font-black mb-0.5 uppercase tracking-wider">مجموع النقاط</p>
-                                                <p className="font-black text-slate-800 text-base">{student.totalPoints?.toLocaleString()}</p>
+                                            <div className="flex flex-row items-center gap-2 sm:gap-3 whitespace-nowrap">
+                                                <p className="text-[8px] sm:text-[9px] text-slate-400 font-black mb-0.5 uppercase tracking-wider hidden xs:block">مجموع النقاط</p>
+                                                <p className="font-black text-slate-800 text-sm sm:text-base">{student.totalPoints?.toLocaleString()}</p>
                                             </div>
 
                                             <Link
                                                 href={`/teacher/reports/view?studentId=${student.id}&view=topics`}
-                                                className="flex items-center justify-center h-10 w-10 rounded-xl bg-[#FBD4D3] hover:bg-[#F9C3C2] text-[#8D1716] transition-all flex-shrink-0"
+                                                className="flex items-center justify-center h-8 w-8 sm:h-10 sm:w-10 rounded-xl bg-[#FBD4D3] hover:bg-[#F9C3C2] text-[#8D1716] transition-all flex-shrink-0"
                                                 aria-label="عرض المواضيع"
                                             >
-                                                <Eye className="w-4 h-4" />
+                                                <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                             </Link>
                                         </div>
                                     </div>

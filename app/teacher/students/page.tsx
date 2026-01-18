@@ -173,85 +173,82 @@ export default function MyStudentsPage() {
         <div className="space-y-10" dir="rtl">
             {/* Results Section */}
             <div className="space-y-6">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-6 px-2">
-                    {/* Left Group: Title & Download */}
-                    <div className="flex items-center gap-4 w-full md:w-auto">
-                        <div className="flex items-center gap-2">
-                            <div className="bg-slate-800 p-1 rounded-md text-white">
-                                <FileText className="w-3.5 h-3.5" />
-                            </div>
-                            <span className="font-black text-slate-800 text-base">نتائج</span>
+                <div className="flex flex-col gap-4 px-2">
+                    {/* Title Row */}
+                    <div className="flex items-center justify-center lg:justify-start gap-2">
+                        <div className="bg-slate-800 p-1 rounded-md text-white">
+                            <FileText className="w-3.5 h-3.5" />
                         </div>
-
-                        <button
-                            onClick={handleDownloadReports}
-                            disabled={isDownloading || compilingId === -1}
-                            className="flex flex-row-reverse items-center justify-center gap-2 bg-white border border-slate-100 text-slate-600 px-4 py-2 rounded-xl font-black hover:bg-slate-50 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed text-xs relative overflow-hidden h-10"
-                        >
-                            {isDownloading || compilingId === -1 ? (
-                                <>
-                                    <div
-                                        className="absolute inset-0 bg-green-50 transition-all duration-300 -z-0"
-                                        style={{ width: `${downloadProgress}%` }}
-                                    />
-                                    <div className="flex items-center gap-2 relative z-10 px-2">
-                                        <div className="w-3 h-3 border-2 border-slate-600 border-t-transparent rounded-full animate-spin" />
-                                        <span>{downloadProgress}%</span>
-                                    </div>
-                                </>
-                            ) : (
-                                <>
-                                    <Download className="w-4 h-4" />
-                                    <span>تحميل التقارير</span>
-                                </>
-                            )}
-                        </button>
+                        <span className="font-black text-slate-800 text-base">نتائج</span>
                     </div>
 
-                    {/* Right Group: Sort & Search */}
-                    <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
-                        <div className="relative w-full sm:w-auto">
-                            <button
-                                onClick={() => setIsFilterOpen(!isFilterOpen)}
-                                className="w-full border border-[#35AB4E] border-b-[3px] border-b-[#298E3E] sm:w-auto flex flex-row-reverse items-center justify-center gap-2 bg-white border border-slate-100 text-slate-600 px-5 py-2.5 rounded-xl font-black hover:bg-slate-50 transition-all shadow-sm text-xs h-10"
-                            >
-                                <Filter className="w-4 h-4" />
-                                <span>الترتيب</span>
-                            </button>
+                    {/* Controls Row */}
+                    <div className="flex flex-col lg:flex-row lg:justify-between items-start gap-3 w-full">
+                        {/* Left Group: Sort & Download Buttons */}
+                        <div className="flex flex-row gap-3 w-full lg:w-auto">
+                            {/* Sort Button */}
+                            <div className="relative min-w-[120px] flex-1">
+                                <button
+                                    onClick={() => setIsFilterOpen(!isFilterOpen)}
+                                    className="flex items-center justify-center gap-1 w-full min-h-[32px] px-2 py-1 rounded-[8px] border-2 border-[#35AB4E] bg-[#35AB4E] text-white cursor-pointer font-bold text-[10px] transition-all shadow-[0_2px_0_0_#20672F] whitespace-nowrap overflow-hidden text-ellipsis"
+                                >
+                                    <Filter className="w-4 h-4" />
+                                    <span>الترتيب</span>
+                                </button>
 
-                            {isFilterOpen && (
-                                <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-slate-100 rounded-xl shadow-xl z-50 overflow-hidden font-bold text-xs" dir="rtl">
-                                    <div className="p-2 border-b border-slate-50 bg-slate-50/50 text-slate-400 text-[10px] uppercase">ترتيب حسب</div>
-                                    <button
-                                        onClick={() => { setSortBy("name"); setSortOrder("asc"); setIsFilterOpen(false); }}
-                                        className={`w-full text-right px-4 py-2.5 hover:bg-slate-50 transition-colors ${sortBy === "name" && sortOrder === "asc" ? "text-green-600 bg-green-50/50" : "text-slate-600"}`}
-                                    >
-                                        الاسم (أ - ي)
-                                    </button>
-                                    <button
-                                        onClick={() => { setSortBy("name"); setSortOrder("desc"); setIsFilterOpen(false); }}
-                                        className={`w-full text-right px-4 py-2.5 hover:bg-slate-50 transition-colors ${sortBy === "name" && sortOrder === "desc" ? "text-green-600 bg-green-50/50" : "text-slate-600"}`}
-                                    >
-                                        الاسم (ي - أ)
-                                    </button>
-                                    <button
-                                        onClick={() => { setSortBy("level"); setSortOrder("desc"); setIsFilterOpen(false); }}
-                                        className={`w-full text-right px-4 py-2.5 hover:bg-slate-50 transition-colors ${sortBy === "level" && sortOrder === "desc" ? "text-green-600 bg-green-50/50" : "text-slate-600"}`}
-                                    >
-                                        المستوى (الأعلى أولاً)
-                                    </button>
-                                    <button
-                                        onClick={() => { setSortBy("points"); setSortOrder("desc"); setIsFilterOpen(false); }}
-                                        className={`w-full text-right px-4 py-2.5 hover:bg-slate-50 transition-colors ${sortBy === "points" && sortOrder === "desc" ? "text-green-600 bg-green-50/50" : "text-slate-600"}`}
-                                    >
-                                        النقاط (الأعلى أولاً)
-                                    </button>
-                                </div>
-                            )}
+                                {isFilterOpen && (
+                                    <div className="absolute right-0 top-full mt-2 w-48 bg-white border-2 border-[#35AB4E] rounded-[8px] shadow-[0_2px_0_0_#20672F] z-50 overflow-hidden font-bold text-[10px]" dir="rtl">
+                                        <div className="p-2 border-b border-[#35AB4E] bg-[#35AB4E]/10 text-[#35AB4E] text-[10px] uppercase">ترتيب حسب</div>
+                                        <button
+                                            onClick={() => { setSortBy("name"); setSortOrder("asc"); setIsFilterOpen(false); }}
+                                            className={`w-full text-right px-3 py-2 hover:bg-[#35AB4E]/10 transition-colors ${sortBy === "name" && sortOrder === "asc" ? "bg-[#35AB4E] text-white" : "text-[#4B4B4B]"}`}
+                                        >
+                                            الاسم (أ - ي)
+                                        </button>
+                                        <button
+                                            onClick={() => { setSortBy("name"); setSortOrder("desc"); setIsFilterOpen(false); }}
+                                            className={`w-full text-right px-3 py-2 hover:bg-[#35AB4E]/10 transition-colors ${sortBy === "name" && sortOrder === "desc" ? "bg-[#35AB4E] text-white" : "text-[#4B4B4B]"}`}
+                                        >
+                                            الاسم (ي - أ)
+                                        </button>
+                                        <button
+                                            onClick={() => { setSortBy("level"); setSortOrder("desc"); setIsFilterOpen(false); }}
+                                            className={`w-full text-right px-3 py-2 hover:bg-[#35AB4E]/10 transition-colors ${sortBy === "level" && sortOrder === "desc" ? "bg-[#35AB4E] text-white" : "text-[#4B4B4B]"}`}
+                                        >
+                                            المستوى (الأعلى أولاً)
+                                        </button>
+                                        <button
+                                            onClick={() => { setSortBy("points"); setSortOrder("desc"); setIsFilterOpen(false); }}
+                                            className={`w-full text-right px-3 py-2 hover:bg-[#35AB4E]/10 transition-colors ${sortBy === "points" && sortOrder === "desc" ? "bg-[#35AB4E] text-white" : "text-[#4B4B4B]"}`}
+                                        >
+                                            النقاط (الأعلى أولاً)
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Download Button */}
+                            <button
+                                onClick={handleDownloadReports}
+                                disabled={isDownloading || compilingId === -1}
+                                className="flex items-center justify-center gap-1 w-full min-h-[32px] px-2 py-1 rounded-[8px] border-2 border-[#35AB4E] bg-[#35AB4E] text-white cursor-pointer font-bold text-[10px] transition-all shadow-[0_2px_0_0_#20672F] whitespace-nowrap overflow-hidden text-ellipsis disabled:opacity-50 disabled:cursor-not-allowed flex-1"
+                            >
+                                {isDownloading || compilingId === -1 ? (
+                                    <>
+                                        <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                        <span>{downloadProgress}%</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Download className="w-4 h-4" />
+                                        <span>تحميل التقارير</span>
+                                    </>
+                                )}
+                            </button>
                         </div>
 
-                        {/* Search Bar */}
-                        <div className="relative w-full md:max-w-xs group">
+                        {/* Search Bar - Far end on screens > 1024px */}
+                        <div className="relative w-full lg:max-w-xs">
                             <input
                                 type="text"
                                 placeholder="البحث عن الطلاب هنا..."
@@ -268,46 +265,56 @@ export default function MyStudentsPage() {
                     {filteredStudents.length === 0 ? (
                         <div className="text-center py-8 text-slate-500 font-bold text-sm">لا يوجد طلاب مطابقين للبحث</div>
                     ) : (
-                        <div className="flex flex-col space-y-4">
-                            {filteredStudents.map((student) => (
-                                <div key={student.id} className="group bg-white border border-slate-50 rounded-[20px] p-4 flex flex-col hover:shadow-lg hover:shadow-slate-100 transition-all duration-300 gap-4">
-                                    <div className="flex flex-row items-center justify-between gap-4 w-full overflow-x-auto" dir="rtl">
-                                        {/* Name and Level */}
-                                        <div className="flex flex-row items-center gap-3 flex-1 min-w-0">
-                                            <div className="w-12 h-12 rounded-[18px] bg-[#FBD4D3] border-2 border-white shadow-sm flex items-center justify-center text-[#BC313F] overflow-hidden relative rotate-3 group-hover:rotate-0 transition-transform">
-                                                <User className="w-6 h-6 opacity-50" />
+                        <>
+                            {/* Table Headers */}
+                            <div className="grid grid-cols-4 gap-4 px-4 py-2 bg-gray-50 rounded-[20px] font-black text-slate-600 text-xs" dir="rtl">
+                                <div className="text-right">الاسم</div>
+                                <div className="text-center">مجموع النقاط</div>
+                                <div className="text-center">الاستخدام</div>
+                                <div className="text-center">عرض</div>
+                            </div>
+                            
+                            {/* Student Cards */}
+                            <div className="flex flex-col space-y-4">
+                                {filteredStudents.map((student) => (
+                                    <div key={student.id} className="group bg-white border border-slate-50 rounded-[20px] p-4 flex flex-col hover:shadow-lg hover:shadow-slate-100 transition-all duration-300 gap-4">
+                                        <div className="grid grid-cols-4 gap-4 w-full overflow-x-auto" dir="rtl">
+                                            {/* Name and Level */}
+                                            <div className="flex flex-row items-center gap-3 min-w-0">
+                                                <div className="w-12 h-12 rounded-[18px] bg-[#FBD4D3] border-2 border-white shadow-sm flex items-center justify-center text-[#BC313F] overflow-hidden relative rotate-3 group-hover:rotate-0 transition-transform">
+                                                    <User className="w-6 h-6 opacity-50" />
+                                                </div>
+                                                <div className="text-right">
+                                                    <h4 className="font-black text-slate-800 text-sm truncate max-w-[10rem] sm:max-w-none">{student.username}</h4>
+                                                    <span className={`text-[10px] font-bold ${getStatusColor(student.level)}`}>{getLevelLabel(student.level)}</span>
+                                                </div>
                                             </div>
-                                            <div className="text-right">
-                                                <h4 className="font-black text-slate-800 text-sm truncate max-w-[10rem] sm:max-w-none">{student.username}</h4>
-                                                <span className={`text-[10px] font-bold ${getStatusColor(student.level)}`}>{getLevelLabel(student.level)}</span>
-                                            </div>
-                                        </div>
 
-                                        <div className="flex flex-row items-center gap-4 flex-shrink-0 whitespace-nowrap">
                                             {/* Points */}
-                                            <div className="flex flex-row items-center gap-3 whitespace-nowrap">
-                                                <p className="text-[9px] text-slate-400 font-black mb-0.5 uppercase tracking-wider">مجموع النقاط</p>
-                                                <p className="font-black text-slate-800 text-base">{student.totalPoints?.toLocaleString()}</p>
+                                            <div className="flex flex-row items-center justify-center">
+                                                <p className="font-semibold text-slate-800 text-base">{student.totalPoints?.toLocaleString()}</p>
                                             </div>
 
                                             {/* Usage */}
-                                            <div className="flex flex-row items-center gap-3 whitespace-nowrap">
-                                                <p className="text-[9px] text-slate-400 font-black mb-0.5 uppercase tracking-wider">الاستخدام</p>
-                                                <p className="font-black text-slate-800 text-base">{student.usageLabel}</p>
+                                            <div className="flex flex-row items-center justify-center">
+                                                <p className="font-semibold text-slate-800 text-base">{student.usageLabel}</p>
                                             </div>
 
-                                            <Link
-                                                href={`/teacher/reports/view?studentId=${student.id}&view=topics`}
-                                                className="flex items-center justify-center h-10 w-10 rounded-xl bg-[#FBD4D3] hover:bg-[#F9C3C2] text-[#8D1716] transition-all flex-shrink-0"
-                                                aria-label="عرض المواضيع"
-                                            >
-                                                <Eye className="w-4 h-4" />
-                                            </Link>
+                                            {/* View Button */}
+                                            <div className="flex flex-row items-center justify-center">
+                                                <Link
+                                                    href={`/teacher/reports/view?studentId=${student.id}&view=topics`}
+                                                    className="flex items-center justify-center h-10 w-10 rounded-xl bg-[#FBD4D3] hover:bg-[#F9C3C2] text-[#8D1716] transition-all"
+                                                    aria-label="عرض المواضيع"
+                                                >
+                                                    <Eye className="w-4 h-4" />
+                                                </Link>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
-                        </div>
+                                ))}
+                            </div>
+                        </>
                     )}
                 </div>
             </div>

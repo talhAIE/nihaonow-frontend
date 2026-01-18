@@ -164,18 +164,35 @@ export default function LeaderboardPage() {
 
     const topThree = useMemo(() => entries.slice(0, 3), [entries])
     const rest = useMemo(() => entries.slice(3), [entries])
+    
+    // Pagination state for "All Students" section
+    const [currentPage, setCurrentPage] = useState(1)
+    const usersPerPage = 15
+    
+    const displayedRest = useMemo(() => {
+        const startIndex = (currentPage - 1) * usersPerPage
+        const endIndex = startIndex + usersPerPage
+        return rest.slice(startIndex, endIndex)
+    }, [rest, currentPage])
+    
+    const totalPages = Math.ceil(rest.length / usersPerPage)
+    
+    // Reset page when tab changes
+    useEffect(() => {
+        setCurrentPage(1)
+    }, [selectedTab])
 
     return (
         <div className="min-h-screen w-[90%] bg-white mx-auto pt-4 sm:pt-6 pb-16" dir='rtl'>
             <div className="mx-auto w-full">
                 {/* Tabs */}
-                <div className="grid grid-cols-3 gap-2 mb-6 px-4 sm:px-0 sm:flex sm:gap-3 sm:justify-start">
+                <div className="flex gap-1 sm:gap-2 flex-wrap justify-start w-full mb-6">
                     <button
                         type="button"
                         onClick={() => setSelectedTab('all')}
-                        className={`w-full px-1 sm:px-6 py-2.5 rounded-full text-sm sm:text-base font-medium transition-all ${selectedTab === 'all'
-                            ? 'bg-[#35AB4E] text-white shadow-md'
-                            : 'bg-[#F5F5F5] text-gray-700 hover:bg-gray-100'
+                        className={`w-[80px] sm:w-[100px] px-3 sm:px-6 py-1.5 rounded-[8px] text-xs sm:text-sm font-bold transition-all border-2 ${selectedTab === 'all'
+                            ? 'bg-[#35AB4E] border-[#35AB4E] text-white shadow-[0_2px_0_0_#20672F]'
+                            : 'bg-white border-[#4B4B4B] text-[#4B4B4B]'
                             }`}
                     >
                         شهري
@@ -183,9 +200,9 @@ export default function LeaderboardPage() {
                     <button
                         type="button"
                         onClick={() => setSelectedTab('monthly')}
-                        className={`w-full px-1 sm:px-6 py-2.5 rounded-full text-sm sm:text-base font-medium transition-all ${selectedTab === 'monthly'
-                            ? 'bg-[#35AB4E] text-white shadow-md'
-                            : 'bg-[#F5F5F5] text-gray-700 hover:bg-gray-100'
+                        className={`w-[80px] sm:w-[100px] px-3 sm:px-6 py-1.5 rounded-[8px] text-xs sm:text-sm font-bold transition-all border-2 ${selectedTab === 'monthly'
+                            ? 'bg-[#35AB4E] border-[#35AB4E] text-white shadow-[0_2px_0_0_#20672F]'
+                            : 'bg-white border-[#4B4B4B] text-[#4B4B4B]'
                             }`}
                     >
                         سنوي
@@ -193,9 +210,9 @@ export default function LeaderboardPage() {
                     <button
                         type="button"
                         onClick={() => setSelectedTab('weekly')}
-                        className={`w-full px-1 sm:px-6 py-2.5 rounded-full text-sm sm:text-base font-medium transition-all ${selectedTab === 'weekly'
-                            ? 'bg-[#35AB4E] text-white shadow-md'
-                            : 'bg-[#F5F5F5] text-gray-700 hover:bg-gray-100'
+                        className={`w-[80px] sm:w-[100px] px-3 sm:px-6 py-1.5 rounded-[8px] text-xs sm:text-sm font-bold transition-all border-2 ${selectedTab === 'weekly'
+                            ? 'bg-[#35AB4E] border-[#35AB4E] text-white shadow-[0_2px_0_0_#20672F]'
+                            : 'bg-white border-[#4B4B4B] text-[#4B4B4B]'
                             }`}
                     >
                         أسبوعي
@@ -244,7 +261,7 @@ export default function LeaderboardPage() {
                             </div>
                         </div>
                     </div>
-                    <CardContent className="p-6 sm:p-8 relative z-10">
+                    <CardContent className="p-4 sm:p-6 lg:p-8 relative z-10">
                         <div className="flex items-center gap-2 mb-6">
                             <div className="w-8 h-8">
                                 <Image
@@ -258,7 +275,7 @@ export default function LeaderboardPage() {
                             <h3 className="text-lg sm:text-xl font-almarai-extrabold text-[#4B4B4B]">أفضل 3 طلاب</h3>
                         </div>
 
-                        <div className="flex flex-row items-center justify-center gap-2 sm:gap-14 pt-4 sm:pt-10">
+                        <div className="flex flex-row items-center justify-center gap-1 sm:gap-8 lg:gap-14 pt-4 sm:pt-10 px-2 sm:px-4">
 
                             {/* Rank 2 (Left) */}
                             {topThree[1] && (
@@ -277,7 +294,7 @@ export default function LeaderboardPage() {
                                     </div>
                                     <div className="text-center w-full">
                                         <div className="min-h-[40px] sm:min-h-[52px] flex items-center justify-center mb-1">
-                                            <h4 className="font-almarai-extrabold text-[#4B4B4B] text-[12px] sm:text-base line-clamp-2 leading-tight">
+                                            <h4 className="font-almarai-extrabold text-[#4B4B4B] text-[12px] sm:text-base truncate leading-tight max-w-full">
                                                 {topThree[1].username}
                                             </h4>
                                         </div>
@@ -306,7 +323,7 @@ export default function LeaderboardPage() {
                                     </div>
                                     <div className="text-center w-full">
                                         <div className="min-h-[40px] sm:min-h-[52px] flex items-center justify-center mb-1">
-                                            <h4 className="font-almarai-extrabold text-[#4B4B4B] text-sm sm:text-lg line-clamp-2 leading-tight">
+                                            <h4 className="font-almarai-extrabold text-[#4B4B4B] text-sm sm:text-lg truncate leading-tight max-w-full">
                                                 {topThree[0].username}
                                             </h4>
                                         </div>
@@ -335,7 +352,7 @@ export default function LeaderboardPage() {
                                     </div>
                                     <div className="text-center w-full">
                                         <div className="min-h-[40px] sm:min-h-[52px] flex items-center justify-center mb-1">
-                                            <h4 className="font-almarai-extrabold text-[#4B4B4B] text-[12px] sm:text-base line-clamp-2 leading-tight">
+                                            <h4 className="font-almarai-extrabold text-[#4B4B4B] text-[12px] sm:text-base truncate leading-tight max-w-full">
                                                 {topThree[2].username}
                                             </h4>
                                         </div>
@@ -376,7 +393,7 @@ export default function LeaderboardPage() {
                                     </button>
                                 </div>
                             )}
-                            {!loading && !error && rest.map((entry, idx) => {
+                            {!loading && !error && displayedRest.map((entry, idx) => {
                                 const isCurrentUser = entry.userId === student?.userId
                                 const displayRank = entry.rank || (idx + 4)
 
@@ -419,8 +436,11 @@ export default function LeaderboardPage() {
                                             </div>
 
                                             {/* Name and Level */}
-                                            <div className="flex flex-col text-right min-w-0">
-                                                <span className="font-almarai-extrabold text-[#4B4B4B] text-base truncate">
+                                            <div className="flex flex-col text-right min-w-0 flex-1">
+                                                <span 
+                                                    className="font-almarai-extrabold text-[#4B4B4B] text-base truncate max-w-full"
+                                                    dir={/[\u0600-\u06FF]/.test(entry.username) ? "rtl" : "ltr"}
+                                                >
                                                     {entry.username}
                                                 </span>
                                                 <span className={`font-almarai-bold text-xs ${levelInfo.color}`}>
@@ -444,6 +464,63 @@ export default function LeaderboardPage() {
                             {!loading && !error && rest.length === 0 && entries.length <= 3 && (
                                 <div className="p-8 text-center text-sm text-gray-500 font-almarai-regular">
                                     لا يوجد المزيد من الطلاب
+                                </div>
+                            )}
+                            {!loading && !error && rest.length > 0 && totalPages > 1 && (
+                                <div className="flex justify-center items-center gap-2 mt-6 flex-wrap">
+                                    {/* Next button (for RTL, this appears first) */}
+                                    <button
+                                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                        disabled={currentPage === totalPages}
+                                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-all ${
+                                            currentPage === totalPages
+                                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                                : 'bg-white border-2 border-[#4B4B4B] text-[#4B4B4B] hover:bg-[#F5F5F5]'
+                                        }`}
+                                    >
+                                        ‹
+                                    </button>
+                                    
+                                    {/* Page numbers */}
+                                    {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                                        let pageNum;
+                                        if (totalPages <= 5) {
+                                            pageNum = totalPages - i; // Reverse for RTL
+                                        } else if (currentPage <= 3) {
+                                            pageNum = 5 - i; // Show 5,4,3,2,1 for RTL
+                                        } else if (currentPage >= totalPages - 2) {
+                                            pageNum = totalPages - (4 - i); // Show last 5 in reverse
+                                        } else {
+                                            pageNum = currentPage + 2 - i; // Show current+2 to current-2 in reverse
+                                        }
+                                        
+                                        return (
+                                            <button
+                                                key={pageNum}
+                                                onClick={() => setCurrentPage(pageNum)}
+                                                className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-all ${
+                                                    currentPage === pageNum
+                                                        ? 'bg-[#35AB4E] border-2 border-[#35AB4E] text-white shadow-[0_2px_0_0_#20672F]'
+                                                        : 'bg-white border-2 border-[#4B4B4B] text-[#4B4B4B] hover:bg-[#F5F5F5]'
+                                                }`}
+                                            >
+                                                {pageNum}
+                                            </button>
+                                        );
+                                    })}
+                                    
+                                    {/* Previous button (for RTL, this appears last) */}
+                                    <button
+                                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                        disabled={currentPage === 1}
+                                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-all ${
+                                            currentPage === 1
+                                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                                : 'bg-white border-2 border-[#4B4B4B] text-[#4B4B4B] hover:bg-[#F5F5F5]'
+                                        }`}
+                                    >
+                                        ›
+                                    </button>
                                 </div>
                             )}
                         </div>

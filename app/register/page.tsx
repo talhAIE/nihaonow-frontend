@@ -253,14 +253,19 @@ export default function RegisterPage() {
               )}
             </Button>
 
-            <Button
-              className=" font-bold w-full sm:max-w-[470.5px] h-11 sm:h-[45px] gap-[10px] rounded-[12px] hover:bg-[#E5E5E5] bg-[#E5E5E5] border-b-[3px] border-b-[rgba(0,0,0,0.08)] text-[#282828] text-[16px] transition duration-200"
-            >
-              لديك حساب بالفعل؟{' '}
-              <Link href="/login" className="font-semibold text-green-600 hover:text-green-700 transition-colors mr-1">
-                تسجيل الدخول
-              </Link>
-            </Button>
+            <div className="w-full sm:max-w-[470.5px] flex items-center justify-center">
+              <Button
+                className="font-bold w-full h-11 sm:h-[45px] px-4 rounded-[12px] hover:bg-[#E5E5E5] bg-[#E5E5E5] border-b-[3px] border-b-[rgba(0,0,0,0.08)] text-[#282828] text-[14px] sm:text-[16px] transition duration-200 whitespace-nowrap"
+                asChild
+              >
+                <div>
+                  <span>لديك حساب بالفعل؟{' '}</span>
+                  <Link href="/login" className="font-semibold text-green-600 hover:text-green-700 transition-colors">
+                    تسجيل الدخول
+                  </Link>
+                </div>
+              </Button>
+            </div>
 
           </form>
         </div>

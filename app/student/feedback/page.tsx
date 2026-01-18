@@ -278,8 +278,8 @@ export default function FeedbackPage() {
     return (
       <div className="min-h-screen flex items-center justify-center" dir="rtl">
         <div className="text-center">
-          <p className="text-gray-600 mb-4">لا توجد تغذية راجعة متاحة</p>
-          <Button onClick={goToStudentDashboard} className="bg-green-500 hover:bg-green-600">
+          <p className="text-gray-600 mb-4 text-sm sm:text-base">لا توجد تغذية راجعة متاحة</p>
+          <Button onClick={goToStudentDashboard} className="bg-green-500 hover:bg-green-600 px-4 sm:px-6 py-2 sm:py-3 rounded-xl text-sm sm:text-base w-full sm:w-auto max-w-[200px] sm:max-w-none">
             العودة للبداية
           </Button>
         </div>
@@ -287,68 +287,79 @@ export default function FeedbackPage() {
     );
   }
   return (
-    <div className="min-h-screen bg-white" dir="rtl">
+    <div className="min-h-screen bg-white overflow-x-hidden" dir="rtl">
 
       {/* Main Content */}
-      <div className="px-4 py-6">
+      <div className="px-3 sm:px-4 py-4 sm:py-6">
         {/* Page Title */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-black">
-            أحسنت يا  {feedback.username || 'user'}
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-black">
+            <span>أحسنت يا </span><span style={{ color: 'red' }}>{feedback.username || 'user'}</span>
           </h1>
-          <p className="text-gray-600 mt-2 text-lg">
+          <p className="text-gray-600 mt-2 text-base sm:text-lg">
             لقد أكملت الدرس بنجاح. إليك تقييمك الشامل.
           </p>
         </div>
 
         {/* Main Content Area */}
-        <div className="flex flex-col lg:flex-row gap-8 items-center justify-center max-w-6xl mx-auto">
-          {/* Feedback Card - Left Side */}
-          <div className="flex-1 lg:w-2/3 max-w-2xl order-1 lg:order-1">
-            <div className="bg-gray-200 rounded-3xl p-8 shadow-lg">
+        <div className="flex flex-col gap-6 sm:gap-8 items-center max-w-6xl mx-auto">
+          {/* Sheikh Character - Top on Mobile */}
+          <div className="w-full max-w-[150px] sm:max-w-xs order-1 lg:hidden">
+            <Image
+              src="/images/shiekh.png"
+              alt="Sheikh Character"
+              width={150}
+              height={200}
+              className="object-contain w-full h-auto"
+            />
+          </div>
+
+          {/* Feedback Card */}
+          <div className="w-full max-w-2xl order-2">
+            <div className="bg-gray-200 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-lg">
               {/* Feedback Summary */}
-              <div className="text-right mb-6">
-                <h2 className="text-2xl font-bold text-green-600">تقييم تلقائي</h2>
-                <p className="text-gray-700 mt-2">{feedback.comprehensiveFeedback}</p>
+              <div className="text-right mb-4 sm:mb-6">
+                <h2 className="text-xl sm:text-2xl font-bold text-green-600">تقييم تلقائي</h2>
+                <p className="text-gray-700 mt-2 text-sm sm:text-base leading-relaxed">{feedback.comprehensiveFeedback}</p>
               </div>
 
               {/* Summary metrics */}
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="bg-white rounded-lg p-4 shadow-sm text-right">
-                  <div className="text-sm text-gray-500">الاكتمال</div>
-                  <div className="text-2xl font-bold text-gray-800">{Math.round(((feedback.completedCount ?? 0) / Math.max(1, feedback.totalScenarios ?? 1)) * 100)}%</div>
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
+                <div className="bg-white rounded-lg p-3 sm:p-4 shadow-sm text-right">
+                  <div className="text-xs sm:text-sm text-gray-500">الاكتمال</div>
+                  <div className="text-lg sm:text-2xl font-bold text-gray-800">{Math.round(((feedback.completedCount ?? 0) / Math.max(1, feedback.totalScenarios ?? 1)) * 100)}%</div>
                   <div className="text-xs text-gray-400">{feedback.completedCount ?? 0} / {feedback.totalScenarios ?? 0}</div>
                 </div>
-                <div className="bg-white rounded-lg p-4 shadow-sm text-right">
-                  <div className="text-sm text-gray-500">الدقة</div>
-                  <div className="text-2xl font-bold text-gray-800">{Number(feedback.strengths.averageAccuracy ?? 0)}%</div>
+                <div className="bg-white rounded-lg p-3 sm:p-4 shadow-sm text-right">
+                  <div className="text-xs sm:text-sm text-gray-500">الدقة</div>
+                  <div className="text-lg sm:text-2xl font-bold text-gray-800">{Number(feedback.strengths.averageAccuracy ?? 0)}%</div>
                   <div className="text-xs text-gray-400">دقة النطق</div>
                 </div>
-                <div className="bg-white rounded-lg p-4 shadow-sm text-right">
-                  <div className="text-sm text-gray-500">النطق</div>
-                  <div className="text-2xl font-bold text-gray-800">{Number(feedback.strengths.averagePronunciation ?? 0)}%</div>
+                <div className="bg-white rounded-lg p-3 sm:p-4 shadow-sm text-right">
+                  <div className="text-xs sm:text-sm text-gray-500">النطق</div>
+                  <div className="text-lg sm:text-2xl font-bold text-gray-800">{Number(feedback.strengths.averagePronunciation ?? 0)}%</div>
                   <div className="text-xs text-gray-400">نسبة النطق</div>
                 </div>
-                <div className="bg-white rounded-lg p-4 shadow-sm text-right">
-                  <div className="text-sm text-gray-500">الطلاقة</div>
-                  <div className="text-2xl font-bold text-gray-800">{Number(feedback.strengths.averageFluency ?? 0)}%</div>
+                <div className="bg-white rounded-lg p-3 sm:p-4 shadow-sm text-right">
+                  <div className="text-xs sm:text-sm text-gray-500">الطلاقة</div>
+                  <div className="text-lg sm:text-2xl font-bold text-gray-800">{Number(feedback.strengths.averageFluency ?? 0)}%</div>
                   <div className="text-xs text-gray-400">سلاسة الكلام</div>
                 </div>
               </div>
 
-              <div className="mb-4 text-right">
-                <div className="text-sm text-gray-500">التقييم العام</div>
-                <div className="text-lg font-semibold text-gray-800" >{feedback.overallAssessment ?? feedback.comprehensiveFeedback}</div>
+              <div className="mb-3 sm:mb-4 text-right">
+                <div className="text-xs sm:text-sm text-gray-500">التقييم العام</div>
+                <div className="text-sm sm:text-lg font-semibold text-gray-800 leading-relaxed" >{feedback.overallAssessment ?? feedback.comprehensiveFeedback}</div>
               </div>
 
               {feedback.feedbackAudioUrl && (
-                <div className="flex justify-center mb-6">
-                  <div className="bg-green-100 border border-green-200 rounded-3xl px-6 py-2 w-full max-w-[60%]">
+                <div className="flex justify-center mb-4 sm:mb-6">
+                  <div className="bg-green-100 border border-green-200 rounded-xl sm:rounded-2xl lg:rounded-3xl px-3 sm:px-4 lg:px-6 py-2 w-full max-w-[90%] sm:max-w-[70%] lg:max-w-[60%]">
                     <div className="flex items-center justify-between">
-                      <span className="text-gray-800 font-medium text-lg">تغذية راجعة صوتية</span>
+                      <span className="text-gray-800 font-medium text-xs sm:text-sm lg:text-lg truncate flex-1 mr-2">تغذية راجعة صوتية</span>
                       <button
                         onClick={handleFeedbackAudioPlay}
-                        className="bg-green-500 hover:bg-green-600 text-white rounded-full p-2 transition-colors"
+                        className="bg-green-500 hover:bg-green-600 text-white rounded-full p-1.5 sm:p-2 transition-colors flex-shrink-0"
                         disabled={!feedback.feedbackAudioUrl}
                       >
                         {isPlayingFeedback && currentPlayingUrl === feedback.feedbackAudioUrl ? (
@@ -374,16 +385,16 @@ export default function FeedbackPage() {
 
               {/* Attempts list (collapsible) */}
               {showAttempts && feedback.attempts && feedback.attempts.length > 0 && (
-                <div className="space-y-3 mt-4">
-                  <h3 className="text-right font-semibold text-gray-700 mb-2">محاولات</h3>
+                <div className="space-y-2 sm:space-y-3 mt-4">
+                  <h3 className="text-right font-semibold text-gray-700 mb-2 text-sm sm:text-base">محاولات</h3>
                   {feedback.attempts.map((a) => (
-                    <div key={a.id ?? a.scenarioId} className="bg-white rounded-lg p-3 shadow-sm flex items-center gap-3">
+                    <div key={a.id ?? a.scenarioId} className="bg-white rounded-lg p-2 sm:p-3 shadow-sm flex items-center gap-2 sm:gap-3">
                       {/* Play button column - fixed width for alignment */}
-                      <div className="flex-shrink-0 w-10 flex justify-center">
+                      <div className="flex-shrink-0 w-8 sm:w-10 flex justify-center">
                         {a.audioFeedbackUrl ? (
                           <button
                             onClick={() => handleAttemptAudioPlay(a.audioFeedbackUrl)}
-                            className="bg-green-500 hover:bg-green-600 text-white rounded-full p-2 transition-colors"
+                            className="bg-green-500 hover:bg-green-600 text-white rounded-full p-1.5 sm:p-2 transition-colors"
                             aria-label={`Play attempt ${a.scenarioNumber ?? a.scenarioId} feedback`}
                           >
                             {isPlayingFeedback && currentPlayingUrl === a.audioFeedbackUrl ? (
@@ -393,18 +404,18 @@ export default function FeedbackPage() {
                             )}
                           </button>
                         ) : (
-                          <div className="w-8 h-8" /> /* Placeholder for alignment */
+                          <div className="w-6 h-6 sm:w-8 sm:h-8" /> /* Placeholder for alignment */
                         )}
                       </div>
                       {/* Score column - fixed width */}
-                      <div className="flex-shrink-0 w-12 text-center">
-                        <div className="text-sm font-medium text-gray-600">{a.totalScore ?? '-'}</div>
+                      <div className="flex-shrink-0 w-10 sm:w-12 text-center">
+                        <div className="text-xs sm:text-sm font-medium text-gray-600">{a.totalScore ?? '-'}</div>
                       </div>
                       {/* Content column - flexible width */}
-                      <div className="flex-1 text-right">
-                        <div className="font-medium">المشهد {a.scenarioNumber ?? a.scenarioId}</div>
-                        {a.textualFeedback && <div className="text-sm text-gray-600 mt-1">{a.textualFeedback}</div>}
-                        <div className="text-xs text-gray-500 mt-1">نطق: {a.pronunciationScore ?? 0}% • دقة: {a.accuracyScore ?? 0}% • طلاقة: {a.fluencyScore ?? 0}% • اكتمال: {a.completenessScore ?? 0}%</div>
+                      <div className="flex-1 text-right min-w-0">
+                        <div className="font-medium text-sm sm:text-base truncate">المشهد {a.scenarioNumber ?? a.scenarioId}</div>
+                        {a.textualFeedback && <div className="text-xs sm:text-sm text-gray-600 mt-1 line-clamp-2">{a.textualFeedback}</div>}
+                        <div className="text-xs text-gray-500 mt-1 truncate">نطق: {a.pronunciationScore ?? 0}% • دقة: {a.accuracyScore ?? 0}% • طلاقة: {a.fluencyScore ?? 0}% • اكتمال: {a.completenessScore ?? 0}%</div>
                       </div>
                     </div>
                   ))}
@@ -412,10 +423,10 @@ export default function FeedbackPage() {
               )}
 
               {/* Session Ended Button */}
-              <div className="text-center mt-8 pb-4">
+              <div className="text-center mt-6 sm:mt-8 pb-2 sm:pb-4">
                 <Button
                   onClick={handleSessionEnd}
-                  className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-xl font-medium"
+                  className="bg-red-600 hover:bg-red-700 text-white px-4 sm:px-6 lg:px-8 py-2 sm:py-3 rounded-xl font-medium text-xs sm:text-sm lg:text-base w-full sm:w-auto max-w-[200px] sm:max-w-none"
                 >
                   انتهت الجلسة
                 </Button>
@@ -423,13 +434,13 @@ export default function FeedbackPage() {
             </div>
           </div>
 
-          {/* Sheikh Character - Right Side */}
-          <div className="flex-shrink-0 lg:w-1/3 order-2 lg:order-2">
+          {/* Sheikh Character - Bottom on Mobile, Right on Desktop */}
+          <div className="w-full max-w-[150px] sm:max-w-xs order-3 hidden lg:block">
             <Image
               src="/images/shiekh.png"
               alt="Sheikh Character"
-              width={300}
-              height={400}
+              width={150}
+              height={200}
               className="object-contain w-full h-auto"
             />
           </div>

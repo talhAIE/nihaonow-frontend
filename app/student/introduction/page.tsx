@@ -124,6 +124,7 @@ export default function SheikhPage() {
           unit={sessionUtils.getCurrentTopic()?.chapter?.name || ""}
           lesson={sessionUtils.getCurrentTopic()?.name || ""}
           progress={progress}
+          title="يعود"
           onClick={() => {
             setSkipIntro(true);
             setProgress(100);
@@ -185,38 +186,29 @@ export default function SheikhPage() {
           )}
         </div>
 
-        <div className="grid grid-cols-3 gap-3 sm:gap-4 w-full px-4 max-w-full mx-auto">
+        <div className="flex flex-col md:flex-row gap-3 w-full max-w-full mx-auto">
+          {/* Yellow User Guide Button */}
           <Button
-            variant="outline"
-            onClick={handleBackClick}
-            className="w-full bg-[#E5E5E5] hover:bg-[#E5E5E5] border-none border-b-[3px] border-b-[#B0B0B0] hover:text-[#282828] text-[#282828]
-            h-14 pt-4 pb-4 flex items-center justify-center gap-2.5 text-base sm:text-lg font-almarai-bold rounded-xl shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all"
-          >
-            <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-            <span className="truncate">رجوع</span>
-          </Button>
-
-          <Button
-            variant="outline"
             onClick={handleUserGuideClick}
-            className="w-full bg-[#E5E5E5] hover:bg-[#E5E5E5] border-none border-b-[3px] border-b-[#B0B0B0] hover:text-[#282828] text-[#282828]
-            h-14 pt-4 pb-4 flex items-center justify-center gap-2.5 text-base sm:text-lg font-almarai-bold rounded-xl shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all"
+            className="w-full bg-[#FFCB08] h-14 hover:bg-[#FFCB08] text-[#1F1F1F] py-4 flex items-center justify-center gap-2 md:gap-3 text-xs sm:text-sm md:text-lg font-almarai-bold border-b-[4px] border-b-[#DEA407] shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all font-almarai"
           >
-            <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+            <BookOpen className="h-4 w-4 md:h-5 md:w-5 stroke-[2.5px] flex-shrink-0" />
             <span className="truncate">دليل المستخدم</span>
           </Button>
 
+          {/* Green Continue Button */}
           <Button
             onClick={handleNextClick}
             disabled={isNavigating || (!introComplete && !skipIntro)}
-            className="w-full bg-[#35AB4E] h-14 hover:bg-[#35AB4E] border-b-[3px] border-b-[#454545] text-white 
-            h-14 pt-4 pb-4 flex items-center justify-center gap-2.5 text-base sm:text-lg font-almarai-bold rounded-xl shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:border-none border-none"
+            className="w-full bg-[#35AB4E] h-14 hover:bg-[#35AB4E] text-white py-4 flex items-center justify-center gap-3 text-sm sm:text-base md:text-lg font-almarai-bold rounded-2xl border-b-[4px] border-b-[#298E3E] disabled:opacity-50 disabled:cursor-not-allowed disabled:border-none shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all font-almarai"
           >
-            <span className="truncate">{isNavigating ? "جاري التحميل..." : "استمر"}</span>
+            <span className="truncate">
+              {isNavigating ? "جاري التحميل..." : "استمر"}
+            </span>
             {isNavigating ? (
-              <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin flex-shrink-0" />
+              <Loader2 className="h-5 w-5 animate-spin" />
             ) : (
-              <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6 flex-shrink-0" />
+              <ChevronLeft className="h-6 w-6" />
             )}
           </Button>
         </div>

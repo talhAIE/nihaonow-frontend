@@ -186,13 +186,13 @@ body.mobile-menu-open {
 
   0%,
   100% {
-    box-shadow: 0 0 4px 1px rgba(255, 203, 8, 0.2);
+    box-shadow: 0 0 8px 2px rgba(255, 203, 8, 0.4);
     transform: scale(1);
   }
 
   50% {
-    box-shadow: 0 0 10px 3px rgba(255, 203, 8, 0.5);
-    transform: scale(1.01);
+    box-shadow: 0 0 20px 6px rgba(255, 203, 8, 0.7);
+    transform: scale(1.02);
   }
 }
 

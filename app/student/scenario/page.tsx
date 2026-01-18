@@ -48,6 +48,18 @@ export default function ScenarioPage() {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [lastAttemptScores, setLastAttemptScores] = useState<any>(null);
   const [lastTranscription, setLastTranscription] = useState<string>("");
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsSmallScreen(window.innerWidth <= 386);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
   const [audioProgress, setAudioProgress] = useState<number>(0);
   const [scenarioProgress, setScenarioProgress] = useState<number>(0);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -446,7 +458,7 @@ export default function ScenarioPage() {
           }}
         />
       </div>
-      <div className="flex-1 overflow-y-auto md:px-4 px-0 pb-24">
+      <div className="flex-1 overflow-y-auto md:px-4 px-0 pb-24 overflow-x-hidden">
         <div className="flex flex-col items-center justify-center space-y-6">
           {isLoadingScenario ? (
             <div className="flex flex-col items-center justify-center space-y-4 py-12">
@@ -493,50 +505,81 @@ export default function ScenarioPage() {
                     {recordedAudio ? (
                       <>
                         {/* Playback Controls with Waveform */}
-                        <div className="flex flex-row gap-3 md:gap-3 flex-row-reverse items-center justify-center px-2">
-                          <Image
-                            src="/images/audioWave.png"
-                            alt="Waveform"
-                            width={310}
-                            height={27}
-                            className="max-w-[150px] xs:max-w-[150px] sm:max-w-[200px] md:max-w-[310px] h-10 sm:h-10 md:h-12"
-                          />
-                          <button
-                            onClick={handlePlayClick}
-                            className="rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 active:border-b-0 active:translate-y-[2px] flex-shrink-0"
-                            title={isPlaying ? "إيقاف" : "تشغيل"}
-                          >
-                            {isPlaying ? (
+                        <div 
+                          className="flex flex-row gap-3 md:gap-3 items-center justify-center px-2"
+                          style={{
+                            flexDirection: isSmallScreen ? 'column' : 'row',
+                            gap: isSmallScreen ? '1rem' : '0.75rem'
+                          }}
+                        >
+                          {!isSmallScreen && (
+                            <button
+                              onClick={handleDiscardClick}
+                              className="rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 flex-shrink-0"
+                              title="حذف التسجيل"
+                            >
                               <Image
-                                src="/images/pause.svg"
-                                alt="Pause"
-                                width={48}
-                                height={48}
-                                className="w-12 h-12 sm:w-12 sm:h-12 md:w-12 md:h-12"
+                                src="/images/cancel.svg"
+                                alt="Discard"
+                                width={80}
+                                height={80}
+                                className="w-18 h-18 sm:w-18 sm:h-18 md:w-18 md:h-18"
                               />
-                            ) : (
-                              <Image
-                                src="/images/play.svg"
-                                alt="Play"
-                                width={48}
-                                height={48}
-                                className="w-12 h-12 sm:w-12 sm:h-12 md:w-12 md:h-12"
-                              />
-                            )}
-                          </button>
-                          <button
-                            onClick={handleDiscardClick}
-                            className="rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 flex-shrink-0"
-                            title="حذف التسجيل"
+                            </button>
+                          )}
+                          <div 
+                            className="flex flex-row-reverse items-center justify-center gap-3"
+                            style={{
+                              width: isSmallScreen ? 'auto' : '100%',
+                              maxWidth: isSmallScreen ? '100%' : 'auto'
+                            }}
                           >
                             <Image
-                              src="/images/cancel.svg"
-                              alt="Discard"
-                              width={80}
-                              height={80}
-                              className="w-18 h-18 sm:w-18 sm:h-18 md:w-18 md:h-18"
+                              src="/images/audioWave.png"
+                              alt="Waveform"
+                              width={310}
+                              height={27}
+                              className="max-w-[150px] xs:max-w-[150px] sm:max-w-[200px] md:max-w-[310px] h-10 sm:h-10 md:h-12"
                             />
-                          </button>
+                            <button
+                              onClick={handlePlayClick}
+                              className="rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 active:border-b-0 active:translate-y-[2px] flex-shrink-0"
+                              title={isPlaying ? "إيقاف" : "تشغيل"}
+                            >
+                              {isPlaying ? (
+                                <Image
+                                  src="/images/pause.svg"
+                                  alt="Pause"
+                                  width={48}
+                                  height={48}
+                                  className="w-12 h-12 sm:w-12 sm:h-12 md:w-12 md:h-12"
+                                />
+                              ) : (
+                                <Image
+                                  src="/images/play.svg"
+                                  alt="Play"
+                                  width={48}
+                                  height={48}
+                                  className="w-12 h-12 sm:w-12 sm:h-12 md:w-12 md:h-12"
+                                />
+                              )}
+                            </button>
+                          </div>
+                          {isSmallScreen && (
+                            <button
+                              onClick={handleDiscardClick}
+                              className="rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 flex-shrink-0"
+                              title="حذف التسجيل"
+                            >
+                              <Image
+                                src="/images/cancel.svg"
+                                alt="Discard"
+                                width={80}
+                                height={80}
+                                className="w-18 h-18 sm:w-18 sm:h-18 md:w-18 md:h-18"
+                              />
+                            </button>
+                          )}
                         </div>
                       </>
                     ) : (
@@ -624,13 +667,13 @@ export default function ScenarioPage() {
               };
 
               return (
-                <div className={`flex items-center gap-4 py-4 px-6 bg-gradient-to-r ${config.container} rounded-2xl shadow-sm border-r-4`}>
-                  <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${config.iconBg} flex items-center justify-center flex-shrink-0 shadow-md`}>
+                <div className={`flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 py-3 sm:py-4 px-4 sm:px-6 bg-gradient-to-r ${config.container} rounded-2xl shadow-sm border-r-4`}>
+                  <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br ${config.iconBg} flex items-center justify-center flex-shrink-0 shadow-md`}>
                     {config.icon}
                   </div>
-                  <div className="flex-1 text-right">
-                    <p className={`text-sm font-almarai-bold ${config.label} mb-1`}>تعليق</p>
-                    <p className="text-base text-gray-800 leading-relaxed font-almarai">{feedback}</p>
+                  <div className="flex-1 text-right w-full">
+                    <p className={`text-xs sm:text-sm font-almarai-bold ${config.label} mb-1`}>تعليق</p>
+                    <p className="text-sm sm:text-base text-gray-800 leading-relaxed font-almarai break-words">{feedback}</p>
                   </div>
                 </div>
               );
@@ -644,23 +687,23 @@ export default function ScenarioPage() {
             {/* Yellow User Guide Button */}
             <Button
               onClick={() => setIsVideoModalOpen(true)}
-              className="w-full bg-[#FFCB08] h-14 hover:bg-[#FFCB08] text-[#1F1F1F] py-4 rounded-2xl flex items-center justify-center gap-2 md:gap-3 text-sm md:text-lg font-almarai-bold border-b-[4px] border-b-[#DEA407] shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all font-almarai"
+              className="w-full bg-[#FFCB08] h-14 hover:bg-[#FFCB08] text-[#1F1F1F] py-4 rounded-2xl flex items-center justify-center gap-2 md:gap-3 text-xs sm:text-sm md:text-lg font-almarai-bold border-b-[4px] border-b-[#DEA407] shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all font-almarai"
             >
               <BookOpen className="h-4 w-4 md:h-5 md:w-5 stroke-[2.5px] flex-shrink-0" />
-              <span>دليل المستخدم</span>
+              <span className="truncate">دليل المستخدم</span>
             </Button>
 
             {/* Grey Feedback Button */}
             <Button
               onClick={() => setIsFeedbackOpen(true)}
               disabled={!lastAttemptScores}
-              className="w-full bg-[#E5E5E5] h-14 hover:bg-[#E5E5E5] text-[#1F1F1F] py-4 rounded-2xl flex items-center justify-center gap-2 md:gap-3 text-sm md:text-lg font-almarai-bold border-b-[4px] border-b-[#C4C4C4] disabled:opacity-50 disabled:border-none shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all font-almarai"
+              className="w-full bg-[#E5E5E5] h-14 hover:bg-[#E5E5E5] text-[#1F1F1F] py-4 rounded-2xl flex items-center justify-center gap-2 md:gap-3 text-xs sm:text-sm md:text-lg font-almarai-bold border-b-[4px] border-b-[#C4C4C4] disabled:opacity-50 disabled:border-none shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all font-almarai"
             >
               <div className='relative flex-shrink-0'>
                 {lastAttemptScores && <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>}
                 <MessageSquare className="h-4 w-4 md:h-5 md:w-5 stroke-[2.5px]" />
               </div>
-              <span>تغذية راجعة</span>
+              <span className="truncate">تغذية راجعة</span>
             </Button>
 
 
@@ -672,7 +715,7 @@ export default function ScenarioPage() {
                 isSubmitting ||
                 (!currentScenario?.isIntroduction && !arabicCompleted)
               }
-              className="w-full col-span-2 md:col-span-1 bg-[#35AB4E] h-14 hover:bg-[#35AB4E] text-white py-4 flex items-center justify-center gap-3 text-lg font-almarai-bold rounded-2xl border-b-[4px] border-b-[#298E3E] disabled:opacity-50 disabled:cursor-not-allowed disabled:border-none shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all font-almarai"
+              className="w-full col-span-2 md:col-span-1 bg-[#35AB4E] h-14 hover:bg-[#35AB4E] text-white py-4 flex items-center justify-center gap-3 text-sm sm:text-base md:text-lg font-almarai-bold rounded-2xl border-b-[4px] border-b-[#298E3E] disabled:opacity-50 disabled:cursor-not-allowed disabled:border-none shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all font-almarai"
             >
               <span className="truncate">
                 {isSubmitting
