@@ -125,11 +125,7 @@ export default function SheikhPage() {
           lesson={sessionUtils.getCurrentTopic()?.name || ""}
           progress={progress}
           title="يعود"
-          onClick={() => {
-            setSkipIntro(true);
-            setProgress(100);
-            handleNextClick();
-          }}
+          onBackClick={() => goToStudentUnits()}
         />
 
         {/* Topic Title Section */}

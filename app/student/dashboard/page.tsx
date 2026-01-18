@@ -197,7 +197,7 @@ export default function Page() {
                                 </p>
 
                                 <div className="h-10 px-4 bg-[#35AB4E] text-white text-sm font-bold rounded-lg border-b-2 border-[#20672F] flex items-center gap-2 w-fit">
-                                    <ChevronLeft className="w-4 h-4" strokeWidth={3} />
+                                    <ChevronRight className="w-4 h-4" strokeWidth={3} />
                                     <span>مستواي</span>
                                 </div>
                             </div>
@@ -275,8 +275,8 @@ export default function Page() {
                                 className="h-10 px-4 bg-[#35AB4E] hover:bg-[#2f9c46] text-white text-sm font-bold rounded-lg border-b-2 border-[#20672F] flex items-center gap-2 transition active:translate-y-[2px] active:border-b-0"
                             >
                                 <span>ابدأ التعلم</span>
-                                <div className="w-5 h-5 bg-white/20 rounded-md flex items-center justify-center">
-                                    <Play className="w-3 h-3 text-white fill-current ml-0.5" />
+                                <div className="w-5 h-5 rounded-md flex items-center justify-center">
+                                    <Play className="w-3 h-3 text-white fill-current ml-0.5 transform rotate-180" />
                                 </div>
                             </button>
                         </div>

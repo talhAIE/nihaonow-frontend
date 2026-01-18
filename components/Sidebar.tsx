@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from 'react';
-import { Home, Trophy, Award, Users, User, LogOut, X, Medal, LayoutDashboard, BookCheck, TrophyIcon, Menu, FileBarChart, Loader2 } from 'lucide-react';
+import { Trophy, User, LogOut, X, Medal, LayoutDashboard, BookCheck, Menu, Loader2 } from 'lucide-react';
 import { useAppContext } from '@/context/AppContext';
 import { usePathname } from 'next/navigation';
 import { useNavigation } from '@/lib/navigation';
