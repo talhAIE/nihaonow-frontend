@@ -60,14 +60,14 @@ export default function LeaderboardPage() {
 
     // Initialize state with cached data if available (instant load)
     const [entries, setEntries] = useState<UnifiedLeaderboardEntry[]>(() => {
-        const cached = leaderboardApi.getCachedLeaderboard(100, 0)
+        const cached = leaderboardApi.getCachedLeaderboard(20, 0)
         const cachedEntries = cached?.leaderboard ?? []
         hadInitialCachedData.current = cachedEntries.length > 0
         return cachedEntries
     })
     const [loading, setLoading] = useState(false)
     const [student, setStudent] = useState<UnifiedLeaderboardEntry | null>(() => {
-        const cached = leaderboardApi.getCachedLeaderboard(100, 0)
+        const cached = leaderboardApi.getCachedLeaderboard(20, 0)
         if (cached?.userRank) return cached.userRank
         // Only use getCachedStudentLevel if it matches UnifiedLeaderboardEntry shape
         const studentLevel = leaderboardApi.getCachedStudentLevel()
@@ -96,7 +96,7 @@ export default function LeaderboardPage() {
             }
             setError(null)
 
-            const leaderboardPromise = leaderboardApi.getLeaderboard(100, 0, undefined, { signal: controller.signal })
+            const leaderboardPromise = leaderboardApi.getLeaderboard(20, 0, undefined, { signal: controller.signal })
             const studentPromise = leaderboardApi.getStudentLevel({ signal: controller.signal })
 
             try {
@@ -107,6 +107,10 @@ export default function LeaderboardPage() {
                 if (lbResult.status === 'fulfilled') {
                     const resp = lbResult.value as UnifiedLeaderboardResponse
                     setEntries(resp.leaderboard ?? [])
+                    if (resp.pagination) {
+                        setTotalPages(resp.pagination.totalPages || 1)
+                        setTotalCount(resp.pagination.total)
+                    }
                     if (resp.userRank) setStudent(resp.userRank)
                 } else {
                     // Only show error if we don't have cached data
@@ -165,22 +169,44 @@ export default function LeaderboardPage() {
     const topThree = useMemo(() => entries.slice(0, 3), [entries])
     const rest = useMemo(() => entries.slice(3), [entries])
 
-    // Pagination state for "All Students" section
+    // Pagination state
     const [currentPage, setCurrentPage] = useState(1)
-    const usersPerPage = 15
+    const [totalPages, setTotalPages] = useState(1)
+    const [totalCount, setTotalCount] = useState(0)
+    const usersPerPage = 20
 
-    const displayedRest = useMemo(() => {
-        const startIndex = (currentPage - 1) * usersPerPage
-        const endIndex = startIndex + usersPerPage
-        return rest.slice(startIndex, endIndex)
-    }, [rest, currentPage])
+    // Load page data
+    const loadPage = useCallback(async (page: number) => {
+        setLoading(true)
+        setError(null)
+        
+        try {
+            const offset = (page - 1) * usersPerPage
+            const resp = await leaderboardApi.getLeaderboard(usersPerPage, offset, undefined)
+            
+            setEntries(resp.leaderboard ?? [])
+            if (resp.pagination) {
+                setTotalPages(resp.pagination.totalPages || 1)
+                setTotalCount(resp.pagination.total)
+            }
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to load leaderboard')
+        } finally {
+            setLoading(false)
+        }
+    }, [usersPerPage])
 
-    const totalPages = Math.ceil(rest.length / usersPerPage)
+    // Handle page changes
+    const handlePageChange = useCallback((page: number) => {
+        setCurrentPage(page)
+        loadPage(page)
+    }, [loadPage])
 
     // Reset page when tab changes
     useEffect(() => {
         setCurrentPage(1)
-    }, [selectedTab])
+        loadPage(1)
+    }, [selectedTab, loadPage])
 
     return (
         <div className="min-h-screen w-[90%] bg-white mx-auto pt-4 sm:pt-6 pb-16" dir='rtl'>
@@ -393,7 +419,7 @@ export default function LeaderboardPage() {
                                     </button>
                                 </div>
                             )}
-                            {!loading && !error && displayedRest.map((entry, idx) => {
+                            {!loading && !error && rest.map((entry: UnifiedLeaderboardEntry, idx: number) => {
                                 const isCurrentUser = entry.userId === student?.userId
                                 const displayRank = entry.rank || (idx + 4)
 
@@ -470,11 +496,11 @@ export default function LeaderboardPage() {
                                 <div className="flex justify-center items-center gap-2 mt-6 flex-wrap">
                                     {/* Next button (for RTL, this appears first) */}
                                     <button
-                                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                        onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                                         disabled={currentPage === totalPages}
                                         className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-all ${currentPage === totalPages
-                                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                                : 'bg-white border-2 border-[#4B4B4B] text-[#4B4B4B] hover:bg-[#F5F5F5]'
+                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                            : 'bg-white border-2 border-[#4B4B4B] text-[#4B4B4B] hover:bg-[#F5F5F5]'
                                             }`}
                                     >
                                         <span>&#8249;</span>
@@ -496,10 +522,10 @@ export default function LeaderboardPage() {
                                         return (
                                             <button
                                                 key={pageNum}
-                                                onClick={() => setCurrentPage(pageNum)}
+                                                onClick={() => handlePageChange(pageNum)}
                                                 className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-all ${currentPage === pageNum
-                                                        ? 'bg-[#35AB4E] border-2 border-[#35AB4E] text-white shadow-[0_2px_0_0_#20672F]'
-                                                        : 'bg-white border-2 border-[#4B4B4B] text-[#4B4B4B] hover:bg-[#F5F5F5]'
+                                                    ? 'bg-[#35AB4E] border-2 border-[#35AB4E] text-white shadow-[0_2px_0_0_#20672F]'
+                                                    : 'bg-white border-2 border-[#4B4B4B] text-[#4B4B4B] hover:bg-[#F5F5F5]'
                                                     }`}
                                             >
                                                 {pageNum}
@@ -509,11 +535,11 @@ export default function LeaderboardPage() {
 
                                     {/* Previous button (for RTL, this appears last) */}
                                     <button
-                                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                        onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                                         disabled={currentPage === 1}
                                         className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-all ${currentPage === 1
-                                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                                : 'bg-white border-2 border-[#4B4B4B] text-[#4B4B4B] hover:bg-[#F5F5F5]'
+                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                            : 'bg-white border-2 border-[#4B4B4B] text-[#4B4B4B] hover:bg-[#F5F5F5]'
                                             }`}
                                     >
                                         <span>&#8250;</span>
