@@ -14,7 +14,15 @@ export const dashboardApi = {
   // Single consolidated endpoint - use this instead of multiple calls
   getDashboard: async (config: any = {}): Promise<ConsolidatedDashboardResponse> => {
     const url = apiEndpoints.dashboard.overview; // /dashboard endpoint
-    return apiClient.get<ConsolidatedDashboardResponse>(url, undefined, config);
+    // Add cache-busting parameter to ensure fresh data
+    const cacheBustingConfig = {
+      ...config,
+      params: {
+        ...config.params,
+        _t: Date.now(), // Add timestamp to prevent caching
+      },
+    };
+    return apiClient.get<ConsolidatedDashboardResponse>(url, undefined, cacheBustingConfig);
   },
 
   // Legacy individual endpoints (kept for backward compatibility)
