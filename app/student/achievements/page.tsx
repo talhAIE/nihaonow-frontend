@@ -280,7 +280,7 @@ export default function AchievementsPage() {
           <div className="bg-slate-50/50 p-1 rounded-2xl flex items-center gap-1.5 shadow-inner border border-slate-100 w-full sm:w-auto overflow-hidden">
             <button
               onClick={() => setActiveTab('awards')}
-              className={`flex-1 sm:flex-none px-12 py-3 rounded-xl font-almarai-bold text-base transition-all duration-200 ${activeTab === 'awards'
+              className={`flex-1 sm:flex-none px-6 sm:px-8 py-3 rounded-xl font-almarai-bold text-sm sm:text-base transition-all duration-200 ${activeTab === 'awards'
                 ? "bg-[#35AB4E] text-white border-b-[4px] border-b-[#298E3E] shadow-md border border-[#35AB4E]"
                 : "bg-transparent text-[#4B4B4B] hover:bg-slate-50 border border-slate-200/60"
                 }`}
@@ -289,7 +289,7 @@ export default function AchievementsPage() {
             </button>
             <button
               onClick={() => setActiveTab('certificates')}
-              className={`flex-1 sm:flex-none px-12 py-3 rounded-xl font-almarai-bold text-base transition-all duration-200 ${activeTab === 'certificates'
+              className={`flex-1 sm:flex-none px-6 sm:px-8 py-3 rounded-xl font-almarai-bold text-sm sm:text-base transition-all duration-200 ${activeTab === 'certificates'
                 ? "bg-[#35AB4E] text-white border-b-[4px] border-b-[#298E3E] shadow-md border border-[#35AB4E]"
                 : "bg-transparent text-[#4B4B4B] hover:bg-slate-50 border border-slate-200/60"
                 }`}

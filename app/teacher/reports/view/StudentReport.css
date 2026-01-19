@@ -20,30 +20,58 @@
 
 .report-actions {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: 8px;
+  right: 12px;
+  z-index: 10;
 }
 
 .report-download-btn {
-  width: auto;
-  height: 36px;
-  padding: 0 12px;
-  border-radius: 10px;
-  border: 2px solid #1f2937;
-  background: #ffffff;
-  color: #1f2937;
+  width: 80px;
+  min-height: 32px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 2px solid #35AB4E;
+  background: #35AB4E;
+  color: white;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
   cursor: pointer;
-  font-weight: 600;
-  font-size: 14px;
+  font-weight: bold;
+  font-size: 10px;
+  transition: all;
+  box-shadow: 0 2px 0 0 #20672F;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.report-download-btn:hover {
+  background: #2f9c46;
+  border-color: #2f9c46;
+  transform: translateY(-2px);
+}
+
+.report-download-btn:active {
+  transform: translateY(0px);
+  box-shadow: 0 0px 0 0 #20672F;
 }
 
 .report-download-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  transform: none;
+}
+
+@media (min-width: 640px) {
+  .report-download-btn {
+    width: 100px;
+    min-height: 36px;
+    padding: 6px 12px;
+    font-size: 12px;
+    gap: 6px;
+  }
 }
 
 .report-container.is-exporting .report-actions {

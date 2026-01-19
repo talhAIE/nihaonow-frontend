@@ -11,7 +11,7 @@ import { useAppContext } from "@/context/AppContext";
 import { useNavigation } from '@/lib/navigation';
 import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { Menu, User, X, LogOut, LayoutDashboard, BookCheck, TrophyIcon, Medal, FileBarChart, Award } from "lucide-react";
+import { Menu, User, X, LogOut, LayoutDashboard, BookCheck, Trophy, Medal, FileBarChart, Award } from "lucide-react";
 
 export default function Header() {
   const { resetOnboarding, logout, state, sidebarOpen, setSidebarOpen, dir } = useAppContext();
@@ -68,8 +68,8 @@ export default function Header() {
   const navItems = [
     { href: '/student/dashboard', label: 'لوحة القيادة', Icon: LayoutDashboard },
     { href: '/student/units', label: 'الوحدات', Icon: BookCheck },
-    { href: '/student/achievements', label: 'الإنجازات', Icon: TrophyIcon },
-    { href: '/student/leaderboard', label: 'المتصدرين', Icon: Medal },
+    { href: '/student/leaderboard', label: 'المتصدرين', Icon: Trophy },
+    { href: '/student/achievements', label: 'الإنجازات', Icon: Medal },
     { href: '/student/account', label: 'حساب المستخدم', Icon: User },
   ];
 

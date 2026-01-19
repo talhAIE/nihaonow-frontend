@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from "next/navigation";
+import { ChevronRight } from 'lucide-react';
 
 interface ProgressBarProps {
     unit?: string;
@@ -7,6 +8,7 @@ interface ProgressBarProps {
     progress?: number;
     dir?: 'ltr' | 'rtl';
     onClick?: () => void;
+    onBackClick?: () => void;
     title?: string;
 }
 
@@ -16,6 +18,7 @@ export default function ProgressBar({
     progress = 0,
     dir,
     onClick,
+    onBackClick,
     title = "تخطي"
 }: ProgressBarProps) {
     const [effectiveDir, setEffectiveDir] = useState<'ltr' | 'rtl'>(dir ?? 'rtl');
@@ -39,10 +42,11 @@ export default function ProgressBar({
             <div className="mx-auto">
                 <div className={`flex gap-2 sm:gap-4 items-center mb-6 flex-wrap sm:flex-nowrap ${effectiveDir === 'rtl' ? 'flex-row' : ''}`}>
                     <button
-                        onClick={onClick}
+                        onClick={onBackClick || onClick}
                         className="inline-flex items-center gap-[4px] h-[33px] py-[6px] px-[10px] sm:px-[16px] opacity-100 rounded-[32px] bg-[#E5E5E5] border-b-2 border-b-[#636363] text-gray-600 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base"
                     >
-                        {title} ←
+                        <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                        {title}
                     </button>
                     <div className="text-semibold-16 align-middle text-xs sm:text-sm md:text-base break-words">
                         {mounted ? `${unit} ${lesson}` : "\u00A0"}

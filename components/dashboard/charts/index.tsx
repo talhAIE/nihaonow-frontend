@@ -33,7 +33,7 @@ export default function ArabicStatsChart({ data: propData }: ArabicStatsChartPro
                 dataKey="name"
                 hide
               />
-              <Bar dataKey="value" radius={[12, 12, 0, 0]} barSize={50} >
+              <Bar dataKey="value" radius={[12, 12, 0, 0]} barSize={40}>
                 {data.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
@@ -42,14 +42,14 @@ export default function ArabicStatsChart({ data: propData }: ArabicStatsChartPro
           </ResponsiveContainer>
         </div>
 
-        <div className="grid grid-cols-3 gap-1 px-4 mt-2">
+        <div className="grid grid-cols-3 gap-1 px-2 sm:px-4 mt-2 sm:mt-3">
           {data.map((item, index) => (
             <div key={index} className="text-center flex flex-col">
               <span className="text-xs sm:text-sm font-bold text-slate-500 mb-1">
                 {item.name}
               </span>
               <span
-                className="text-lg sm:text-2xl font-black"
+                className="text-sm sm:text-lg lg:text-2xl font-black"
                 style={{ color: item.labelColor || item.color }}
               >
                 %{Math.round(item.value)}
