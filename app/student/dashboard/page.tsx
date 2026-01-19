@@ -99,13 +99,27 @@ export default function Page() {
     };
 
     useEffect(() => {
+        // Check if user has just completed a session (sessionFeedback exists in sessionStorage)
+        const hasJustCompletedSession = !!sessionStorage.getItem('sessionFeedback');
+        
         fetchData();
         // Add listener for focus to refetch data
         const onFocus = () => {
             fetchData();
         }
+        // Add listener for storage events (triggered when user completes a session and clears session data)
+        const onStorageChange = (e: StorageEvent) => {
+            if (e.key === 'sessionFeedback' && !e.newValue) {
+                // Session feedback was cleared, meaning user returned from feedback page
+                fetchData();
+            }
+        }
         window.addEventListener('focus', onFocus)
-        return () => window.removeEventListener('focus', onFocus)
+        window.addEventListener('storage', onStorageChange)
+        return () => {
+            window.removeEventListener('focus', onFocus)
+            window.removeEventListener('storage', onStorageChange)
+        }
     }, [])
 
     if (loading && initialLoad) {
@@ -450,6 +464,8 @@ export default function Page() {
                                                 ></div>
                                             ))}
                                         </div>
+
+                                        {/* start button */}
                                         <button
                                             onClick={() => handleContinue(topic.id)}
                                             disabled={startingSession === topic.id}

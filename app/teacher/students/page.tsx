@@ -281,30 +281,30 @@ export default function MyStudentsPage() {
                                         <div className="grid grid-cols-4 gap-4 w-full overflow-x-auto" dir="rtl">
                                             {/* Name and Level */}
                                             <div className="flex flex-row items-center gap-3 min-w-0">
-                                                <div className="w-12 h-12 rounded-[18px] bg-[#FBD4D3] border-2 border-white shadow-sm flex items-center justify-center text-[#BC313F] overflow-hidden relative rotate-3 group-hover:rotate-0 transition-transform">
-                                                    <User className="w-6 h-6 opacity-50" />
+                                                <div className="w-8 h-8 min-w-8 min-h-8 max-w-8 max-h-8 flex-none rounded-[18px] bg-[#FBD4D3] border-2 border-white shadow-sm flex items-center justify-center text-[#BC313F] overflow-hidden relative rotate-3 group-hover:rotate-0 transition-transform">
+                                                    <User className="w-4 h-4 opacity-50" />
                                                 </div>
                                                 <div className="text-right">
-                                                    <h4 className="font-black text-slate-800 text-sm truncate max-w-[10rem] sm:max-w-none">{student.username}</h4>
-                                                    <span className={`text-[10px] font-bold ${getStatusColor(student.level)}`}>{getLevelLabel(student.level)}</span>
+                                                    <h4 className="font-black text-[12px] text-slate-800 truncate max-w-[10rem] sm:max-w-none">{student.username}</h4>
+                                                    <span className={`text-[9px] font-bold ${getStatusColor(student.level)}`}>{getLevelLabel(student.level)}</span>
                                                 </div>
                                             </div>
 
                                             {/* Points */}
                                             <div className="flex flex-row items-center justify-center">
-                                                <p className="font-semibold text-slate-800 text-base">{student.totalPoints?.toLocaleString()}</p>
+                                                <p className="font-semibold text-slate-800 text-sm">{student.totalPoints?.toLocaleString()}</p>
                                             </div>
 
                                             {/* Usage */}
                                             <div className="flex flex-row items-center justify-center">
-                                                <p className="font-semibold text-slate-800 text-base">{student.usageLabel}</p>
+                                                <p className="font-semibold text-slate-800 text-sm">{student.usageLabel}</p>
                                             </div>
 
                                             {/* View Button */}
                                             <div className="flex flex-row items-center justify-center">
                                                 <Link
                                                     href={`/teacher/reports/view?studentId=${student.id}&view=topics`}
-                                                    className="flex items-center justify-center h-10 w-10 rounded-xl bg-[#FBD4D3] hover:bg-[#F9C3C2] text-[#8D1716] transition-all"
+                                                    className="flex items-center justify-center h-8 w-8 rounded-xl bg-[#FBD4D3] hover:bg-[#F9C3C2] text-[#8D1716] transition-all"
                                                     aria-label="عرض المواضيع"
                                                 >
                                                     <Eye className="w-4 h-4" />

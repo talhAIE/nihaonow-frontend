@@ -66,8 +66,8 @@ export default function StudentReportContent() {
     const usageHoursDisplay = `${report.usageHours || 0} ساعة`;
     const monthYear = report.period || 'ديسمبر 2023';
     const progressPercent = report.progressPercent || 0;
-    const completedLectures = report.completedLectures || 0;
-    const remainingLectures = report.remainingLectures || 0;
+    const completedLectures = report.completedTopics || 0;
+    const remainingLectures = report.remainingTopics || 0;
     const achievements = report.achievements || [];
     const certificates = report.certificates || [];
 
