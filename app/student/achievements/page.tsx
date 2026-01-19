@@ -303,12 +303,7 @@ export default function AchievementsPage() {
       {activeTab === 'awards' ? (
         <div className="animate-in fade-in slide-in-from-bottom-3 duration-500 text-right">
           {/* Awards Map Section */}
-          <div className="bg-white rounded-[32px] sm:rounded-[48px] p-4 sm:p-10 shadow-xl border-4 sm:border-8 border-[#F3F4F6]">
-            {/* Unified Awards Map for all viewports */}
-            <div className="w-full">
-              <AwardsMap achievements={mapData} onClaim={handleClaimBadge} claimedAchievements={claimedAchievements} />
-            </div>
-          </div>
+            <AwardsMap achievements={mapData} onClaim={handleClaimBadge} claimedAchievements={claimedAchievements} />
         </div>
       ) : (
         <div className="animate-in fade-in slide-in-from-bottom-5 duration-700">

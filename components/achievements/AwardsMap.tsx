@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import { CheckCircle2, Lock, Star } from "lucide-react";
 
@@ -24,6 +24,7 @@ interface AwardsMapProps {
 interface MapNode {
   x: number;
   mdX?: number; // 1022px X position
+  lgX?: number; // 1024px X position
   y: number;
   pathId: "left" | "center" | "right";
   variant: "red" | "yellow" | "green" | "star_gold" | "book" | "read" | "speak";
@@ -37,6 +38,7 @@ const TRI_PATH_NODES: MapNode[] = [
   {
     x: 50,
     mdX: 50,
+    lgX: 50,
     y: 24,
     pathId: "center",
     variant: "yellow",
@@ -45,6 +47,7 @@ const TRI_PATH_NODES: MapNode[] = [
   {
     x: 50,
     mdX: 50,
+    lgX: 50,
     y: 44,
     pathId: "center",
     variant: "yellow",
@@ -53,6 +56,7 @@ const TRI_PATH_NODES: MapNode[] = [
   {
     x: 50,
     mdX: 50,
+    lgX: 50,
     y: 64,
     pathId: "center",
     variant: "star_gold",
@@ -61,6 +65,7 @@ const TRI_PATH_NODES: MapNode[] = [
   {
     x: 50,
     mdX: 50,
+    lgX: 50,
     y: 84,
     pathId: "center",
     variant: "yellow",
@@ -68,21 +73,26 @@ const TRI_PATH_NODES: MapNode[] = [
   },
 
   // --- LEFT PATH (Streak - Red) ---
-  { x: 25, mdX: 40, y: 23, pathId: "left", variant: "red", size: "medium" },
-  { x: 20, mdX: 36, y: 44, pathId: "left", variant: "red", size: "medium" },
-  { x: 15, mdX: 24, y: 64, pathId: "left", variant: "speak", size: "medium" },
-  { x: 10, mdX: 10, y: 84, pathId: "left", variant: "red", size: "medium" },
+  { x: 25, mdX: 40, lgX: 38, y: 23, pathId: "left", variant: "red", size: "medium" },
+  { x: 20, mdX: 36, lgX: 32, y: 44, pathId: "left", variant: "red", size: "medium" },
+  { x: 15, mdX: 24, lgX: 26, y: 64, pathId: "left", variant: "speak", size: "medium" },
+  { x: 10, mdX: 10, lgX: 18, y: 84, pathId: "left", variant: "red", size: "medium" },
 
   // --- RIGHT PATH (Topics - Green) ---
-  { x: 75, mdX: 60, y: 23, pathId: "right", variant: "green", size: "medium" },
-  { x: 80, mdX: 64, y: 44, pathId: "right", variant: "green", size: "medium" },
-  { x: 85, mdX: 76, y: 64, pathId: "right", variant: "read", size: "medium" },
-  { x: 90, mdX: 90, y: 84, pathId: "right", variant: "green", size: "medium" },
+  { x: 75, mdX: 60, lgX: 62, y: 23, pathId: "right", variant: "green", size: "medium" },
+  { x: 80, mdX: 64, lgX: 68, y: 44, pathId: "right", variant: "green", size: "medium" },
+  { x: 85, mdX: 76, lgX: 74, y: 64, pathId: "right", variant: "read", size: "medium" },
+  { x: 90, mdX: 90, lgX: 82, y: 84, pathId: "right", variant: "green", size: "medium" },
 ];
 
 export default function AwardsMap({ achievements, onClaim, claimedAchievements = new Set() }: AwardsMapProps) {
   // Local state for claimed achievements to show immediate UI feedback
   const [localClaimed, setLocalClaimed] = useState<Set<string>>(claimedAchievements);
+  const [activePopup, setActivePopup] = useState<AchievementNode | null>(null);
+
+  useEffect(() => {
+    setLocalClaimed(new Set(claimedAchievements));
+  }, [claimedAchievements]);
 
   // Optimistic claim handler - updates UI immediately
   const handleOptimisticClaim = useCallback((key: string, name: string) => {
@@ -145,6 +155,72 @@ export default function AwardsMap({ achievements, onClaim, claimedAchievements =
   return (
     <div className="relative w-full min-h-[600px] sm:min-h-[800px] min-[1022px]:min-h-[1000px] bg-[#FEF9EC] rounded-[32px] sm:rounded-[48px] overflow-hidden shadow-2xl border-[8px] sm:border-[14px] border-white transition-all duration-500 mb-10 pt-16 sm:pt-20 pb-32 sm:pb-48">
       <div className="absolute inset-0 bg-gradient-to-br from-[#FFFDF9] via-[#FFFFFF] to-[#FDF4E5]" />
+      
+      {/* Backdrop overlay */}
+      {activePopup && (
+        <div
+          className="fixed inset-0 bg-black/50 z-[9998]"
+          onClick={() => setActivePopup(null)}
+        />
+      )}
+
+      {activePopup && (
+        <div
+          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 sm:w-80 md:w-96 max-w-[92vw] bg-slate-900/95 backdrop-blur-md text-white rounded-[24px] p-4 sm:p-5 md:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/10 z-[9999]"
+          role="dialog"
+          aria-modal="true"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex items-start justify-between gap-3 mb-3">
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <Star
+                className={`w-4 h-4 shrink-0 ${
+                  activePopup.status === "earned"
+                    ? "text-yellow-400 fill-yellow-400"
+                    : "text-slate-500"
+                }`}
+              />
+              <p className="text-sm sm:text-base font-almarai-extrabold leading-tight text-white break-words">
+                {activePopup.name}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              className="text-white/70 hover:text-white text-xl leading-none px-2"
+              onClick={() => setActivePopup(null)}
+              aria-label="إغلاق"
+            >
+              ×
+            </button>
+          </div>
+
+          <p className="text-xs sm:text-sm text-slate-300 font-medium mb-4 leading-relaxed break-words">
+            {activePopup.description ||
+              "أكمل المهام المطلوبة للحصول على هذه المكافأة الرائعة!"}
+          </p>
+
+          <div className="flex items-center justify-between gap-2">
+            <span
+              className={`text-[11px] font-black px-3 py-1.5 rounded-full uppercase tracking-wider ${
+                activePopup.status === "earned"
+                  ? "bg-green-500/20 text-green-400"
+                  : "bg-slate-700/50 text-slate-400"
+              }`}
+            >
+              {activePopup.status === "earned" ? "تم الإنجاز" : "مغلق"}
+            </span>
+            {activePopup.status !== "earned" && (
+              <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-yellow-400/10 rounded-xl">
+                <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                <span className="text-xs font-black text-yellow-400">
+                  {activePopup.pointValue}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* MOBILE SVG (Wide Paths) - Visible only on mobile */}
       <svg
@@ -261,6 +337,7 @@ export default function AwardsMap({ achievements, onClaim, claimedAchievements =
       {TRI_PATH_NODES.map((node, index) => {
         const achievement = achievements[index] || null;
         const isEarned = achievement?.status === "earned";
+        const isClaimed = !!achievement?.rewardClaimed || localClaimed.has(achievement.key);
         const assetUrl = getAssetForNode(node, achievement);
 
         // Slightly larger node sizes
@@ -289,6 +366,7 @@ export default function AwardsMap({ achievements, onClaim, claimedAchievements =
               // @ts-ignore
               "--node-mob-x": `${node.x}%`,
               "--node-md-x": `${node.mdX ?? node.x}%`,
+              "--node-lg-x": `${node.lgX ?? node.mdX ?? node.x}%`,
             }}
           >
             <style jsx>{`
@@ -300,57 +378,19 @@ export default function AwardsMap({ achievements, onClaim, claimedAchievements =
                   left: var(--node-md-x);
                 }
               }
+              @media (min-width: 1024px) {
+                div[style*="--node-lg-x"] {
+                  left: var(--node-lg-x);
+                }
+              }
             `}</style>
-            {achievement && (
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-6 w-56 sm:w-64 bg-slate-900/95 backdrop-blur-md text-white rounded-[24px] p-4 sm:p-5 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/10 z-50 scale-90 group-hover:scale-100 origin-bottom">
-                <div className="flex items-start justify-between gap-3 mb-3">
-                  <p className="text-xs sm:text-[15px] font-almarai-extrabold leading-tight text-white whitespace-nowrap overflow-hidden text-ellipsis">
-                    {achievement.name}
-                  </p>
-                  <Star
-                    className={`w-4 h-4 shrink-0 ${
-                      isEarned
-                        ? "text-yellow-400 fill-yellow-400"
-                        : "text-slate-500"
-                    }`}
-                  />
-                </div>
-
-                <p className="text-[10px] sm:text-[11px] text-slate-300 font-medium mb-4 leading-relaxed line-clamp-2">
-                  {achievement.description ||
-                    "أكمل المهام المطلوبة للحصول على هذه المكافأة الرائعة!"}
-                </p>
-
-                <div className="flex items-center justify-between gap-2">
-                  <span
-                    className={`text-[9px] sm:text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-wider ${
-                      isEarned
-                        ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                        : "bg-slate-700/50 text-slate-400 border border-slate-600/30"
-                    }`}
-                  >
-                    {isEarned ? "تم الإنجاز" : "مغلق"}
-                  </span>
-                  {!isEarned && (
-                    <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-yellow-400/10 rounded-xl border border-yellow-400/20">
-                      <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                      <span className="text-[10px] font-black text-yellow-400">
-                        {achievement.pointValue}
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Improved Triangle Pointer */}
-                <div className="absolute top-full left-1/2 -translate-x-1/2 w-4 h-4 overflow-hidden -mt-0.5">
-                  <div className="w-2.5 h-2.5 bg-slate-900/95 rotate-45 transform origin-top-left translate-x-1/2 border-r border-b border-white/10" />
-                </div>
-              </div>
-            )}
-
             <div
               onClick={() => {
-                if (isEarned && !achievement?.rewardClaimed && !localClaimed.has(achievement.key)) {
+                // Toggle centered popup
+                setActivePopup(prev => (prev?.key === achievement.key ? null : achievement));
+                
+                // Handle claim if needed
+                if (isEarned && !isClaimed) {
                   handleOptimisticClaim(achievement.key, achievement.name);
                 }
               }}
@@ -377,15 +417,22 @@ export default function AwardsMap({ achievements, onClaim, claimedAchievements =
 
               {isEarned && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none translate-y-5 sm:translate-y-7">
-                  <div
-                    className={`${
-                      achievement?.rewardClaimed
-                        ? "bg-green-600/95"
-                        : "bg-yellow-500/95"
-                    } text-white text-[7px] sm:text-[10px] font-black px-2 sm:px-3 py-0.5 sm:py-1 rounded-full shadow-lg border border-white/20 uppercase`}
-                  >
-                    {achievement?.rewardClaimed ? "تم الاستلام" : "استلم الآن"}
-                  </div>
+                  {isClaimed ? (
+                    <div className="relative">
+                      <div className="bg-green-600/95 text-white rounded-full shadow-lg border border-white/20 w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center">
+                        <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </div>
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <div className="bg-slate-900/95 text-white text-[10px] sm:text-[11px] font-almarai-bold px-3 py-1.5 rounded-full shadow-lg border border-white/10 whitespace-nowrap">
+                          تمت المطالبة به
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-yellow-500/95 text-white text-[9px] sm:text-[11px] font-almarai-bold px-3 sm:px-4 py-1 sm:py-1.5 rounded-full shadow-lg border border-white/20 whitespace-nowrap text-center leading-none flex items-center justify-center">
+                      مطالبة
+                    </div>
+                  )}
                 </div>
               )}
             </div>

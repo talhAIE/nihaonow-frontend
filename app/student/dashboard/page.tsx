@@ -464,6 +464,8 @@ export default function Page() {
                                                 ></div>
                                             ))}
                                         </div>
+
+                                        {/* start button */}
                                         <button
                                             onClick={() => handleContinue(topic.id)}
                                             disabled={startingSession === topic.id}

@@ -228,9 +228,9 @@ export default function LeaderboardPage() {
                             backgroundImage: 'linear-gradient(135deg, #FDE68A 0%, #FFFFFF 100%)'
                         }}
                     >
-                        <div className="hidden xl:block">
+                        <div className="hidden 2xl:block">
                             {/* Decorative elements */}
-                            <div className="absolute top-0 left-0 bottom-0 w-[500px] -translate-x-24">
+                            <div className="absolute top-0 left-0 bottom-0 w-[500px] -translate-x-24 z-0">
                                 <Image
                                     src="/images/Road Vector - 2.png"
                                     alt=""
@@ -240,7 +240,7 @@ export default function LeaderboardPage() {
                                     style={{ height: 'auto' }}
                                 />
                             </div>
-                            <div className="absolute top-0 left-0 bottom-0 w-48 translate-x-3">
+                            <div className="absolute top-0 left-0 bottom-0 w-48 translate-x-3 z-0">
                                 <Image
                                     src="/images/cup.png"
                                     alt=""
@@ -249,7 +249,7 @@ export default function LeaderboardPage() {
                                     className="w-full h-full object-contain"
                                 />
                             </div>
-                            <div className="absolute bottom-0 right-0 translate-y-52 translate-x-16">
+                            <div className="absolute bottom-0 right-0 translate-y-52 translate-x-16 z-0">
                                 <Image
                                     src="/images/Road Vector -1.png"
                                     alt=""
@@ -261,7 +261,7 @@ export default function LeaderboardPage() {
                             </div>
                         </div>
                     </div>
-                    <CardContent className="p-4 sm:p-6 lg:p-8 relative z-10">
+                    <CardContent className="p-4 sm:p-6 lg:p-8 relative z-20">
                         <div className="flex items-center gap-2 mb-6">
                             <div className="w-8 h-8">
                                 <Image
@@ -275,18 +275,18 @@ export default function LeaderboardPage() {
                             <h3 className="text-lg sm:text-xl font-almarai-extrabold text-[#4B4B4B]">أفضل 3 طلاب</h3>
                         </div>
 
-                        <div className="flex flex-row items-center justify-center gap-1 sm:gap-8 lg:gap-14 pt-4 sm:pt-10 px-2 sm:px-4">
+                        <div className="flex flex-row items-center justify-center gap-1 sm:gap-8 lg:gap-14 pt-4 sm:pt-10 px-2 sm:px-4 relative z-30">
 
                             {/* Rank 2 (Left) */}
                             {topThree[1] && (
                                 <div className="flex flex-col items-center order-1 w-[80px] sm:w-[120px]">
                                     <div className="relative mb-4">
-                                        <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full overflow-hidden flex items-center justify-center aspect-square shadow-inner relative">
+                                        <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full overflow-hidden flex items-center justify-center aspect-square shadow-inner relative bg-[#C0C0C0]">
                                             {/* Avatar Background Circle */}
                                             <div className="absolute inset-0 z-0">
                                                 <Image src="/Leaderboardicons/circle2.svg" alt="" fill className="object-contain" />
                                             </div>
-                                            <span className="text-xl sm:text-3xl font-almarai-bold text-[#4B4B4B] relative z-10">
+                                            <span className="text-xl sm:text-3xl font-almarai-bold text-white relative z-10">
                                                 {topThree[1].username?.charAt(0).toUpperCase()}
                                             </span>
                                         </div>
@@ -310,12 +310,12 @@ export default function LeaderboardPage() {
                             {topThree[0] && (
                                 <div className="flex flex-col items-center order-2 w-[130px] sm:w-[180px]">
                                     <div className="relative mb-4">
-                                        <div className="h-24 w-24 sm:h-32 sm:w-32 rounded-full overflow-hidden flex items-center justify-center aspect-square shadow-md relative">
+                                        <div className="h-24 w-24 sm:h-32 sm:w-32 rounded-full overflow-hidden flex items-center justify-center aspect-square shadow-md relative bg-[#FFD700]">
                                             {/* Avatar Background Circle */}
                                             <div className="absolute inset-0 z-0">
                                                 <Image src="/Leaderboardicons/circle1.svg" alt="" fill className="object-contain" />
                                             </div>
-                                            <span className="text-2xl sm:text-4xl font-almarai-bold text-[#4B4B4B] relative z-10">
+                                            <span className="text-2xl sm:text-4xl font-almarai-bold text-white relative z-10">
                                                 {topThree[0].username?.charAt(0).toUpperCase()}
                                             </span>
                                         </div>
@@ -339,12 +339,12 @@ export default function LeaderboardPage() {
                             {topThree[2] && (
                                 <div className="flex flex-col items-center order-3 w-[80px] sm:w-[120px]">
                                     <div className="relative mb-4">
-                                        <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full overflow-hidden flex items-center justify-center aspect-square shadow-inner relative">
+                                        <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full overflow-hidden flex items-center justify-center aspect-square shadow-inner relative bg-[#CD7F32]">
                                             {/* Avatar Background Circle */}
                                             <div className="absolute inset-0 z-0">
                                                 <Image src="/Leaderboardicons/circle3.svg" alt="" fill className="object-contain" />
                                             </div>
-                                            <span className="text-xl sm:text-3xl font-almarai-bold text-[#4B4B4B] relative z-10">
+                                            <span className="text-xl sm:text-3xl font-almarai-bold text-white relative z-10">
                                                 {topThree[2].username?.charAt(0).toUpperCase()}
                                             </span>
                                         </div>
