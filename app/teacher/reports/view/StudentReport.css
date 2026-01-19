@@ -88,8 +88,8 @@
 }
 
 .header-top-right {
-  width: 353px;
-  max-width: 100%;
+  flex: 1;
+  min-width: 200px;
   height: 44px;
   padding: 10px 16px;
   border-radius: 32px;
@@ -110,8 +110,8 @@
 }
 
 .header-top-left {
-  width: 353px;
-  max-width: 100%;
+  flex: 1;
+  min-width: 200px;
   height: 44px;
   padding: 10px 16px;
   border-radius: 32px;
