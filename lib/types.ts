@@ -354,6 +354,10 @@ export interface UnifiedLeaderboardResponse {
     total: number;
     limit: number;
     offset: number;
+    currentPage?: number;
+    totalPages?: number;
+    hasMore?: boolean;
+    hasPrevious?: boolean;
   };
 }
 
