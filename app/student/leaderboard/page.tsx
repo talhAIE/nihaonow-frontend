@@ -478,12 +478,12 @@ export default function LeaderboardPage() {
                                                 : 'bg-white border-2 border-[#4B4B4B] text-[#4B4B4B] hover:bg-[#F5F5F5]'
                                         }`}
                                     >
-                                        ‹
+                                        <span>&#8249;</span>
                                     </button>
                                     
                                     {/* Page numbers */}
                                     {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                                        let pageNum;
+                                        let pageNum: number;
                                         if (totalPages <= 5) {
                                             pageNum = totalPages - i; // Reverse for RTL
                                         } else if (currentPage <= 3) {
@@ -519,7 +519,7 @@ export default function LeaderboardPage() {
                                                 : 'bg-white border-2 border-[#4B4B4B] text-[#4B4B4B] hover:bg-[#F5F5F5]'
                                         }`}
                                     >
-                                        ›
+                                        <span>&#8250;</span>
                                     </button>
                                 </div>
                             )}
