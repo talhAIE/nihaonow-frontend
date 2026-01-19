@@ -164,19 +164,19 @@ export default function LeaderboardPage() {
 
     const topThree = useMemo(() => entries.slice(0, 3), [entries])
     const rest = useMemo(() => entries.slice(3), [entries])
-    
+
     // Pagination state for "All Students" section
     const [currentPage, setCurrentPage] = useState(1)
     const usersPerPage = 15
-    
+
     const displayedRest = useMemo(() => {
         const startIndex = (currentPage - 1) * usersPerPage
         const endIndex = startIndex + usersPerPage
         return rest.slice(startIndex, endIndex)
     }, [rest, currentPage])
-    
+
     const totalPages = Math.ceil(rest.length / usersPerPage)
-    
+
     // Reset page when tab changes
     useEffect(() => {
         setCurrentPage(1)
@@ -228,9 +228,9 @@ export default function LeaderboardPage() {
                             backgroundImage: 'linear-gradient(135deg, #FDE68A 0%, #FFFFFF 100%)'
                         }}
                     >
-                        <div className="hidden 2xl:block">
+                        <div className="hidden xl:block">
                             {/* Decorative elements */}
-                            <div className="absolute top-0 left-0 bottom-0 w-[500px] -translate-x-24 z-0">
+                            <div className="absolute top-0 left-0 bottom-0 w-[500px] -translate-x-32 z-0">
                                 <Image
                                     src="/images/Road Vector - 2.png"
                                     alt=""
@@ -437,7 +437,7 @@ export default function LeaderboardPage() {
 
                                             {/* Name and Level */}
                                             <div className="flex flex-col text-right min-w-0 flex-1">
-                                                <span 
+                                                <span
                                                     className="font-almarai-extrabold text-[#4B4B4B] text-base truncate max-w-full"
                                                     dir={/[\u0600-\u06FF]/.test(entry.username) ? "rtl" : "ltr"}
                                                 >
@@ -472,15 +472,14 @@ export default function LeaderboardPage() {
                                     <button
                                         onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                                         disabled={currentPage === totalPages}
-                                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-all ${
-                                            currentPage === totalPages
+                                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-all ${currentPage === totalPages
                                                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                                 : 'bg-white border-2 border-[#4B4B4B] text-[#4B4B4B] hover:bg-[#F5F5F5]'
-                                        }`}
+                                            }`}
                                     >
                                         <span>&#8249;</span>
                                     </button>
-                                    
+
                                     {/* Page numbers */}
                                     {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
                                         let pageNum: number;
@@ -493,31 +492,29 @@ export default function LeaderboardPage() {
                                         } else {
                                             pageNum = currentPage + 2 - i; // Show current+2 to current-2 in reverse
                                         }
-                                        
+
                                         return (
                                             <button
                                                 key={pageNum}
                                                 onClick={() => setCurrentPage(pageNum)}
-                                                className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-all ${
-                                                    currentPage === pageNum
+                                                className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-all ${currentPage === pageNum
                                                         ? 'bg-[#35AB4E] border-2 border-[#35AB4E] text-white shadow-[0_2px_0_0_#20672F]'
                                                         : 'bg-white border-2 border-[#4B4B4B] text-[#4B4B4B] hover:bg-[#F5F5F5]'
-                                                }`}
+                                                    }`}
                                             >
                                                 {pageNum}
                                             </button>
                                         );
                                     })}
-                                    
+
                                     {/* Previous button (for RTL, this appears last) */}
                                     <button
                                         onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                                         disabled={currentPage === 1}
-                                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-all ${
-                                            currentPage === 1
+                                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-all ${currentPage === 1
                                                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                                 : 'bg-white border-2 border-[#4B4B4B] text-[#4B4B4B] hover:bg-[#F5F5F5]'
-                                        }`}
+                                            }`}
                                     >
                                         <span>&#8250;</span>
                                     </button>
