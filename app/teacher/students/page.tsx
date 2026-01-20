@@ -269,9 +269,9 @@ export default function MyStudentsPage() {
                             {/* Table Headers */}
                             <div className="grid grid-cols-4 gap-4 px-4 py-2 bg-gray-50 rounded-[20px] font-black text-slate-600 text-xs" dir="rtl">
                                 <div className="text-right">الاسم</div>
-                                <div className="text-center">مجموع النقاط</div>
-                                <div className="text-center">الاستخدام</div>
-                                <div className="text-center">عرض</div>
+                                <div className="text-left">مجموع النقاط</div>
+                                <div className="text-left">الاستخدام</div>
+                                <div className="text-left">عرض</div>
                             </div>
                             
                             {/* Student Cards */}
@@ -281,7 +281,7 @@ export default function MyStudentsPage() {
                                         <div className="grid grid-cols-4 gap-4 w-full overflow-x-auto" dir="rtl">
                                             {/* Name and Level */}
                                             <div className="flex flex-row items-center gap-3 min-w-0">
-                                                <div className="w-8 h-8 min-w-8 min-h-8 max-w-8 max-h-8 flex-none rounded-[18px] bg-[#FBD4D3] border-2 border-white shadow-sm flex items-center justify-center text-[#BC313F] overflow-hidden relative rotate-3 group-hover:rotate-0 transition-transform">
+                                                <div className="w-8 h-8 min-w-8 min-h-8 max-w-8 max-h-8 flex-none rounded-[18px] bg-[#FBD4D3] border-2 border-white shadow-sm flex items-center justify-center text-[#BC313F] overflow-hidden relative rotate-3 group-hover:rotate-0 transition-transform max-[400px]:hidden">
                                                     <User className="w-4 h-4 opacity-50" />
                                                 </div>
                                                 <div className="text-right">
@@ -291,17 +291,17 @@ export default function MyStudentsPage() {
                                             </div>
 
                                             {/* Points */}
-                                            <div className="flex flex-row items-center justify-center">
-                                                <p className="font-semibold text-slate-800 text-sm">{student.totalPoints?.toLocaleString()}</p>
+                                            <div className="flex flex-row items-center justify-end">
+                                                <p className="font-semibold text-slate-800 text-sm mr-2">{student.totalPoints?.toLocaleString()}</p>
                                             </div>
 
                                             {/* Usage */}
-                                            <div className="flex flex-row items-center justify-center">
-                                                <p className="font-semibold text-slate-800 text-sm">{student.usageLabel}</p>
+                                            <div className="flex flex-row items-center justify-end">
+                                                <p className="font-semibold text-slate-800 text-sm mr-2">{student.usageLabel}</p>
                                             </div>
 
                                             {/* View Button */}
-                                            <div className="flex flex-row items-center justify-center">
+                                            <div className="flex flex-row items-center justify-end">
                                                 <Link
                                                     href={`/teacher/reports/view?studentId=${student.id}&view=topics`}
                                                     className="flex items-center justify-center h-8 w-8 rounded-xl bg-[#FBD4D3] hover:bg-[#F9C3C2] text-[#8D1716] transition-all"
