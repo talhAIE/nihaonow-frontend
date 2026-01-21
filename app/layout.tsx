@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Almarai } from "next/font/google";
 import { AppProvider } from "@/context/AppContext";
 import { Toaster } from "@/components/ui/toaster";
+import LocalStorageGuard from "@/components/LocalStorageGuard";
 
 const almarai = Almarai({
   subsets: ["arabic"],
@@ -24,7 +25,9 @@ export default function RootLayout({
     <html lang="ar" dir="rtl">
       <body className={`${almarai.variable} ${almarai.className} font-sans`} suppressHydrationWarning={true}>
         <AppProvider>
-          {children}
+          <LocalStorageGuard>
+            {children}
+          </LocalStorageGuard>
         </AppProvider>
         <Toaster />
       </body>
