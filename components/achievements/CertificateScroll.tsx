@@ -73,7 +73,7 @@ export default function CertificateScroll({
         )}
       </div>
 
-      <div className="mt-8 px-4">
+      <div className="mt-8 px-4" dir="rtl">
         <div
           onClick={!isLocked && !isDownloading ? onDownload : undefined}
           className={`bg-white border border-[#E5E5E5] rounded-[20px] px-5 py-3.5 flex items-center justify-between shadow-sm w-full min-h-[64px] transition-all ${
@@ -84,34 +84,8 @@ export default function CertificateScroll({
               : "hover:border-slate-300 cursor-pointer active:scale-[0.99]"
           }`}
         >
-          {/* Left: Download Icon (Only for Earned) */}
-          <div className="flex items-center">
-            {!isLocked ? (
-              <div className="p-2.5 bg-slate-50 rounded-xl transition-colors text-slate-600">
-                {isDownloading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <Download className="w-5 h-5" />
-                )}
-              </div>
-            ) : (
-              // Invisible placeholder to maintain consistent height
-              <div className="p-2.5 invisible">
-                <Download className="w-5 h-5" />
-              </div>
-            )}
-          </div>
-
-          {/* Right: Name + Icon */}
+          {/* Right: Icon + Name */}
           <div className="flex items-center gap-2.5">
-            <h3
-              className={`lg:text-[15px] text-[12px] font-almarai-bold ${
-                isLocked ? "text-gray-400" : "text-[#4B4B4B]"
-              }`}
-            >
-              {name}
-            </h3>
-
             {/* Category Icons based on name/status */}
             {!isLocked ? (
               <svg
@@ -164,7 +138,34 @@ export default function CertificateScroll({
                 <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
               </svg>
             )}
+            <h3
+              className={`lg:text-[15px] text-[12px] font-almarai-bold ${
+                isLocked ? "text-gray-400" : "text-[#4B4B4B]"
+              }`}
+            >
+              {name}
+            </h3>
           </div>
+          
+          {/* Left: Download Icon (Only for Earned) */}
+          <div className="flex items-center">
+            {!isLocked ? (
+              <div className="p-2.5 bg-slate-50 rounded-xl transition-colors text-slate-600">
+                {isDownloading ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <Download className="w-5 h-5" />
+                )}
+              </div>
+            ) : (
+              // Invisible placeholder to maintain consistent height
+              <div className="p-2.5 invisible">
+                <Download className="w-5 h-5" />
+              </div>
+            )}
+          </div>
+
+                    
         </div>
       </div>
     </div>
