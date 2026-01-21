@@ -445,7 +445,7 @@ export default function ScenarioPage() {
   };
 
   return (
-    <div className="top-4 h-screen flex flex-col md:pb-0 pb-8 w-full md:px-8 px-8" dir="rtl">
+    <div className="top-4 h-screen flex flex-col md:pb-0 pb-8 w-full md:px-8 px-3" dir="rtl">
       <audio ref={audioPlayerRef} className="hidden" />
       <div className="mt-4">
         <ProgressBar
@@ -689,7 +689,7 @@ export default function ScenarioPage() {
               onClick={() => setIsVideoModalOpen(true)}
               className="w-full bg-[#FFCB08] h-14 hover:bg-[#FFCB08] text-[#1F1F1F] py-4 rounded-2xl flex items-center justify-center gap-2 md:gap-3 text-xs sm:text-sm md:text-lg font-almarai-bold border-b-[4px] border-b-[#DEA407] shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all font-almarai"
             >
-              <BookOpen className="h-4 w-4 md:h-5 md:w-5 stroke-[2.5px] flex-shrink-0" />
+              <BookOpen className="h-3 w-3 md:h-5 md:w-5 stroke-[2.5px] flex-shrink-0" />
               <span className="truncate">دليل المستخدم</span>
             </Button>
 
@@ -701,7 +701,7 @@ export default function ScenarioPage() {
             >
               <div className='relative flex-shrink-0'>
                 {lastAttemptScores && <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>}
-                <MessageSquare className="h-4 w-4 md:h-5 md:w-5 stroke-[2.5px]" />
+                <MessageSquare className="h-3 w-3 md:h-5 md:w-5 stroke-[2.5px]" />
               </div>
               <span className="truncate">تغذية راجعة</span>
             </Button>
@@ -725,7 +725,7 @@ export default function ScenarioPage() {
                     : "إرسال"}
               </span>
               {!isSubmitting && (
-                <ChevronLeft className="h-6 w-6" />
+                <ChevronLeft className="h-5 w-5" />
               )}
               {isSubmitting && <Loader2 className="h-5 w-5 animate-spin" />}
             </Button>
