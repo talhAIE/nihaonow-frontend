@@ -3,12 +3,12 @@
 import React from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
+import { useNavigation } from '@/lib/navigation';
 import { useAppContext } from '@/context/AppContext';
 
 export default function WelcomeOnBoardingScreen() {
   const { dir, setDir } = useAppContext();
-  const router = useRouter();
+  const { goToRegister, goToLogin } = useNavigation();
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-white flex items-center justify-center p-4 md:p-8" dir={"ltr"}>
@@ -35,30 +35,30 @@ export default function WelcomeOnBoardingScreen() {
 
           <div className="w-full max-w-sm space-y-3">
             <Button
-              onClick={() => router.push('/register')}
+              onClick={goToRegister}
               aria-label="Get started - register"
               className="transition duration-200 shadow-md w-full max-w-[470.5px] h-[48px] md:h-[54px] py-4 gap-[10px] rounded-[12px] border-b-[3px] border-b-[#20672F] bg-[#35AB4E] hover:bg-[#35AB4E] text-[#ECECEC] font-nunito font-bold text-[16px] leading-[100%] tracking-[0%]"
             >
-              Get Started
+              ابدأ الآن
             </Button>
 
             <Button
-              onClick={() => router.push('/login')}
+              onClick={goToLogin}
               aria-label="I already have an account - login"
               className="font-nunito font-bold max-w-[470.5px] w-full h-[48px] md:h-[54px] py-4 gap-[10px] rounded-[12px] bg-[#E5E5E5] hover:bg-[#E5E5E5] border-b-[3px] border-b-[rgba(0,0,0,0.08)] opacity-100 text-[#282828] text-[16px] leading-[100%] tracking-[0%] transition duration-200"
             >
-              I already have an account
+              لدي حساب بالفعل
             </Button>
           </div>
 
           <div className="w-full max-w-sm mt-6 md:mt-8">
             <div className="flex justify-between font-inter-medium-11 text-xs md:text-sm">
               <div className="flex gap-2 md:gap-4">
-                <a href="#" className="hover:text-gray-800 text-start">Privacy Policy</a>
+                <a href="#" className="hover:text-gray-800 text-start">سياسة الخصوصية</a>
                 <span>|</span>
-                <a href="#" className="hover:text-gray-800">Terms of Use</a>
+                <a href="#" className="hover:text-gray-800">شروط الاستخدام</a>
               </div>
-              <span>© NihaoNow 2025 Inc.</span>
+              <span dir="ltr">© NihaoNow 2025 Inc.</span>
             </div>
           </div>
         </div>

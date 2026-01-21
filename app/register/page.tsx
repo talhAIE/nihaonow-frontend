@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useNavigation } from '@/lib/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +10,7 @@ import { authApi } from '@/lib/api';
 import { setAuthToken } from '@/lib/authUtils';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
+import Image from 'next/image';
 
 type FormData = {
   username: string;
@@ -18,7 +19,7 @@ type FormData = {
 };
 
 export default function RegisterPage() {
-  const router = useRouter();
+  const { goToStudentDashboard } = useNavigation();
   const { login } = useAppContext();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -37,17 +38,19 @@ export default function RegisterPage() {
     const value = (formData[field] ?? '').toString();
     let error = '';
     if (!value.trim()) {
-      error = 'This field is required';
+      error = 'هذا الحقل مطلوب';
     } else {
       if (field === 'username' && value.length < 3) {
-        error = 'Username must be at least 3 characters long';
+        error = 'يجب أن يكون اسم المستخدم 3 أحرف على الأقل';
       }
       if (field === 'password' && value.length < 4) {
-        error = 'Password must be at least 4 characters long';
+        error = 'يجب أن تكون كلمة المرور 4 أحرف على الأقل';
+      }
+      if (field === 'email') {
       }
       if (field === 'email') {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(value)) error = 'Please enter a valid email address';
+        if (!emailRegex.test(value)) error = 'الرجاء إدخال عنوان بريد إلكتروني صالح';
       }
     }
     setErrors(prev => ({ ...prev, [field]: error || undefined }));
@@ -59,10 +62,10 @@ export default function RegisterPage() {
     const fieldResults = fields.map(f => validateField(f));
     const ok = fieldResults.every(Boolean);
     if (!ok) {
-      // toast({ title: 'Validation Error', description: 'Please fix the highlighted fields', variant: 'destructive' });
+      // toast({ title: 'خطأ في التحقق', description: 'يرجى تصحيح الحقول المظللة', variant: 'destructive' });
     }
     return ok;
-  }, [validateField, toast]);
+  }, [validateField]);
 
   const normalizeResponse = (res: any) => {
     if (!res) return { token: null, user: null, message: 'Empty response from server' };
@@ -87,7 +90,7 @@ export default function RegisterPage() {
         const { token, user, message } = normalizeResponse(response);
 
         if (!token || !user) {
-          toast({ title: 'خطأ في التسجيل', description: message || 'فشل التسجيل', variant: 'destructive' });
+          toast({ title: 'خطأ في التسجيل', description: message || 'فشل التسجيل', variant: 'destructive', duration: 5000 });
           return;
         }
 
@@ -95,7 +98,7 @@ export default function RegisterPage() {
           setAuthToken(token);
         } catch (err) {
           console.error('Failed to persist auth token', err);
-          toast({ title: 'خطأ في المصادقة', description: 'تعذر حفظ رمز الجلسة', variant: 'destructive' });
+          toast({ title: 'خطأ في المصادقة', description: 'تعذر حفظ رمز الجلسة', variant: 'destructive', duration: 5000 });
           return;
         }
 
@@ -103,35 +106,40 @@ export default function RegisterPage() {
           id: user.id?.toString?.() ?? '',
           email: user.email ?? '',
           username: user.username ?? user.name ?? '',
+          role: user.role ?? 'student', // Ensure role is set to 'student' if not provided
         });
 
 
-          toast({ title: 'تم بنجاح', description: 'مرحبًا بعودتك' });
-        router.push('/student/dashboard');
+        toast({ title: 'تم بنجاح', description: 'مرحبًا بعودتك', duration: 5000 });
+        goToStudentDashboard();
       } catch (error: any) {
         console.error('Registration error:', error);
         const message = error?.response?.data?.message ?? error?.message ?? 'حدث خطأ غير متوقع';
-        toast({ title: 'خطأ', description: message, variant: 'destructive' });
+        toast({ title: 'خطأ', description: message, variant: 'destructive', duration: 5000 });
       } finally {
         setIsLoading(false);
       }
     },
-    [formData, login, router, toast, validateForm]
+    [formData, login, goToStudentDashboard, toast, validateForm]
   );
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] bg-white flex flex-col items-center justify-center px-4 py-8 overflow-hidden" dir='ltr'>
-      <img
+    <div className="relative min-h-[calc(100vh-4rem)] bg-white flex flex-col items-center justify-center px-4 py-8 overflow-hidden" dir='rtl'>
+      <Image
         src="/images/LoginLogo2.png"
         alt=""
         aria-hidden="true"
+        width={220}
+        height={225}
         className="pointer-events-none absolute top-0 right-0 z-0 w-[60%] max-w-[220px] h-auto max-h-[225px] opacity-100 transform-none md:top-0"
         style={{ transform: 'rotate(0deg)', opacity: 1 }}
       />
-      <img
-        src="/images/LoginLogo.png"
+      <Image
+        src="/images/loginLogo.png"
         alt=""
         aria-hidden="true"
+        width={420}
+        height={225}
         className="pointer-events-none absolute left-0 bottom-0 z-0 w-[60%] max-w-[420px] h-auto max-h-[225px] opacity-100 transform-none sm:left-4 sm:bottom-0 lg:left-[5px] lg:bottom-0"
         style={{ transform: 'rotate(0deg)', opacity: 1 }}
       />
@@ -140,7 +148,7 @@ export default function RegisterPage() {
         <div className="bg-white p-6 sm:p-8 backdrop-blur-sm rounded-lg">
           <div className="mb-6 flex justify-center items-center">
             <h2 className="text-center" style={{ fontFamily: 'Nunito', fontWeight: 700, fontSize: '24px', lineHeight: '100%', letterSpacing: '0%', textAlign: 'center', color: '#282828' }}>
-              Register
+              إنشاء حساب
             </h2>
           </div>
 
@@ -149,11 +157,12 @@ export default function RegisterPage() {
             <div className="space-y-2">
               <div className="relative">
                 <Input
-                  aria-label="Username"
+                  dir="ltr"
+                  aria-label="اسم المستخدم"
                   id="username"
                   name="username"
                   type="text"
-                  placeholder="Enter your username"
+                  placeholder="أدخل اسم المستخدم"
                   value={formData.username}
                   onChange={handleInputChange}
                   disabled={isLoading}
@@ -161,7 +170,7 @@ export default function RegisterPage() {
                   aria-required="true"
                   aria-invalid={errors.username ? 'true' : 'false'}
                   aria-describedby={errors.username ? 'username-error' : undefined}
-                  className="bg-[#ECECEC] border-0 hover:bg-[#ECECEC] focus:bg-[#ECECEC] focus-visible:bg-[#ECECEC] focus:border-0 focus-visible:border-0 focus:ring-0 focus-visible:ring-0 outline-none w-full h-11 sm:h-[44px] px-4 rounded-[12px]"
+                  className="text-left bg-[#ECECEC] border-0 hover:bg-[#ECECEC] focus:bg-[#ECECEC] focus-visible:bg-[#ECECEC] focus:border-0 focus-visible:border-0 focus:ring-0 focus-visible:ring-0 outline-none w-full h-11 sm:h-[44px] px-4 rounded-[12px]"
                 />
               </div>
               {errors.username && (
@@ -172,7 +181,8 @@ export default function RegisterPage() {
             <div className="space-y-2">
               <div className="relative">
                 <Input
-                  aria-label="Email"
+                  dir="ltr"
+                  aria-label="البريد الإلكتروني"
                   id="email"
                   name="email"
                   type="email"
@@ -184,7 +194,7 @@ export default function RegisterPage() {
                   aria-required="true"
                   aria-invalid={errors.email ? 'true' : 'false'}
                   aria-describedby={errors.email ? 'email-error' : undefined}
-                  className="bg-[#ECECEC] border-0 hover:bg-[#ECECEC] focus:bg-[#ECECEC] focus-visible:bg-[#ECECEC] focus:border-0 focus-visible:border-0 focus:ring-0 focus-visible:ring-0 outline-none w-full h-11 sm:h-[44px] px-4 rounded-[12px]"
+                  className="text-left bg-[#ECECEC] border-0 hover:bg-[#ECECEC] focus:bg-[#ECECEC] focus-visible:bg-[#ECECEC] focus:border-0 focus-visible:border-0 focus:ring-0 focus-visible:ring-0 outline-none w-full h-11 sm:h-[44px] px-4 rounded-[12px]"
                 />
               </div>
               {errors.email && (
@@ -195,7 +205,8 @@ export default function RegisterPage() {
             <div className="space-y-2">
               <div className="relative">
                 <Input
-                  aria-label="Password"
+                  dir="ltr"
+                  aria-label="كلمة المرور"
                   id="password"
                   name="password"
                   type={showPassword ? 'text' : 'password'}
@@ -207,13 +218,13 @@ export default function RegisterPage() {
                   aria-required="true"
                   aria-invalid={errors.password ? 'true' : 'false'}
                   aria-describedby={errors.password ? 'password-error' : undefined}
-                  className="bg-[#ECECEC] border-0 hover:bg-[#ECECEC] focus:bg-[#ECECEC] focus-visible:bg-[#ECECEC] focus:border-0 focus-visible:border-0 focus:ring-0 focus-visible:ring-0 outline-none w-full h-11 sm:h-[44px] px-4 pr-12 rounded-[12px]"
+                  className="text-left bg-[#ECECEC] border-0 hover:bg-[#ECECEC] focus:bg-[#ECECEC] focus-visible:bg-[#ECECEC] focus:border-0 focus-visible:border-0 focus:ring-0 focus-visible:ring-0 outline-none w-full h-11 sm:h-[44px] px-4 pr-12 rounded-[12px]"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  aria-label={showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
                 >
                   {showPassword ? (
                     <EyeOff className="h-5 w-5" />
@@ -230,26 +241,31 @@ export default function RegisterPage() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="transition duration-200 shadow-md w-full sm:max-w-[470.5px] h-11 sm:h-[45px] gap-[10px] rounded-[12px] border-b-[3px] border-b-[#20672F] hover:bg-[#35AB4E] bg-[#35AB4E] text-[#ECECEC] font-nunito font-bold text-[16px]"
+              className="transition duration-200 shadow-md w-full sm:max-w-[470.5px] h-11 sm:h-[45px] gap-[10px] rounded-[12px] border-b-[3px] border-b-[#20672F] hover:bg-[#35AB4E] bg-[#35AB4E] text-[#ECECEC]  font-bold text-[16px]"
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Signing up...
+                  <Loader2 className="h-4 w-4 ml-2 animate-spin" />
+                  جاري إنشاء الحساب...
                 </>
               ) : (
-                'Sign Up'
+                'إنشاء حساب'
               )}
             </Button>
 
-            <Button
-              className="font-nunito font-bold w-full sm:max-w-[470.5px] h-11 sm:h-[45px] gap-[10px] rounded-[12px] hover:bg-[#E5E5E5] bg-[#E5E5E5] border-b-[3px] border-b-[rgba(0,0,0,0.08)] text-[#282828] text-[16px] transition duration-200"
-            >
-              Already have an account?{' '}
-              <Link href="/login" className="font-semibold text-green-600 hover:text-green-700 transition-colors">
-                Login
-              </Link>
-            </Button>
+            <div className="w-full sm:max-w-[470.5px] flex items-center justify-center">
+              <Button
+                className="font-bold w-full h-11 sm:h-[45px] px-4 rounded-[12px] hover:bg-[#E5E5E5] bg-[#E5E5E5] border-b-[3px] border-b-[rgba(0,0,0,0.08)] text-[#282828] text-[14px] sm:text-[16px] transition duration-200 whitespace-nowrap"
+                asChild
+              >
+                <div>
+                  <span>لديك حساب بالفعل؟{' '}</span>
+                  <Link href="/login" className="font-semibold text-green-600 hover:text-green-700 transition-colors">
+                    تسجيل الدخول
+                  </Link>
+                </div>
+              </Button>
+            </div>
 
           </form>
         </div>

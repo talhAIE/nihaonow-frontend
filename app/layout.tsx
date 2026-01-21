@@ -1,13 +1,14 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Almarai } from "next/font/google";
 import { AppProvider } from "@/context/AppContext";
 import { Toaster } from "@/components/ui/toaster";
-import AuthSidebar from '@/components/AuthSidebar';
-import ConditionalHeader from '@/components/ConditionalHeader';
-import Layout from "@/components/layout";
 
-const inter = Inter({ subsets: ["latin"] });
+const almarai = Almarai({
+  subsets: ["arabic"],
+  weight: ["300", "400", "700", "800"],
+  variable: "--font-almarai",
+});
 
 export const metadata: Metadata = {
   title: "Ni hao now",
@@ -20,10 +21,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className} suppressHydrationWarning={true}>
+    <html lang="ar" dir="rtl">
+      <body className={`${almarai.variable} ${almarai.className} font-sans`} suppressHydrationWarning={true}>
         <AppProvider>
-          <Layout>{children}</Layout>
+          {children}
         </AppProvider>
         <Toaster />
       </body>

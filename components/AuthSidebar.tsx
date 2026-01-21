@@ -32,6 +32,7 @@ export default function AuthSidebar() {
   }, [isAuthenticated, pathname]);
 
   const isScenarioPath = pathname?.includes("/scenario");
+  const isTeacherPath = pathname?.startsWith("/teacher");
   const isPublicAuthPath =
     pathname &&
     (pathname === "/" ||
@@ -66,6 +67,7 @@ export default function AuthSidebar() {
   if (!isAuthenticated) return <></>;
   if (isPublicAuthPath) return <></>;
   if (isScenarioPath) return <></>;
+  if (isTeacherPath) return <></>;
   if (!showSidebarReady) return <></>;
 
   return <Sidebar />;

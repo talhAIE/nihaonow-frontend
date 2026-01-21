@@ -14,6 +14,10 @@ const config: Config = {
         'gradient-conic':
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
+      fontFamily: {
+        almarai: ['var(--font-almarai)', 'Almarai', 'sans-serif'],
+        sans: ['var(--font-almarai)', 'Almarai', 'sans-serif', 'Nunito', 'Inter', 'ui-sans-serif', 'system-ui'],
+      },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
@@ -55,13 +59,20 @@ const config: Config = {
         ring: 'hsl(var(--ring))',
         // Custom brand colors
         brand: {
-          DEFAULT: '#31A749',
+          DEFAULT: '#30a849',
+          red: '#eb2625',
+          green: '#30a849',
+          yellow: '#ffcb08',
+          orange: '#f98d00',
+          'light-green': '#8ac53e',
+          rose: '#ca495a',
+          mint: '#99ecba',
           50: '#F0F9F2',
           100: '#DCF2E1',
           200: '#BBE4C4',
           300: '#8DD09B',
           400: '#57B56C',
-          500: '#31A749',
+          500: '#30a849',
           600: '#248A3A',
           700: '#1E6E2F',
           800: '#1B5828',

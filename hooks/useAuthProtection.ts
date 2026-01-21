@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { useAppContext } from '@/context/AppContext';
+import { useNavigation } from '@/lib/navigation';
 
 interface UseAuthProtectionOptions {
   redirectTo?: string;
   allowedRoles?: string[];
+  unauthorizedRedirectTo?: string;
 }
 
 /**
@@ -23,28 +24,49 @@ interface UseAuthProtectionOptions {
  * - user: User object or null
  */
 export function useAuthProtection(options: UseAuthProtectionOptions = {}) {
-  const router = useRouter();
+  const { goTo, goToLogin } = useNavigation();
   const { state } = useAppContext();
-  const { redirectTo = '/login' } = options;
+  const { redirectTo, allowedRoles, unauthorizedRedirectTo } = options;
 
   useEffect(() => {
     // Only check after state is initialized
     // Delay to allow AppContext to load from storage
     const checkAuth = () => {
       if (!state.isAuthenticated) {
-        router.push(redirectTo);
+        redirectTo ? goTo(redirectTo) : goToLogin();
+        return;
+      }
+
+      if (allowedRoles && allowedRoles.length > 0) {
+        const userRole = String(state.authUser?.role || '').toLowerCase();
+        const normalizedAllowed = allowedRoles.map((r) => String(r).toLowerCase());
+        const isAllowed = normalizedAllowed.includes(userRole);
+
+        if (!isAllowed) {
+          if (unauthorizedRedirectTo) {
+            goTo(unauthorizedRedirectTo);
+          } else {
+            goToLogin();
+          }
+        }
       }
     };
 
     // Small delay to ensure AppContext has loaded
     const timer = setTimeout(checkAuth, 100);
     return () => clearTimeout(timer);
-  }, [state.isAuthenticated, router, redirectTo]);
+  }, [state.isAuthenticated, state.authUser, redirectTo, allowedRoles, unauthorizedRedirectTo, goTo, goToLogin]);
+
+  const userRole = String(state.authUser?.role || '').toLowerCase();
+  const normalizedAllowed = (allowedRoles || []).map((r) => String(r).toLowerCase());
+  const isAuthorized =
+    state.isAuthenticated && (normalizedAllowed.length === 0 || normalizedAllowed.includes(userRole));
 
   return {
     isAuthenticated: state.isAuthenticated,
-    isLoading: !state.isAuthenticated,
+    isLoading: !state.isInitialized, // Check initialization status
     user: state.authUser,
+    isAuthorized,
   };
 }
 
@@ -68,7 +90,7 @@ export function useAuth() {
  * Usage: const { logout } = useLogout();
  */
 export function useLogout() {
-  const router = useRouter();
+  const { goToLogin } = useNavigation();
   const { logout: contextLogout } = useAppContext();
 
   const logout = async () => {
@@ -77,7 +99,7 @@ export function useLogout() {
     } catch (err) {
       // ignore
     }
-    router.push('/login');
+    goToLogin();
   };
 
   return { logout };

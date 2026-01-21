@@ -8,14 +8,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAppContext } from "@/context/AppContext";
+import { useNavigation } from '@/lib/navigation';
 import React, { useState, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { Menu, User, X, LogOut, LayoutDashboard, BookCheck, TrophyIcon, Medal } from "lucide-react";
+import { usePathname } from 'next/navigation';
+import { Menu, User, X, LogOut, LayoutDashboard, BookCheck, Trophy, Medal, FileBarChart, Award } from "lucide-react";
 
 export default function Header() {
   const { resetOnboarding, logout, state, sidebarOpen, setSidebarOpen, dir } = useAppContext();
   const displayName = state?.user || state?.authUser?.username || 'جون دو';
-  const router = useRouter();
+  const { goToWelcome, goToLogin } = useNavigation();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -24,22 +25,22 @@ export default function Header() {
       if (!state.isAuthenticated) {
         const publicPaths = ['/welcome', '/login', '/register'];
         if (!publicPaths.includes(pathname)) {
-          router.push('/welcome');
+          goToWelcome();
         }
       }
     }, 100);
     return () => clearTimeout(timer);
-  }, [state.isAuthenticated, pathname, router]);
+  }, [state.isAuthenticated, pathname, goToWelcome]);
 
   const handleLogout = async () => {
     try {
       await logout();
-      router.push('/login');
+      goToLogin();
       // Reset logout state after a short delay to ensure navigation completes
       setTimeout(() => {
         try {
           // This will be handled by the login page loading
-        } catch (err) {}
+        } catch (err) { }
       }, 100);
     } catch (err) {
       console.warn("Logout failed (context logout):", err);
@@ -66,16 +67,16 @@ export default function Header() {
 
   const navItems = [
     { href: '/student/dashboard', label: 'لوحة القيادة', Icon: LayoutDashboard },
-    { href: '/units', label: 'الوحدات', Icon: BookCheck },
-    // { href: '/achievements', label: 'الإنجازات', Icon: TrophyIcon },
-    { href: '/leaderboard', label: 'المتصدرين', Icon: Medal },
-    { href: '/account', label: 'حساب المستخدم', Icon: User },
+    { href: '/student/units', label: 'الوحدات', Icon: BookCheck },
+    { href: '/student/leaderboard', label: 'المتصدرين', Icon: Trophy },
+    { href: '/student/achievements', label: 'الإنجازات', Icon: Medal },
+    { href: '/student/account', label: 'حساب المستخدم', Icon: User },
   ];
 
   return (
     <div className="px-4 py-4 md:px-6" dir={dir}>
 
-      <div className="md:hidden">
+      <div className="xl:hidden">
         <div
           className="flex items-center justify-between h-[84px] px-[16px] py-[14px] rounded-[13px] bg-[#35AB4E]"
           style={{ boxShadow: "0px 4px 0px 0px #20672F" }}
@@ -119,7 +120,7 @@ export default function Header() {
 
         {/* Mobile dropdown panel */}
         <div
-          className={`fixed inset-0 z-30 md:hidden ${mobileMenuOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
+          className={`fixed inset-0 z-30 xl:hidden ${mobileMenuOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
           aria-hidden={!mobileMenuOpen}
         >
           <div
@@ -159,15 +160,15 @@ export default function Header() {
                 }}
                 className="w-full flex items-center justify-center gap-4 px-4 py-3 rounded-[10px] bg-[#FBD4D3] text-[#8D1716] font-semibold"
               >
-               
+
                 <span>تسجيل الخروج</span>
-                 <LogOut size={18} />
+                <LogOut size={18} />
               </button>
             </div>
           </div>
         </div>
       </div>
-      <div className="hidden md:flex items-center justify-between">
+      <div className="hidden xl:flex items-center justify-between">
         <div className="flex items-center gap-3">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

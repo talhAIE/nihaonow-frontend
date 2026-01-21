@@ -5,6 +5,9 @@ export const sessionsApi = {
   start: async (data: SessionStartRequest): Promise<SessionStartResponse> => {
     return apiClient.post<SessionStartResponse>(apiEndpoints.sessions.start, data);
   },
+  startWord: async (data: { wordTopicId: number }): Promise<SessionStartResponse> => {
+    return apiClient.post<SessionStartResponse>(apiEndpoints.sessions.startWord, data);
+  },
   getById: async (sessionId: string): Promise<any> => {
     return apiClient.get<any>(apiEndpoints.sessions.byId(sessionId));
   },
@@ -23,5 +26,8 @@ export const sessionsApi = {
     return apiClient.post(url, formData, { headers: { 'ngrok-skip-browser-warning': 'true',
       'Content-Type': 'multipart/form-data',
      } });
+  },
+  complete: async (sessionId: string): Promise<any> => {
+    return apiClient.post(apiEndpoints.sessions.complete(sessionId));
   },
 };

@@ -3,6 +3,7 @@ import { sessionsApi, SessionStartRequest, SessionStartResponse } from '@/lib/ap
 
 interface UseSessionReturn {
   startSession: (topicId: number) => Promise<SessionStartResponse>;
+  startWordSession: (wordTopicId: number) => Promise<SessionStartResponse>;
   loading: boolean;
   error: string | null;
 }
@@ -15,13 +16,8 @@ export const useSession = (): UseSessionReturn => {
     try {
       setLoading(true);
       setError(null);
-
-      // Get username from localStorage
-      // const username = localStorage.getItem('username') || 'User';
-      // console.log('Starting session for user:', username, 'with topicId:', topicId);
       
       const payload: SessionStartRequest = {
-        // username,
         topicId,
       };
 
@@ -40,8 +36,29 @@ export const useSession = (): UseSessionReturn => {
     }
   };
 
+  const startWordSession = async (wordTopicId: number): Promise<SessionStartResponse> => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const sessionData = await sessionsApi.startWord({ wordTopicId });
+      
+      sessionStorage.setItem('currentSession', JSON.stringify(sessionData));
+      
+      return sessionData;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to start word session';
+      setError(errorMessage);
+      console.error('Error starting word session:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     startSession,
+    startWordSession,
     loading,
     error,
   };
