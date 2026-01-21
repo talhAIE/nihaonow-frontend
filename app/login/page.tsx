@@ -70,11 +70,32 @@ export default function LoginPage() {
       }
       setIsLoading(true);
       try {
+        console.log('Attempting login with:', formData.username);
         const response = await authApi.login({ identifier: formData.username, password: formData.password });
-        const token = response?.access_token ?? response?.token;
-        const userData = response?.user;
+        console.log('Login response:', response);
+        
+        // Handle both direct response and wrapped response formats
+        let token, userData;
+        if (response && typeof response === 'object') {
+          if ('data' in response && response.data) {
+            // Response is wrapped: { data: { access_token, user, ... }, success: true }
+            const wrappedResponse = response as any;
+            token = wrappedResponse.data.access_token ?? wrappedResponse.data.token;
+            userData = wrappedResponse.data.user;
+          } else {
+            // Direct response: { access_token, user, ... }
+            token = response.access_token ?? response.token;
+            userData = response.user;
+          }
+        }
+        
+        console.log('Extracted token:', token);
+        console.log('Extracted user data:', userData);
+        
         if (token && userData) {
+          console.log('Setting auth token...');
           setAuthToken(token);
+          console.log('Auth token set successfully');
 
           // Normalize role to lowercase for consistent frontend comparison
           let userRole = String(userData.role || 'student').toLowerCase();
@@ -83,18 +104,24 @@ export default function LoginPage() {
             userRole = 'teacher';
           }
 
+          console.log('User role:', userRole);
           setUserRole(userRole);
+          console.log('User role set successfully');
 
+          console.log('Calling login function...');
           login({
             id: String(userData.id ?? ''),
             email: userData.email ?? '',
             username: userData.username ?? '',
             role: userRole
           });
+          console.log('Login function called successfully');
+          
           toast({ title: 'تم بنجاح', description: 'مرحبًا بعودتك', duration: 5000 });
 
           // Wrap in timeout to ensure context updates propagate
           setTimeout(() => {
+            console.log('Redirecting to dashboard...');
             if (userRole === 'teacher') {
               goToTeacherDashboard();
             } else {
@@ -102,6 +129,7 @@ export default function LoginPage() {
             }
           }, 100);
         } else {
+          console.error('Invalid login response - missing token or user data');
           toast({ title: 'خطأ', description: response?.message ?? 'فشل تسجيل الدخول', variant: 'destructive', duration: 5000 });
         }
         setErrors({});

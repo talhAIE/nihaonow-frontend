@@ -260,6 +260,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem('authUser');
       localStorage.removeItem('userName');
       localStorage.removeItem('username');
+      localStorage.removeItem('userRole');
 
       // Clear sessionStorage keys related to sessions
       try {
@@ -271,6 +272,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       try {
         clearAuthToken();
+        clearUserRole();
       } catch (err) { }
 
       setState(prev => ({
