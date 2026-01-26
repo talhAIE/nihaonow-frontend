@@ -74,7 +74,7 @@ export default function Header() {
   ];
 
   return (
-    <div className="px-4 py-4 md:px-6" dir={dir}>
+    <div className="py-4 md:px-6" dir={dir}>
 
       <div className="xl:hidden">
         <div
