@@ -273,7 +273,7 @@ export default function AchievementsPage() {
   const progressPercentage = totalAchievementsCount > 0 ? (earnedAchievementsCount / totalAchievementsCount) * 100 : 0;
 
   return (
-    <div className="flex-1 space-y-6 p-4 sm:p-6 pt-4 bg-white" dir="rtl">
+    <div className="flex-1 space-y-6 px-0 pt-4 bg-white" dir="rtl">
       {/* Refined Header & Tab Switcher */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
         <div className="flex-1 w-full sm:w-auto flex justify-center sm:justify-start">
