@@ -176,7 +176,6 @@ export default function TeacherDashboard() {
                         <span className="text-[#BC313F] text-xl sm:text-2xl lg:text-3xl font-black">
                             {stats.notLoggedInCount}
                         </span>
-                        <span className="text-[#BC313F] text-xs font-bold mt-1 sm:mt-2">ساعة</span>
                     </div>
                 </div>
             </div>
