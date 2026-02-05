@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import { CheckCircle2, Lock, Star } from "lucide-react";
+import { Close } from "@radix-ui/react-toast";
 
 interface AchievementNode {
   id: string | number;
@@ -139,7 +140,7 @@ export default function AwardsMap({ achievements, onClaim, claimedAchievements =
         if (isLocked) {
           return "/achievements/LockedRed 1.png";
         } else if (isEarned && !isClaimed) {
-          return "/achievements/Redstar 2.png";
+          return "/achievements/StarRedAward 1.png";
         } else if (isEarned && isClaimed) {
           return "/achievements/StarRedAward 1.png";
         } else {
@@ -149,7 +150,7 @@ export default function AwardsMap({ achievements, onClaim, claimedAchievements =
         if (isLocked) {
           return "/achievements/LockedYellow 1.png";
         } else if (isEarned && !isClaimed) {
-          return "/achievements/YellowStar 2.png";
+          return "/achievements/StarYellowAward 1.png";
         } else if (isEarned && isClaimed) {
           return "/achievements/StarYellowAward 1.png";
         } else {
@@ -159,7 +160,7 @@ export default function AwardsMap({ achievements, onClaim, claimedAchievements =
         if (isLocked) {
           return "/achievements/LockedGreen 1.png";
         } else if (isEarned && !isClaimed) {
-          return "/achievements/GreenStar 2.png";
+          return "/achievements/StarGreenAward 1.png";
         } else if (isEarned && isClaimed) {
           return "/achievements/StarGreenAward 1.png";
         } else {
@@ -169,7 +170,7 @@ export default function AwardsMap({ achievements, onClaim, claimedAchievements =
         if (isLocked) {
           return "/achievements/LockedGreen 1.png";
         } else if (isEarned && !isClaimed) {
-          return "/achievements/GreenStar 2.png";
+          return "/achievements/GreenStar 1.png";
         } else if (isEarned && isClaimed) {
           return "/achievements/StarGreenAward 1.png";
         } else {
@@ -179,7 +180,7 @@ export default function AwardsMap({ achievements, onClaim, claimedAchievements =
   };
 
   return (
-    <div className="relative w-full min-h-[600px] sm:min-h-[800px] min-[1022px]:min-h-[1000px] overflow-hidden transition-all duration-500 pt-16 sm:pt-20 pb-32 sm:pb-48 rounded-[32px] sm:rounded-[48px]">
+    <div className="relative w-full min-h-[500px] sm:min-h-[700px] min-[1022px]:min-h-[900px] overflow-hidden transition-all duration-500 pt-16 sm:pt-20 pb-16 sm:pb-24 rounded-[32px] sm:rounded-[48px]">
       {/* Background SVG */}
       <div className="absolute inset-0 z-0 overflow-hidden rounded-[32px] sm:rounded-[48px]">
         <Image
@@ -201,56 +202,64 @@ export default function AwardsMap({ achievements, onClaim, claimedAchievements =
 
       {activePopup && (
         <div
-          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 sm:w-80 md:w-96 max-w-[92vw] bg-slate-900/95 backdrop-blur-md text-white rounded-[24px] p-4 sm:p-5 md:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/10 z-[9999]"
+          className="fixed w-72 sm:w-80 md:w-96 max-w-[92vw] bg-white p-5 sm:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.2)] z-[9999] rounded-[24px]"
           role="dialog"
           aria-modal="true"
           onClick={(e) => e.stopPropagation()}
+          style={{
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+          }}
         >
-          <div className="flex items-start justify-between gap-3 mb-3">
-            <div className="flex items-center gap-2 flex-1 min-w-0">
-              <Star
-                className={`w-4 h-4 shrink-0 ${activePopup.status === "earned"
-                    ? "text-yellow-400 fill-yellow-400"
-                    : "text-slate-500"
-                  }`}
-              />
-              <p className="text-sm sm:text-base font-almarai-extrabold leading-tight text-white break-words">
+          {/* Close Button Top Right */}
+          <button
+            type="button"
+            className="absolute top-5 right-5 text-gray-400 hover:text-gray-600 text-xl leading-none w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors z-20"
+            onClick={() => setActivePopup(null)}
+            aria-label="إغلاق"
+          >
+            ✕
+          </button>
+
+          {/* Content Group: Star + Text */}
+          <div className="flex items-center justify-center gap-3 mb-5 mt-2 relative z-10">
+            <Star
+              className={`w-8 h-8 sm:w-10 sm:h-10 shrink-0 rotate-12 ${activePopup.status === "earned"
+                ? "text-yellow-400 fill-yellow-400"
+                : "text-gray-400 fill-gray-400"
+                }`}
+            />
+            <div className="flex flex-col items-start text-right">
+              <h3 className="text-base sm:text-lg font-almarai-extrabold leading-tight text-gray-900">
                 {activePopup.name}
+              </h3>
+              <p className="text-xs sm:text-sm text-gray-600 font-medium leading-relaxed break-words max-w-[200px]">
+                {activePopup.description ||
+                  "أكمل المهام المطلوبة للحصول على هذه المكافأة الرائعة!"}
               </p>
             </div>
-
-            <button
-              type="button"
-              className="text-white/70 hover:text-white text-xl leading-none px-2"
-              onClick={() => setActivePopup(null)}
-              aria-label="إغلاق"
-            >
-              ×
-            </button>
           </div>
 
-          <p className="text-xs sm:text-sm text-slate-300 font-medium mb-4 leading-relaxed break-words">
-            {activePopup.description ||
-              "أكمل المهام المطلوبة للحصول على هذه المكافأة الرائعة!"}
-          </p>
-
-          <div className="flex items-center justify-between gap-2">
-            <span
-              className={`text-[11px] font-black px-3 py-1.5 rounded-full uppercase tracking-wider ${activePopup.status === "earned"
-                  ? "bg-green-500/20 text-green-400"
-                  : "bg-slate-700/50 text-slate-400"
+          {/* Footer with points and status */}
+          <div className="flex items-center justify-between gap-3 relative z-10">
+            {/* Status button - moved to left */}
+            <button
+              className={`text-xs sm:text-sm font-almarai-bold px-4 py-2 rounded-xl transition-colors ${activePopup.status === "earned"
+                ? "bg-green-100 text-green-700 hover:bg-green-200"
+                : "bg-rose-100 text-rose-700 hover:bg-rose-200"
                 }`}
             >
               {activePopup.status === "earned" ? "تم الإنجاز" : "مغلق"}
-            </span>
-            {activePopup.status !== "earned" && (
-              <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-yellow-400/10 rounded-xl">
-                <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                <span className="text-xs font-black text-yellow-400">
-                  {activePopup.pointValue}
-                </span>
-              </div>
-            )}
+            </button>
+
+            {/* Points display - moved to right */}
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-yellow-50 rounded-xl border border-yellow-200">
+              <span className="text-sm sm:text-base font-black text-gray-900">
+                {activePopup.pointValue || 0}
+              </span>
+              <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+            </div>
           </div>
         </div>
       )}
@@ -356,6 +365,17 @@ export default function AwardsMap({ achievements, onClaim, claimedAchievements =
           right: "drop-shadow-[0_6px_8px_rgba(34,197,94,0.45)]",
         }[node.pathId];
 
+        const getFloatingCoin = (variant: string) => {
+          if (variant === "red") return "/achievements/Redstar 1.png";
+          if (variant === "yellow" || variant === "star_gold" || variant === "speak")
+            return "/achievements/YellowStar 1.png";
+          if (variant === "green" || variant === "read")
+            return "/achievements/GreenStar 1.png";
+          return null;
+        };
+
+        const floatingCoin = isEarned && !isClaimed ? getFloatingCoin(node.variant) : null;
+
         return (
           <div
             key={index}
@@ -400,6 +420,7 @@ export default function AwardsMap({ achievements, onClaim, claimedAchievements =
 
               {isEarned && pointLight(node.variant)}
 
+              {/* Main Award Image */}
               <div className="relative w-full h-full flex items-center justify-center filter">
                 <Image
                   src={assetUrl}
@@ -407,30 +428,36 @@ export default function AwardsMap({ achievements, onClaim, claimedAchievements =
                   fill
                   style={{ objectFit: "contain" }}
                   className={`transition-all duration-700 ${isEarned
-                      ? "brightness-110 contrast-125 scale-110"
-                      : "grayscale opacity-60"
+                    ? "brightness-110 contrast-125 scale-110"
+                    : "grayscale opacity-60"
                     }`}
                 />
               </div>
 
-              {isEarned && (
+              {/* Float Coin (Static) for Unclaimed Awards */}
+              {floatingCoin && (
+                <div className="absolute -top-9 w-12 h-12 sm:w-14 sm:h-14 pointer-events-none z-10">
+                  <Image
+                    src={floatingCoin}
+                    alt="Collect"
+                    fill
+                    className="object-contain drop-shadow-lg"
+                  />
+                </div>
+              )}
+
+              {isEarned && isClaimed && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none translate-y-5 sm:translate-y-7">
-                  {isClaimed ? (
-                    <div className="relative">
-                      <div className="bg-green-600/95 text-white rounded-full shadow-lg border border-white/20 w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center">
-                        <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
-                      </div>
-                      <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <div className="bg-slate-900/95 text-white text-[10px] sm:text-[11px] font-almarai-bold px-3 py-1.5 rounded-full shadow-lg border border-white/10 whitespace-nowrap">
-                          تمت المطالبة به
-                        </div>
+                  <div className="relative">
+                    <div className="bg-green-600/95 text-white rounded-full shadow-lg border border-white/20 w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center">
+                      <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                    </div>
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                      <div className="bg-slate-900/95 text-white text-[10px] sm:text-[11px] font-almarai-bold px-3 py-1.5 rounded-full shadow-lg border border-white/10 whitespace-nowrap">
+                        تمت المطالبة به
                       </div>
                     </div>
-                  ) : (
-                    <div className="bg-yellow-500/95 text-white text-[9px] sm:text-[11px] font-almarai-bold px-3 sm:px-4 py-1 sm:py-1.5 rounded-full shadow-lg border border-white/20 whitespace-nowrap text-center leading-none flex items-center justify-center">
-                      مطالبة
-                    </div>
-                  )}
+                  </div>
                 </div>
               )}
             </div>
@@ -442,48 +469,22 @@ export default function AwardsMap({ achievements, onClaim, claimedAchievements =
 
       <div className="absolute top-[26%] right-[5%] w-16 h-16 min-[700px]:w-28 min-[700px]:h-36 z-0">
         <Image
-          src="/achievements/tiger 1.png"
-          alt="Tiger"
+          src="/achievements/panda1 1.png"
+          alt="panda1"
           fill
           className="object-contain"
         />
       </div>
       <div className="absolute top-[26%] left-[5%] w-16 h-16 min-[700px]:w-28 min-[700px]:h-36 z-0">
         <Image
-          src="/achievements/panda1 1.png"
-          alt="Panda"
+          src="/achievements/Building2 1.png"
+          alt="Building2"
           fill
           className="object-contain"
         />
       </div>
 
       <div className="min-[700px]:block hidden">
-        <div className="absolute top-[44%] left-[2%] w-24 h-24 sm:w-32 sm:h-32 z-0">
-          <Image
-            src="/achievements/monkey2 1.png"
-            alt="Monkey"
-            fill
-            className="object-contain"
-          />
-        </div>
-
-        <div className="absolute top-[75%] left-[1%] w-18 h-18 sm:w-24 sm:h-24 z-0">
-          <Image
-            src="/achievements/monkey1 1.png"
-            alt="Monkey"
-            fill
-            className="object-contain"
-          />
-        </div>
-
-        <div className="absolute top-[55%] right-[1%] w-24 h-24 sm:w-30 sm:h-30 z-0">
-          <Image
-            src="/achievements/panda2 1.png"
-            alt="Panda 2"
-            fill
-            className="object-contain"
-          />
-        </div>
 
         <div className="absolute top-[75%] right-[25%] w-14 h-14 sm:w-20 sm:h-20 z-0">
           <Image
@@ -496,23 +497,32 @@ export default function AwardsMap({ achievements, onClaim, claimedAchievements =
 
         <div className="absolute top-[70%] left-[25%] w-20 h-20 sm:w-28 sm:h-28 z-0">
           <Image
-            src="/achievements/Building2 1.png"
-            alt="Building 2"
+            src="/achievements/tiger 1.png"
+            alt="tiger"
             fill
             className="object-contain"
           />
         </div>
 
-        <div className="absolute top-[52%] right-[25%] w-18 h-18 sm:w-24 sm:h-24 z-0">
+        <div className="absolute top-[52%] right-[28%] w-22 h-22 sm:w-28 sm:h-28 z-0">
           <Image
-            src="/achievements/buildingfour 1.png"
-            alt="Building 4"
+            src="/achievements/monkey1 1.png"
+            alt="monkey1"
             fill
             className="object-contain"
           />
         </div>
 
         <div className="absolute top-[50%] left-[30%] w-20 h-20 sm:w-24 sm:h-24 z-0">
+          <Image
+            src="/achievements/miniforesttwo 1.png"
+            alt="Forest 1"
+            fill
+            className="object-contain"
+          />
+        </div>
+
+        <div className="absolute top-[30%] left-[34%] w-20 h-20 sm:w-24 sm:h-24 z-0">
           <Image
             src="/achievements/miniforestone 1.png"
             alt="Forest 1"
