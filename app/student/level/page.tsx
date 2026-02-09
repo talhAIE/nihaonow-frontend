@@ -67,7 +67,7 @@ export default function StudentLevelPage() {
               <Star className="w-5 h-5 text-green-500" />
             </div>
             <span className="text-xl font-black text-slate-800">{userLevel?.stats?.currentStreak ?? 0}</span>
-            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">سلسلة الأيام</span>
+            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">سلسلة الإنجاز</span>
           </div>
         </div>
 

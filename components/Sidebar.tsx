@@ -10,10 +10,10 @@ import { userApi } from '@/lib/services/user';
 import { useToast } from '@/hooks/use-toast';
 
 const navItems = [
-  { href: '/student/dashboard', label: 'لوحة القيادة', Icon: LayoutDashboard },
-  { href: '/student/units', label: 'الوحدات', Icon: BookCheck },
-  { href: '/student/leaderboard', label: 'المتصدرين', Icon: Trophy },
-  { href: '/student/achievements', label: 'الإنجازات', Icon: Medal },
+  { href: '/student/dashboard', label: 'لوحة التحكم', Icon: LayoutDashboard },
+  { href: '/student/units', label: 'الوحدات التدريبية', Icon: BookCheck },
+  { href: '/student/leaderboard', label: 'قائمة المتفوقين', Icon: Trophy },
+  { href: '/student/achievements', label: 'الشارات التعليمية', Icon: Medal },
   { href: '/student/account', label: 'حساب المستخدم', Icon: User },
 ];
 

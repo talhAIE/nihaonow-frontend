@@ -69,8 +69,8 @@ export default function Page() {
 
     const tabs = [
         { key: 'daily', label: 'يومي' },
-        { key: 'weekly', label: 'أسبوعي' },
-        { key: 'monthly', label: 'شهري' },
+        { key: 'weekly', label: 'إحصائيات أسبوعية' },
+        { key: 'monthly', label: 'إحصائيات شهرية' },
     ]
 
     const fetchData = async () => {
@@ -239,7 +239,7 @@ export default function Page() {
                         </div>
 
                         <div className="w-full text-right mb-2">
-                            <h4 className="font-almarai-extrabold text-[#4B4B4B] text-sm lg:text-base">كلمة الأسبوع</h4>
+                            <h4 className="font-almarai-extrabold text-[#4B4B4B] text-sm lg:text-base">مفردة الأسبوع</h4>
                         </div>
 
                         <div className="flex-1 flex flex-col items-center justify-center w-full">
@@ -288,7 +288,7 @@ export default function Page() {
                                 }}
                                 className="h-10 px-4 bg-[#35AB4E] hover:bg-[#2f9c46] text-white text-sm font-bold rounded-lg border-b-2 border-[#20672F] flex items-center gap-2 transition active:translate-y-[2px] active:border-b-0"
                             >
-                                <span>ابدأ التعلم</span>
+                                <span>بدء التعلم</span>
                                 <div className="w-5 h-5 rounded-md flex items-center justify-center">
                                     <Play className="w-3 h-3 text-white fill-current ml-0.5 transform rotate-180" />
                                 </div>
@@ -301,7 +301,7 @@ export default function Page() {
                     {/* Metrics Card - Always first */}
                     <div className={`flex flex-col w-full min-h-[350px] sm:h-72 md:h-80 lg:h-88 px-6 py-6 gap-6 rounded-[24px] border border-slate-100 bg-white shadow-sm overflow-hidden ${is1024Width ? 'max-w-2xl mx-auto' : 'col-span-2 sm:col-span-2 lg:col-span-1'}`}>
                         <div className="flex flex-col items-start w-full">
-                            <h4 className="font-almarai-extrabold text-[#4B4B4B] text-base lg:text-lg mb-3">المقاييس الرئيسية</h4>
+                            <h4 className="font-almarai-extrabold text-[#4B4B4B] text-base lg:text-lg mb-3">المؤشرات الرئيسة للأداء</h4>
                             <div className="flex gap-1 sm:gap-2 flex-wrap justify-start w-full">
                                 {tabs.filter(t => t.key !== 'daily').map((tab) => (
                                     <button
@@ -325,21 +325,21 @@ export default function Page() {
 
                             const chartData = [
                                 {
-                                    name: 'النطق',
+                                    name: 'مهارة النطق',
                                     value: currentMetrics?.pronunciationScore || 0,
                                     color: '#F98D00',
                                     labelColor: '#F98D00',
                                     label: `${Math.round(currentMetrics?.pronunciationScore || 0)}%`
                                 },
                                 {
-                                    name: 'الطلاقة',
+                                    name: 'مستوى الطلاقة',
                                     value: currentMetrics?.fluencyScore || 0,
                                     color: '#CA495A',
                                     labelColor: '#00AEEF',
                                     label: `${Math.round(currentMetrics?.fluencyScore || 0)}%`
                                 },
                                 {
-                                    name: 'الدقة',
+                                    name: 'معدل الدقة',
                                     value: currentMetrics?.accuracyScore || 0,
                                     color: '#8BD9B7',
                                     labelColor: '#35AB4E',
@@ -364,9 +364,9 @@ export default function Page() {
                                     className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-auto sm:w-[70px] sm:h-auto"
                                 />
                                 <div className="relative z-10">
-                                    <p className="text-sm sm:text-base font-bold mb-1">أطول خط</p>
+                                    <p className="text-sm sm:text-base font-bold mb-1">أطول سلسلة إنجاز</p>
                                     <h3 className="text-4xl sm:text-5xl font-extrabold mb-1">{longestStreak}</h3>
-                                    <p className="text-sm sm:text-base">أيام</p>
+                                    <p className="text-sm sm:text-base">يومًا</p>
                                 </div>
                             </div>
 
@@ -379,9 +379,9 @@ export default function Page() {
                                     className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-auto sm:w-[70px] sm:h-auto"
                                 />
                                 <div className="relative z-10">
-                                    <p className="text-sm sm:text-base font-bold mb-1">الخط الحالي</p>
+                                    <p className="text-sm sm:text-base font-bold mb-1">سلسلة الإنجاز الحالية</p>
                                     <h3 className="text-4xl sm:text-5xl font-extrabold mb-1">{currentStreak}</h3>
-                                    <p className="text-sm sm:text-base">أيام</p>
+                                    <p className="text-sm sm:text-base">يومًا</p>
                                 </div>
                             </div>
                         </>
@@ -424,7 +424,7 @@ export default function Page() {
                 </div>
 
                 <div className="bg-transparent sm:bg-white sm:shadow-sm h-auto py-[10px] px-0 sm:px-[16px] gap-[12px] rounded-[13px] overflow-y-auto sm:border-2 sm:border-[#E5E5E5] flex flex-col justify-start">
-                    <h2 className="text-right text-xl sm:text-2xl font-bold text-slate-900 mb-6 px-2">تقدم المحاضرات</h2>
+                    <h2 className="text-right text-xl sm:text-2xl font-bold text-slate-900 mb-6 px-2">مدى التقدم في المحاضرات</h2>
 
                     <div className="space-y-4">
                         {topicProgress.length === 0 ? (
@@ -436,7 +436,11 @@ export default function Page() {
                                 <div key={topic.id} className="bg-white shadow-sm h-auto py-5 px-4 rounded-[13px] border-2 border-[#E5E5E5] flex flex-col gap-4">
                                     <div className="flex flex-row items-center justify-between">
                                         <div className="text-right">
-                                            <p className="text-lg font-bold text-[#4B4B4B]">{topic.name}</p>
+                                            <p className="text-lg font-bold text-[#4B4B4B]">
+                                                {topic.name === "الدرس 1 – التحيات" ? "الوحدة 1: مهارات الترحيب" : 
+                                                 topic.name === "الدرس 10 – الشكر" ? "الوحدة 10: مهارات التعبير عن الشكر" : 
+                                                 topic.name}
+                                            </p>
                                             <p className="text-sm text-slate-500 flex items-center gap-1">
                                                 <span>{topic.completedScenarios} من {topic.totalScenarios} درس</span>
                                                 <Image src="/images/Frame.svg" alt="Check" width={14} height={14} className="inline-block" />
@@ -471,7 +475,7 @@ export default function Page() {
                                             disabled={startingSession === topic.id}
                                             className={`h-10 px-4 bg-[#35AB4E] hover:bg-[#2f9c46] text-white text-sm font-bold rounded-lg border-b-2 border-[#20672F] flex items-center gap-2 transition active:translate-y-[1px] active:border-b-0 disabled:opacity-70 disabled:cursor-not-allowed`}
                                         >
-                                            {startingSession === topic.id ? 'جاري التحميل...' : 'متابعة'}
+                                            {startingSession === topic.id ? 'جاري التحميل...' : 'متابعة التقدم'}
                                             <ChevronLeft className="w-4 h-4 mr-[-4px]" />
                                         </button>
                                     </div>
