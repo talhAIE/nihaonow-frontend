@@ -4,19 +4,11 @@ import Image from "next/image";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { 
   ChevronLeft, 
-  X, 
-  Home, 
-  BookOpen, 
-  Trophy, 
-  Medal, 
-  User, 
-  LogOut, 
+  X,
   Sparkles, 
-  BarChart3, 
-  Star, 
-  Flame, 
-  TrendingUp,
-  GraduationCap
+  Rocket,
+  PartyPopper,
+  Hand
 } from "lucide-react";
 import { Nunito } from "next/font/google";
 
@@ -60,10 +52,16 @@ const STEPS = [
 export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
   const [stepIndex, setStepIndex] = useState(0);
   const [targetRect, setTargetRect] = useState<TargetRect | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
-  const currentStep = STEPS[stepIndex];
+  const currentStep = STEPS[stepIndex] || STEPS[0];
+
+  const checkMobile = useCallback(() => {
+    setIsMobile(window.innerWidth < 1024);
+  }, []);
 
   const updateTargetRect = useCallback(() => {
+    checkMobile();
     if (currentStep.id) {
       const element = document.getElementById(currentStep.id);
       if (element) {
@@ -78,7 +76,7 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
     } else {
       setTargetRect(null);
     }
-  }, [currentStep.id]);
+  }, [currentStep?.id, checkMobile]);
 
   useLayoutEffect(() => {
     if (isOpen) {
@@ -92,8 +90,15 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
   }, [isOpen, stepIndex, updateTargetRect]);
 
   const handleNext = () => {
-    if (stepIndex < STEPS.length - 1) {
-      setStepIndex((prev) => prev + 1);
+    let nextIdx = stepIndex + 1;
+    
+    // Skip sidebar steps on mobile since they might be hidden
+    while (nextIdx < STEPS.length - 1 && isMobile && STEPS[nextIdx].id?.startsWith('sidebar-')) {
+      nextIdx++;
+    }
+
+    if (nextIdx < STEPS.length) {
+      setStepIndex(nextIdx);
     } else {
       handleFinish();
     }
@@ -122,6 +127,16 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
     if (currentStep.type === 'welcome' || currentStep.type === 'final_completion') return { top: "50%", left: "50%", transform: "translate(-50%, -50%)" };
     if (!targetRect) return { top: "50%", left: "50%", transform: "translate(-50%, -50%)" };
     
+    if (isMobile) {
+        // Position tooltips at the bottom for mobile to avoid obscuring content
+        return { 
+            bottom: "20px", 
+            left: "50%", 
+            transform: "translateX(-50%)",
+            top: "auto"
+        };
+    }
+
     let top = targetRect.top + targetRect.height / 2;
     let left = targetRect.left + targetRect.width / 2;
     let transform = "translate(-50%, -50%)";
@@ -158,6 +173,8 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
         <DialogPrimitive.Content
           className={`fixed inset-0 z-[100] outline-none ${nunito.variable} pointer-events-none`}
         >
+          <DialogPrimitive.Title className="sr-only">Guide</DialogPrimitive.Title>
+          <DialogPrimitive.Description className="sr-only">A guide to help you navigate the student dashboard.</DialogPrimitive.Description>
           {/* Hole Punch Highlight */}
           {targetRect && (
             <div
@@ -182,26 +199,26 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
             style={tooltipPosition()}
           >
             {currentStep.type === 'welcome' && (
-              <div className="relative w-[480px] h-[496px] bg-white rounded-[16px] flex flex-col items-center justify-center p-[41px_0px] gap-6 shadow-[0px_4px_12px_rgba(0,0,0,0.2)] border-[1.6px] border-[#ECECEC] border-b-[4px]">
+              <div className="relative w-[calc(100vw-32px)] max-w-[480px] h-auto min-h-[496px] bg-white rounded-[16px] flex flex-col items-center justify-center p-8 sm:p-[41px_0px] gap-6 shadow-[0px_4px_12px_rgba(0,0,0,0.2)] border-[1.6px] border-[#ECECEC] border-b-[4px]">
                 {/* Image */}
-                <div className="w-[190px] h-[190px] relative flex-none order-0 flex-grow-0">
-                  <Image src="/images/3.png" alt="Welcome" width={190} height={190} className="object-contain" onError={(e) => { e.currentTarget.src = "/images/PANDA.png"; }} />
+                <div className="w-[150px] h-[150px] sm:w-[190px] sm:h-[190px] relative flex-none order-0 flex-grow-0">
+                  <Image src="/images/3.png" alt="Welcome" fill className="object-contain" onError={(e) => { e.currentTarget.src = "/images/PANDA.png"; }} />
                 </div>
 
                 {/* Text Content */}
-                <div className="flex flex-col items-center gap-0 w-full px-8">
-                  <h2 className="w-full text-center font-almarai font-extrabold text-[28px] leading-[36px] text-[#282828] mb-2 order-1">
-                    مرحباً بك في Zayd AI Chinese 👋
+                <div className="flex flex-col items-center gap-0 w-full px-4 sm:px-8">
+                  <h2 className="w-full text-center font-almarai font-extrabold text-[22px] sm:text-[28px] leading-[30px] sm:leading-[36px] text-[#282828] mb-2 order-1 flex items-center justify-center gap-2">
+                    مرحباً بك في Zayd AI Chinese <Hand className="text-[#FFCB08] animate-bounce" size={28} />
                   </h2>
-                  <p className="w-full text-center font-nunito font-semibold text-[18px] leading-[28px] text-[#454545] tracking-[-0.005em] order-2 font-sans">
-                    تعلم اللغة الصينية خطوة بخطوة وبطريقة ممتعة 🎉
+                  <p className="w-full text-center font-nunito font-semibold text-[16px] sm:text-[18px] leading-[22px] sm:leading-[28px] text-[#454545] tracking-[-0.005em] order-2 font-sans flex items-center justify-center gap-2">
+                    تعلم اللغة الصينية خطوة بخطوة وبطريقة ممتعة <PartyPopper className="text-[#35AB4E]" size={20} />
                   </p>
                 </div>
 
                 {/* Button */}
                 <button
                   onClick={handleNext}
-                  className="flex flex-row justify-center items-center p-[16px_0px] gap-[10px] w-[388px] h-[56px] bg-[#35AB4E] border-b-[3px] border-[#20672F] rounded-[12px] hover:bg-[#2f9c46] active:border-b-0 active:translate-y-[2px] transition-all order-3"
+                  className="flex flex-row justify-center items-center p-[16px_0px] gap-[10px] w-full max-w-[388px] h-[56px] bg-[#35AB4E] border-b-[3px] border-[#20672F] rounded-[12px] hover:bg-[#2f9c46] active:border-b-0 active:translate-y-[2px] transition-all order-3"
                 >
                   <ChevronLeft className="w-6 h-6 text-white" />
                   <span className="font-nunito font-bold text-[16px] leading-[22px] text-white">
@@ -220,25 +237,25 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
             )}
 
             {currentStep.type === 'final_completion' && (
-              <div className="relative w-[480px] h-[350px] bg-white rounded-[16px] flex flex-col items-center justify-center p-[41px_0px] gap-8 shadow-[0px_4px_12px_rgba(0,0,0,0.2)] border-[1.6px] border-[#ECECEC] border-b-[4px]">
-                <div className="absolute inset-0 bg-black/60 pointer-events-none rounded-[16px] -m-1" />
+              <div className="relative w-[calc(100vw-32px)] max-w-[420px] h-auto min-h-[280px] bg-white rounded-[24px] flex flex-col items-center justify-center p-8 gap-6 shadow-[0px_10px_30px_rgba(0,0,0,0.15)] border-[1.6px] border-[#ECECEC] border-b-[4px]">
                 <div className="relative z-10 flex flex-col items-center gap-6 w-full">
-                  <div className="flex flex-col items-center gap-2">
-                    <h2 className="font-almarai font-extrabold text-[32px] leading-[40px] text-[#282828] flex items-center gap-2">
-                      استمتع بالتعلم! <Sparkles className="text-[#FFCB08]" size={32} />
+                  <div className="flex flex-col items-center gap-3">
+                    <h2 className="font-almarai font-extrabold text-[26px] sm:text-[30px] leading-tight text-[#282828] flex items-center gap-2 text-center">
+                      استمتع بالتعلم! <Sparkles className="text-[#FFCB08] animate-pulse" size={28} />
                     </h2>
-                    <p className="font-nunito font-semibold text-[18px] text-[#454545]">
+                    <p className="font-nunito font-semibold text-[16px] sm:text-[17px] text-[#666666] text-center max-w-[280px]">
                       تعلم قليلاً كل يوم وستصبح أفضل
                     </p>
                   </div>
 
                   <button
                     onClick={handleFinish}
-                    className="flex flex-row justify-center items-center p-[16px_0px] gap-[10px] w-[300px] h-[56px] bg-[#35AB4E] border-b-[3px] border-[#20672F] rounded-[12px] hover:bg-[#2f9c46] active:border-b-0 active:translate-y-[2px] transition-all"
+                    className="flex flex-row justify-center items-center p-[12px_24px] gap-2 w-full max-w-[280px] h-[52px] bg-[#35AB4E] border-b-[4px] border-[#20672F] rounded-[14px] hover:bg-[#3dbb57] active:border-b-0 active:translate-y-[2px] transition-all group"
                   >
-                    <span className="font-nunito font-bold text-[18px] text-white">
-                      ابدأ التعلم 🚀
+                    <span className="font-nunito font-extrabold text-[18px] text-white">
+                      ابدأ التعلم
                     </span>
+                    <Rocket className="w-5 h-5 text-white group-hover:translate-x-[-4px] group-hover:translate-y-[-4px] transition-transform" />
                   </button>
                 </div>
               </div>
@@ -248,8 +265,8 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
               <div className="flex flex-row items-center gap-[20px] transition-all duration-300">
                 {/* Tooltip Card */}
                 <div
-                  className="box-border flex flex-col items-center p-4 gap-[22px] w-[305px] h-fit min-h-[220px] bg-white border-[1.6px] border-[#ECECEC] border-b-[4px] shadow-[0px_4px_12px_rgba(0,0,0,0.2)]"
-                  style={{ borderRadius: "16px 16px 16px 0px" }}
+                  className="box-border flex flex-col items-center p-4 gap-[22px] w-[calc(100vw-40px)] max-w-[305px] h-fit min-h-[220px] bg-white border-[1.6px] border-[#ECECEC] border-b-[4px] shadow-[0px_4px_12px_rgba(0,0,0,0.2)]"
+                  style={{ borderRadius: "16px 16px 16px 16px" }}
                 >
                   {/* Header */}
                   <div className="relative flex flex-row items-center w-full h-[36px]">
@@ -260,8 +277,8 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
                       <X className="w-4 h-4 text-[#454545]" />
                     </button>
                     <div className="flex flex-row items-center justify-center gap-2 w-full">
-                      <span className="me-6">{currentStep.icon}</span>
-                      <h3 className="me-16 font-almarai font-bold text-[22px] leading-[28px] text-[#282828] text-center">
+                      <span className="">{currentStep.icon}</span>
+                      <h3 className="font-almarai font-bold text-[20px] sm:text-[22px] leading-[26px] sm:leading-[28px] text-[#282828] text-center">
                         {currentStep.title}
                       </h3>
                     </div>

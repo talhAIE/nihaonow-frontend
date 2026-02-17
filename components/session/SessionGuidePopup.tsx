@@ -28,6 +28,11 @@ export default function SessionGuidePopup({
 }: SessionGuidePopupProps) {
   const [step, setStep] = useState(1);
   const [targetRect, setTargetRect] = useState<TargetRect | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  const checkMobile = useCallback(() => {
+    setIsMobile(window.innerWidth < 1024);
+  }, []);
 
   const getTargetId = useCallback((currentStep: number) => {
     switch (currentStep) {
@@ -42,6 +47,7 @@ export default function SessionGuidePopup({
   }, []);
 
   const updateTargetRect = useCallback(() => {
+    checkMobile();
     const id = getTargetId(step);
     if (id) {
       const element = document.getElementById(id);
@@ -57,7 +63,7 @@ export default function SessionGuidePopup({
     } else {
       setTargetRect(null);
     }
-  }, [step, getTargetId]);
+  }, [step, getTargetId, checkMobile]);
 
   useLayoutEffect(() => {
     if (isOpen) {
@@ -81,6 +87,15 @@ export default function SessionGuidePopup({
   const tooltipPosition = () => {
     if (!targetRect) return { top: "50%", left: "50%", transform: "translate(-50%, -50%)" };
     
+    if (isMobile) {
+        return { 
+            bottom: "20px", 
+            left: "50%", 
+            transform: "translateX(-50%)",
+            top: "auto"
+        };
+    }
+
     let top = targetRect.top + targetRect.height + 20;
     let left = targetRect.left + targetRect.width / 2;
     let transform = "translateX(-50%)";
@@ -101,6 +116,8 @@ export default function SessionGuidePopup({
         <DialogPrimitive.Content
           className={`fixed inset-0 z-[100] outline-none ${nunito.variable} pointer-events-none`}
         >
+          <DialogPrimitive.Title className="sr-only">Session Guide</DialogPrimitive.Title>
+          <DialogPrimitive.Description className="sr-only">A guide to help you understand the scenario session interface.</DialogPrimitive.Description>
           {/* Hole Punch Highlight - This handles the background darkening */}
           {targetRect && (
             <div
@@ -119,7 +136,7 @@ export default function SessionGuidePopup({
             className="absolute z-20 animate-in fade-in slide-in-from-bottom-5 duration-500 pointer-events-auto"
             style={tooltipPosition()}
           >
-            <div className="bg-white rounded-[24px] shadow-2xl border-[1.5px] border-[#ECECEC] border-b-[4px] p-6 w-[340px] flex flex-col gap-5">
+            <div className="bg-white rounded-[24px] shadow-2xl border-[1.5px] border-[#ECECEC] border-b-[4px] p-6 w-[calc(100vw-40px)] max-w-[340px] flex flex-col gap-5">
               <div className="flex justify-between items-center">
                 <button onClick={handleFinish} className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
                   <X className="w-5 h-5 text-slate-400" />

@@ -50,10 +50,16 @@ const STEPS = [
 export function LeaderboardGuide({ isOpen, onClose }: LeaderboardGuideProps) {
   const [stepIndex, setStepIndex] = useState(0);
   const [targetRect, setTargetRect] = useState<TargetRect | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
-  const currentStep = STEPS[stepIndex];
+  const currentStep = STEPS[stepIndex] || STEPS[0];
+
+  const checkMobile = useCallback(() => {
+    setIsMobile(window.innerWidth < 1024);
+  }, []);
 
   const updateTargetRect = useCallback(() => {
+    checkMobile();
     if (currentStep.id) {
       const element = document.getElementById(currentStep.id);
       if (element) {
@@ -68,7 +74,7 @@ export function LeaderboardGuide({ isOpen, onClose }: LeaderboardGuideProps) {
     } else {
       setTargetRect(null);
     }
-  }, [currentStep.id]);
+  }, [currentStep?.id, checkMobile]);
 
   useLayoutEffect(() => {
     if (isOpen) {
@@ -99,6 +105,15 @@ export function LeaderboardGuide({ isOpen, onClose }: LeaderboardGuideProps) {
   const tooltipPosition = () => {
     if (!targetRect) return { top: "50%", left: "50%", transform: "translate(-50%, -50%)" };
     
+    if (isMobile) {
+        return { 
+            bottom: "20px", 
+            left: "50%", 
+            transform: "translateX(-50%)",
+            top: "auto"
+        };
+    }
+
     let top = targetRect.top + targetRect.height / 2;
     let left = targetRect.left + targetRect.width / 2;
     let transform = "translate(-50%, -50%)";
@@ -130,6 +145,8 @@ export function LeaderboardGuide({ isOpen, onClose }: LeaderboardGuideProps) {
         <DialogPrimitive.Content
           className={`fixed inset-0 z-[100] outline-none ${nunito.variable} pointer-events-none`}
         >
+          <DialogPrimitive.Title className="sr-only">Leaderboard Guide</DialogPrimitive.Title>
+          <DialogPrimitive.Description className="sr-only">A guide to help you understand the leaderboard and ranking system.</DialogPrimitive.Description>
           {/* Hole Punch Highlight */}
           {targetRect && (
             <div
@@ -149,9 +166,9 @@ export function LeaderboardGuide({ isOpen, onClose }: LeaderboardGuideProps) {
             style={tooltipPosition()}
           >
             <div className="flex flex-row items-center gap-[20px] transition-all duration-300">
-              {/* Tooltip Card */}
+            {/* Tooltip Card */}
               <div
-                className="box-border flex flex-col items-center p-4 gap-[22px] w-[305px] h-fit min-h-[200px] bg-white border-[1.6px] border-[#ECECEC] border-b-[4px] shadow-[0px_4px_12px_rgba(0,0,0,0.2)]"
+                className="box-border flex flex-col items-center p-4 gap-[22px] w-[calc(100vw-40px)] max-w-[305px] h-fit min-h-[200px] bg-white border-[1.6px] border-[#ECECEC] border-b-[4px] shadow-[0px_4px_12px_rgba(0,0,0,0.2)]"
                 style={{ borderRadius: "16px 16px 16px 16px" }}
               >
                 {/* Header */}
@@ -163,8 +180,8 @@ export function LeaderboardGuide({ isOpen, onClose }: LeaderboardGuideProps) {
                     <X className="w-4 h-4 text-[#454545]" />
                   </button>
                   <div className="flex flex-row items-center justify-center gap-2 w-full">
-                    <span className="me-6">{currentStep.icon}</span>
-                    <h3 className="me-16 font-almarai font-bold text-[22px] leading-[28px] text-[#282828] text-center">
+                    <span className="">{currentStep.icon}</span>
+                    <h3 className="font-almarai font-bold text-[20px] sm:text-[22px] leading-[26px] sm:leading-[28px] text-[#282828] text-center">
                       {currentStep.title}
                     </h3>
                   </div>

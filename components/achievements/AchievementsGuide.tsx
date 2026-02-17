@@ -62,8 +62,13 @@ const STEPS = [
 export function AchievementsGuide({ isOpen, onClose, activeTab, onTabChange }: AchievementsGuideProps) {
   const [stepIndex, setStepIndex] = useState(0);
   const [targetRect, setTargetRect] = useState<TargetRect | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
-  const currentStep = STEPS[stepIndex];
+  const currentStep = STEPS[stepIndex] || STEPS[0];
+
+  const checkMobile = useCallback(() => {
+    setIsMobile(window.innerWidth < 1024);
+  }, []);
 
   // Sync tab with step requirements
   useEffect(() => {
@@ -73,6 +78,7 @@ export function AchievementsGuide({ isOpen, onClose, activeTab, onTabChange }: A
   }, [isOpen, stepIndex, currentStep.tab, activeTab, onTabChange]);
 
   const updateTargetRect = useCallback(() => {
+    checkMobile();
     if (currentStep.targetId) {
       const element = document.getElementById(currentStep.targetId);
       if (element) {
@@ -87,7 +93,7 @@ export function AchievementsGuide({ isOpen, onClose, activeTab, onTabChange }: A
     } else {
       setTargetRect(null);
     }
-  }, [currentStep.targetId]);
+  }, [currentStep?.targetId, checkMobile]);
 
   useLayoutEffect(() => {
     if (isOpen) {
@@ -120,6 +126,15 @@ export function AchievementsGuide({ isOpen, onClose, activeTab, onTabChange }: A
   const tooltipPosition = () => {
     if (!targetRect) return { top: "50%", left: "50%", transform: "translate(-50%, -50%)" };
     
+    if (isMobile) {
+        return { 
+            bottom: "20px", 
+            left: "50%", 
+            transform: "translateX(-50%)",
+            top: "auto"
+        };
+    }
+
     let top = targetRect.top + targetRect.height / 2;
     let left = targetRect.left + targetRect.width / 2;
     let transform = "translate(-50%, -50%)";
@@ -153,6 +168,8 @@ export function AchievementsGuide({ isOpen, onClose, activeTab, onTabChange }: A
         <DialogPrimitive.Content
           className={`fixed inset-0 z-[100] outline-none ${nunito.variable} pointer-events-none`}
         >
+          <DialogPrimitive.Title className="sr-only">Achievements Guide</DialogPrimitive.Title>
+          <DialogPrimitive.Description className="sr-only">A guide to help you understand your awards and certificates.</DialogPrimitive.Description>
           {/* Hole Punch Highlight */}
           {targetRect && (
             <div
@@ -174,7 +191,7 @@ export function AchievementsGuide({ isOpen, onClose, activeTab, onTabChange }: A
             <div className="flex flex-row items-center gap-[20px] transition-all duration-300">
               {/* Tooltip Card */}
               <div
-                className="box-border flex flex-col items-center p-4 gap-[22px] w-[305px] h-fit min-h-[200px] bg-white border-[1.6px] border-[#ECECEC] border-b-[4px] shadow-[0px_4px_12px_rgba(0,0,0,0.2)]"
+                className="box-border flex flex-col items-center p-4 gap-[22px] w-[calc(100vw-40px)] max-w-[305px] h-fit min-h-[200px] bg-white border-[1.6px] border-[#ECECEC] border-b-[4px] shadow-[0px_4px_12px_rgba(0,0,0,0.2)]"
                 style={{ borderRadius: "16px 16px 16px 16px" }}
               >
                 {/* Header */}
@@ -187,7 +204,7 @@ export function AchievementsGuide({ isOpen, onClose, activeTab, onTabChange }: A
                   </button>
                   <div className="flex flex-row items-center justify-center gap-2 w-full">
                     <Sparkles className="text-[#FFCB08]" size={24} />
-                    <h3 className="font-almarai font-bold text-[22px] leading-[28px] text-[#282828] text-center">
+                    <h3 className="font-almarai font-bold text-[20px] sm:text-[22px] leading-[26px] sm:leading-[28px] text-[#282828] text-center">
                       {currentStep.title}
                     </h3>
                   </div>
