@@ -432,39 +432,39 @@ export default function Page() {
           {!is1024Width && (
             <>
               {/* Pink Card (Middle): Longest Streak */}
-          <div id="longest-streak-card" className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[6px] w-[262.5px] h-[291px] bg-[#FBD4D3] border-b-[4px] border-[#F9BEBE] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
-            <div className="flex flex-col justify-center items-center gap-3">
-              <span className="font-nunito font-semibold text-[16px] leading-[22px] text-[#2F0807]">
+          <div id="longest-streak-card" className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[6px] w-full sm:w-[262.5px] h-[180px] sm:h-[291px] bg-[#FBD4D3] border-b-[4px] border-[#F9BEBE] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
+            <div className="flex flex-col justify-center items-center gap-1 sm:gap-3">
+              <span className="font-nunito font-semibold text-[14px] sm:text-[16px] leading-tight sm:leading-[22px] text-[#2F0807]">
                 أطول خط
               </span>
-              <span className="font-nunito font-extrabold text-[56px] leading-[76px] text-[#2F0807]">
+              <span className="font-nunito font-extrabold text-[40px] sm:text-[56px] leading-tight sm:leading-[76px] text-[#2F0807]">
                 {longestStreak}
               </span>
-              <span className="font-nunito font-semibold text-[16px] leading-[22px] text-[#2F0807]">
+              <span className="font-nunito font-semibold text-[14px] sm:text-[16px] leading-tight sm:leading-[22px] text-[#2F0807]">
                 أيام
               </span>
             </div>
             {/* Red Star SVG */}
-            <div className="absolute -left-[10px] top-[70px] w-[85px] h-[139px] z-10 pointer-events-none">
+            <div className="absolute -left-[10px] top-1/2 -translate-y-1/2 w-[60px] sm:w-[85px] h-auto z-10 pointer-events-none">
               <Image src={RedStarSVG} alt="Red Star" />
             </div>
           </div>
 
               {/* Skin Card (Left): Current Streak */}
-          <div id="current-streak-card" className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[17px] w-[262.5px] h-[291px] bg-[#FFF5CE] border-b-[4px] border-[#FFEFB5] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
-            <div className="flex flex-col justify-center items-center gap-3">
-              <span className="font-nunito font-semibold text-[16px] leading-[22px] text-[#332902]">
+          <div id="current-streak-card" className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[17px] w-full sm:w-[262.5px] h-[180px] sm:h-[291px] bg-[#FFF5CE] border-b-[4px] border-[#FFEFB5] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
+            <div className="flex flex-col justify-center items-center gap-1 sm:gap-3">
+              <span className="font-nunito font-semibold text-[14px] sm:text-[16px] leading-tight sm:leading-[22px] text-[#332902]">
                 الخط الحالي
               </span>
-              <span className="font-nunito font-extrabold text-[56px] leading-[76px] text-[#332902]">
+              <span className="font-nunito font-extrabold text-[40px] sm:text-[56px] leading-tight sm:leading-[76px] text-[#332902]">
                 {currentStreak}
               </span>
-              <span className="font-nunito font-semibold text-[16px] leading-[22px] text-[#332902]">
+              <span className="font-nunito font-semibold text-[14px] sm:text-[16px] leading-tight sm:leading-[22px] text-[#332902]">
                 أيام
               </span>
             </div>
             {/* Fire Icon Placeholder */}
-            <div className="absolute -left-[50px] top-[65px] w-[103px] h-[150px] z-10 -scale-x-200">
+            <div className="absolute -left-[30px] sm:-left-[50px] top-1/2 -translate-y-1/2 w-[70px] sm:w-[103px] h-auto z-10 -scale-x-200">
               <Image src={FireSVG} alt="Fire" />
             </div>
           </div>
@@ -475,39 +475,39 @@ export default function Page() {
           {is1024Width && (
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {/* Pink Card (Middle): Longest Streak */}
-          <div id="longest-streak-card" className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[6px] w-[262.5px] h-[291px] bg-[#FBD4D3] border-b-[4px] border-[#F9BEBE] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
-            <div className="flex flex-col justify-center items-center gap-3">
-              <span className="font-nunito font-semibold text-[16px] leading-[22px] text-[#2F0807]">
+          <div id="longest-streak-card" className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[6px] w-full sm:w-[262.5px] h-[180px] sm:h-[291px] bg-[#FBD4D3] border-b-[4px] border-[#F9BEBE] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
+            <div className="flex flex-col justify-center items-center gap-1 sm:gap-3">
+              <span className="font-nunito font-semibold text-[14px] sm:text-[16px] leading-tight sm:leading-[22px] text-[#2F0807]">
                 أطول خط
               </span>
-              <span className="font-nunito font-extrabold text-[56px] leading-[76px] text-[#2F0807]">
+              <span className="font-nunito font-extrabold text-[40px] sm:text-[56px] leading-tight sm:leading-[76px] text-[#2F0807]">
                 {longestStreak} 
               </span>
-              <span className="font-nunito font-semibold text-[16px] leading-[22px] text-[#2F0807]">
+              <span className="font-nunito font-semibold text-[14px] sm:text-[16px] leading-tight sm:leading-[22px] text-[#2F0807]">
                 أيام
               </span>
             </div>
             {/* Red Star SVG */}
-            <div className="absolute -left-[10px] top-[70px] w-[85px] h-[139px] z-10 pointer-events-none">
+            <div className="absolute -left-[10px] top-1/2 -translate-y-1/2 w-[60px] sm:w-[85px] h-auto z-10 pointer-events-none">
               <Image src={RedStarSVG} alt="Red Star" />
             </div>
           </div>
 
               {/* Skin Card (Left): Current Streak */}
-          <div id="current-streak-card" className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[17px] w-[262.5px] h-[291px] bg-[#FFF5CE] border-b-[4px] border-[#FFEFB5] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
-            <div className="flex flex-col justify-center items-center gap-3">
-              <span className="font-nunito font-semibold text-[16px] leading-[22px] text-[#332902]">
+          <div id="current-streak-card" className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[17px] w-full sm:w-[262.5px] h-[180px] sm:h-[291px] bg-[#FFF5CE] border-b-[4px] border-[#FFEFB5] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
+            <div className="flex flex-col justify-center items-center gap-1 sm:gap-3">
+              <span className="font-nunito font-semibold text-[14px] sm:text-[16px] leading-tight sm:leading-[22px] text-[#332902]">
                 الخط الحالي
               </span>
-              <span className="font-nunito font-extrabold text-[56px] leading-[76px] text-[#332902]">
+              <span className="font-nunito font-extrabold text-[40px] sm:text-[56px] leading-tight sm:leading-[76px] text-[#332902]">
                 {currentStreak}
               </span>
-              <span className="font-nunito font-semibold text-[16px] leading-[22px] text-[#332902]">
+              <span className="font-nunito font-semibold text-[14px] sm:text-[16px] leading-tight sm:leading-[22px] text-[#332902]">
                 أيام
               </span>
             </div>
             {/* Fire Icon */}
-            <div className="absolute -left-[50px] top-[65px] w-[103px] h-[150px] z-10 -scale-x-200">
+            <div className="absolute -left-[30px] sm:-left-[50px] top-1/2 -translate-y-1/2 w-[70px] sm:w-[103px] h-auto z-10 -scale-x-200">
               <Image src={FireSVG} alt="Fire" />
             </div>
           </div>
