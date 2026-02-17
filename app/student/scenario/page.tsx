@@ -517,9 +517,12 @@ export default function ScenarioPage() {
 
           {!isLoadingScenario && (
             <>
-              {!currentScenario?.isIntroduction && (
-                <div className="w-full flex justify-center items-center py-4 sm:py-6 md:py-8">
-                  <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 max-w-full">
+              <div className="w-full">
+                {currentScenario?.isIntroduction ? (
+                  <div className="h-16 w-full" /> // Standardized medium gap for introductory mode
+                ) : (
+                  <div className="w-full flex justify-center items-center py-4 sm:py-6 md:py-8">
+                    <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 max-w-full">
 
                     {recordedAudio ? (
                       <>
@@ -661,7 +664,9 @@ export default function ScenarioPage() {
                     )}
                   </div>
                 </div>
-              )}
+                )
+                }
+              </div>
             </>
           )}
         </div>
@@ -733,9 +738,9 @@ export default function ScenarioPage() {
             <Button
               onClick={handleContinueClick}
               disabled={
-                (!currentScenario?.isIntroduction && !recordedAudio && !hasSubmittedSuccessfully) ||
                 isSubmitting ||
-                (!currentScenario?.isIntroduction && !arabicCompleted)
+                !arabicCompleted ||
+                (!currentScenario?.isIntroduction && !recordedAudio && !hasSubmittedSuccessfully)
               }
               className="w-full col-span-2 md:col-span-1 bg-[#35AB4E] h-14 hover:bg-[#35AB4E] text-white py-4 flex items-center justify-center gap-3 text-sm sm:text-base md:text-lg font-almarai-bold rounded-2xl border-b-[4px] border-b-[#298E3E] disabled:opacity-50 disabled:cursor-not-allowed disabled:border-none shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all font-almarai"
             >
