@@ -1,10 +1,9 @@
 "use client";
-import DashboardCard from "@/components/dashboard/card";
+import FireSVG from "@/public/svgs/fire.svg";
+import RedStarSVG from "@/public/svgs/redstar.svg";
 import {
   ChevronLeft,
   ChevronRight,
-  BookOpen,
-  Trophy,
   Star,
   Play,
   Pause,
@@ -17,12 +16,9 @@ import Image from "next/image";
 import ArabicStatsChart from "@/components/dashboard/charts";
 import { dashboardApi } from "@/lib/services/dashboard";
 import { levelsApi } from "@/lib/services/levels";
-import { sessionsApi } from "@/lib/api";
 import { wordOfWeekApi } from "@/lib/services/word-of-week";
-import { sessionUtils } from "@/lib/sessionUtils";
 import type {
   ConsolidatedDashboardResponse,
-  TopicProgress,
   UserLevelResponse,
   LevelDefinition,
 } from "@/lib/types";
@@ -380,147 +376,142 @@ export default function Page() {
           className={`mt-4 grid gap-4 lg:gap-6 mb-8 items-stretch ${is1024Width ? "grid-cols-1" : "grid-cols-2 sm:grid-cols-2 lg:grid-cols-3"}`}
         >
           {/* Metrics Card - Always first */}
-          <div
-            className={`flex flex-col w-full min-h-[350px] sm:h-72 md:h-80 lg:h-88 px-6 py-6 gap-6 rounded-[24px] border border-slate-100 bg-white shadow-sm overflow-hidden ${is1024Width ? "max-w-2xl mx-auto" : "col-span-2 sm:col-span-2 lg:col-span-1"}`}
-          >
-            <div className="flex flex-col items-start w-full">
-              <h4 className="font-almarai-extrabold text-[#4B4B4B] text-base lg:text-lg mb-3">
-                المؤشرات الرئيسة للأداء
-              </h4>
-              <div className="flex gap-1 sm:gap-2 flex-wrap justify-start w-full">
-                {tabs
-                  .filter((t) => t.key !== "daily")
-                  .map((tab) => (
-                    <button
-                      key={tab.key}
-                      onClick={() => setActive(tab.key)}
-                      className={`w-[80px] sm:w-[100px] px-3 sm:px-6 py-1.5 rounded-[8px] text-xs sm:text-sm font-bold transition-all border-2 ${
-                        active === tab.key
-                          ? "bg-[#35AB4E] border-[#35AB4E] text-white shadow-[0_2px_0_0_#20672F]"
-                          : "bg-white border-[#4B4B4B] text-[#4B4B4B]"
-                      }`}
-                    >
-                      {tab.label}
-                    </button>
-                  ))}
-              </div>
-            </div>
-            {(() => {
-              const currentMetrics =
-                active === "monthly"
-                  ? metrics?.monthly
-                  : active === "weekly"
-                    ? metrics?.weekly
-                    : metrics?.daily;
+                    <div className={`flex flex-col w-full min-h-[380px] sm:h-80 md:h-96 lg:h-[400px] px-6 py-6 gap-6 rounded-[24px] border border-slate-100 bg-white shadow-sm ${is1024Width ? 'max-w-2xl mx-auto' : 'col-span-2 sm:col-span-2 lg:col-span-1'}`}>
+                        <div className="flex flex-col items-start w-full">
+                            <h4 className="font-almarai-extrabold text-[#4B4B4B] text-base lg:text-lg mb-3">المؤشرات الرئيسة للأداء</h4>
+                            <div className="flex gap-1 sm:gap-2 flex-wrap justify-start w-full">
+                                {tabs.filter(t => t.key !== 'daily').map((tab) => (
+                                    <button
+                                        key={tab.key}
+                                        onClick={() => setActive(tab.key)}
+                                        className={`w-[80px] sm:w-[100px] px-3 sm:px-6 py-1.5 rounded-[8px] text-xs sm:text-sm font-bold transition-all border-2 ${active === tab.key
+                                            ? 'bg-[#35AB4E] border-[#35AB4E] text-white shadow-[0_2px_0_0_#20672F]'
+                                            : 'bg-white border-[#4B4B4B] text-[#4B4B4B]'
+                                            }`}
+                                    >
+                                        {tab.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                        {(() => {
+                            const currentMetrics =
+                                active === 'monthly' ? metrics?.monthly :
+                                    active === 'weekly' ? metrics?.weekly :
+                                        metrics?.daily;
 
-              const chartData = [
-                {
-                  name: "مهارة النطق",
-                  value: currentMetrics?.pronunciationScore || 0,
-                  color: "#F98D00",
-                  labelColor: "#F98D00",
-                  label: `${Math.round(currentMetrics?.pronunciationScore || 0)}%`,
-                },
-                {
-                  name: "مستوى الطلاقة",
-                  value: currentMetrics?.fluencyScore || 0,
-                  color: "#CA495A",
-                  labelColor: "#00AEEF",
-                  label: `${Math.round(currentMetrics?.fluencyScore || 0)}%`,
-                },
-                {
-                  name: "معدل الدقة",
-                  value: currentMetrics?.accuracyScore || 0,
-                  color: "#8BD9B7",
-                  labelColor: "#35AB4E",
-                  label: `${Math.round(currentMetrics?.accuracyScore || 0)}%`,
-                },
-              ];
-              return <ArabicStatsChart data={chartData} />;
-            })()}
-          </div>
+                            const chartData = [
+                                {
+                                    name: 'مهارة النطق',
+                                    value: currentMetrics?.pronunciationScore || 0,
+                                    color: '#F98D00',
+                                    labelColor: '#F98D00',
+                                    label: `${Math.round(currentMetrics?.pronunciationScore || 0)}%`
+                                },
+                                {
+                                    name: 'مستوى الطلاقة',
+                                    value: currentMetrics?.fluencyScore || 0,
+                                    color: '#CA495A',
+                                    labelColor: '#00AEEF',
+                                    label: `${Math.round(currentMetrics?.fluencyScore || 0)}%`
+                                },
+                                {
+                                    name: 'معدل الدقة',
+                                    value: currentMetrics?.accuracyScore || 0,
+                                    color: '#8BD9B7',
+                                    labelColor: '#35AB4E',
+                                    label: `${Math.round(currentMetrics?.accuracyScore || 0)}%`
+                                }
+                            ];
+                            return <div className="w-full flex-1 flex items-center justify-center pb-4 mb-2"><ArabicStatsChart data={chartData} /></div>;
+                        })()}
+
+
+                    </div>
 
           {/* Streak Cards - Show after metrics for all screen sizes */}
           {!is1024Width && (
             <>
-              <div className="relative flex flex-col items-center justify-center text-center w-full h-[140px] sm:h-56 md:h-60 lg:h-64 py-4 gap-3 rounded-[16px] border-2 border-transparent bg-[#FBD4D3] shadow-sm pl-0">
-                <Image
-                  src="/images/start.png"
-                  alt="decor"
-                  width={56}
-                  height={56}
-                  className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-auto sm:w-[70px] sm:h-auto"
-                />
-                <div className="relative z-10">
-                  <p className="text-sm sm:text-base font-bold mb-1">
-                    أطول سلسلة إنجاز
-                  </p>
-                  <h3 className="text-4xl sm:text-5xl font-extrabold mb-1">
-                    {longestStreak}
-                  </h3>
-                  <p className="text-sm sm:text-base">يومًا</p>
-                </div>
-              </div>
+              {/* Pink Card (Middle): Longest Streak */}
+          <div className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[6px] w-[262.5px] h-[291px] bg-[#FBD4D3] border-b-[4px] border-[#F9BEBE] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
+            <div className="flex flex-col justify-center items-center gap-3">
+              <span className="font-nunito font-semibold text-[16px] leading-[22px] text-[#2F0807]">
+                أطول خط
+              </span>
+              <span className="font-nunito font-extrabold text-[56px] leading-[76px] text-[#2F0807]">
+                20
+              </span>
+              <span className="font-nunito font-semibold text-[16px] leading-[22px] text-[#2F0807]">
+                أيام
+              </span>
+            </div>
+            {/* Red Star SVG */}
+            <div className="absolute -left-[10px] top-[70px] w-[85px] h-[139px] z-10 pointer-events-none">
+              <Image src={RedStarSVG} alt="Red Star" />
+            </div>
+          </div>
 
-              <div className="relative flex flex-col items-center justify-center text-center w-full h-[140px] sm:h-56 md:h-60 lg:h-64 py-4 gap-3 rounded-[16px] border-2 border-transparent bg-[#FFF5CE] shadow-sm pl-0">
-                <Image
-                  src="/images/fire.png"
-                  alt="decor"
-                  width={56}
-                  height={56}
-                  className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-auto sm:w-[70px] sm:h-auto"
-                />
-                <div className="relative z-10">
-                  <p className="text-sm sm:text-base font-bold mb-1">
-                    سلسلة الإنجاز الحالية
-                  </p>
-                  <h3 className="text-4xl sm:text-5xl font-extrabold mb-1">
-                    {currentStreak}
-                  </h3>
-                  <p className="text-sm sm:text-base">يومًا</p>
-                </div>
-              </div>
+              {/* Skin Card (Left): Current Streak */}
+          <div className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[17px] w-[262.5px] h-[291px] bg-[#FFF5CE] border-b-[4px] border-[#FFEFB5] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
+            <div className="flex flex-col justify-center items-center gap-3">
+              <span className="font-nunito font-semibold text-[16px] leading-[22px] text-[#332902]">
+                الخط الحالي
+              </span>
+              <span className="font-nunito font-extrabold text-[56px] leading-[76px] text-[#332902]">
+                7
+              </span>
+              <span className="font-nunito font-semibold text-[16px] leading-[22px] text-[#332902]">
+                أيام
+              </span>
+            </div>
+            {/* Fire Icon Placeholder */}
+            <div className="absolute -left-[50px] top-[65px] w-[103px] h-[150px] z-10 -scale-x-200">
+              <Image src={FireSVG} alt="Fire" />
+            </div>
+          </div>
             </>
           )}
 
           {/* Streak Cards - Show after metrics at 1024px width */}
           {is1024Width && (
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <div className="relative flex flex-col items-center justify-center text-center w-full h-[140px] sm:h-56 md:h-60 lg:h-64 py-4 gap-3 rounded-[16px] border-2 border-transparent bg-[#FBD4D3] shadow-sm pr-0">
-                <Image
-                  src="/images/start.png"
-                  alt="decor"
-                  width={56}
-                  height={56}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 w-12 h-auto sm:w-[70px] sm:h-auto"
-                />
-                <div className="relative z-10">
-                  <p className="text-sm sm:text-base font-bold mb-1">أطول خط</p>
-                  <h3 className="text-4xl sm:text-5xl font-extrabold mb-1">
-                    {longestStreak}
-                  </h3>
-                  <p className="text-sm sm:text-base">أيام</p>
-                </div>
-              </div>
+              {/* Pink Card (Middle): Longest Streak */}
+          <div className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[6px] w-[262.5px] h-[291px] bg-[#FBD4D3] border-b-[4px] border-[#F9BEBE] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
+            <div className="flex flex-col justify-center items-center gap-3">
+              <span className="font-nunito font-semibold text-[16px] leading-[22px] text-[#2F0807]">
+                أطول خط
+              </span>
+              <span className="font-nunito font-extrabold text-[56px] leading-[76px] text-[#2F0807]">
+                20
+              </span>
+              <span className="font-nunito font-semibold text-[16px] leading-[22px] text-[#2F0807]">
+                أيام
+              </span>
+            </div>
+            {/* Red Star SVG */}
+            <div className="absolute -left-[10px] top-[70px] w-[85px] h-[139px] z-10 pointer-events-none">
+              <Image src={RedStarSVG} alt="Red Star" />
+            </div>
+          </div>
 
-              <div className="relative flex flex-col items-center justify-center text-center w-full h-[140px] sm:h-56 md:h-60 lg:h-64 py-4 gap-3 rounded-[16px] border-2 border-transparent bg-[#FFF5CE] shadow-sm pr-0">
-                <Image
-                  src="/images/fire.png"
-                  alt="decor"
-                  width={56}
-                  height={56}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 w-12 h-auto sm:w-[70px] sm:h-auto"
-                />
-                <div className="relative z-10">
-                  <p className="text-sm sm:text-base font-bold mb-1">
-                    الخط الحالي
-                  </p>
-                  <h3 className="text-4xl sm:text-5xl font-extrabold mb-1">
-                    {currentStreak}
-                  </h3>
-                  <p className="text-sm sm:text-base">أيام</p>
-                </div>
-              </div>
+              {/* Skin Card (Left): Current Streak */}
+          <div className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[17px] w-[262.5px] h-[291px] bg-[#FFF5CE] border-b-[4px] border-[#FFEFB5] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
+            <div className="flex flex-col justify-center items-center gap-3">
+              <span className="font-nunito font-semibold text-[16px] leading-[22px] text-[#332902]">
+                الخط الحالي
+              </span>
+              <span className="font-nunito font-extrabold text-[56px] leading-[76px] text-[#332902]">
+                7
+              </span>
+              <span className="font-nunito font-semibold text-[16px] leading-[22px] text-[#332902]">
+                أيام
+              </span>
+            </div>
+            {/* Fire Icon Placeholder */}
+            <div className="absolute -left-[50px] top-[65px] w-[103px] h-[150px] z-10 -scale-x-200">
+              <Image src={FireSVG} alt="Fire" />
+            </div>
+          </div>
             </div>
           )}
         </div>
