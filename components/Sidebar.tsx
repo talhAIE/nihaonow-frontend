@@ -126,6 +126,7 @@ export default function Sidebar() {
       />
 
       <aside
+        id="sidebar-container"
         className={`fixed top-0 bottom-0 z-50 transform transition-transform duration-300 ease-in-out ${offscreenClass} ${posClasses} md:translate-x-0 w-[260px] md:w-[260px] lg:w-[280px] bg-[#35AB4E] shadow-lg overflow-hidden flex flex-col lg:h-fit lg:max-h-[calc(100vh-2rem)] lg:top-4 lg:rounded-[2.5rem]`}
       >
         <div className="flex flex-col items-center pt-8 pb-4 px-4 shrink-0">
@@ -143,9 +144,14 @@ export default function Sidebar() {
               const isActive = pathname === item.href ||
                 (item.href === '/student/dashboard' && pathname === '/') ||
                 (item.href === '/student/leaderboard' && pathname.startsWith('/student/leaderboard'));
+              
+              // Generate a safe ID suffix from the href
+              const idSuffix = item.href.split('/').pop() || 'dashboard';
+
               return (
                 <li key={item.href}>
                   <Link
+                    id={`sidebar-${idSuffix}`}
                     href={item.href}
                     className={`flex items-center ${isRtl ? 'flex-row-reverse' : 'flex-row'} px-6 py-4 h-[60px] gap-4 rounded-xl transition-all ${isActive
                       ? 'bg-white text-[#30a849] shadow-md scale-[1.02]'
@@ -175,9 +181,10 @@ export default function Sidebar() {
             })}
           </ul>
         </nav>
-
+ 
         <div className="p-4 pt-2 shrink-0">
           <button
+            id="sidebar-logout"
             onClick={() => handleLogout()}
             aria-label="Logout"
             className={`w-full mx-auto min-h-[56px] flex items-center ${isRtl ? 'flex-row' : 'flex-row-reverse'} px-4 py-2 rounded-[16px] bg-white hover:bg-white/90 transition-colors text-[#eb2625] shadow-sm group mb-2 font-bold`}

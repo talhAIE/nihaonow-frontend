@@ -13,6 +13,7 @@ interface CertificateScrollProps {
   awardedAt?: string;
   onDownload: () => void;
   isDownloading: boolean;
+  customId?: string;
 }
 
 export default function CertificateScroll({
@@ -23,11 +24,13 @@ export default function CertificateScroll({
   awardedAt,
   onDownload,
   isDownloading,
+  customId,
 }: CertificateScrollProps) {
   const isLocked = status === "locked";
 
   return (
     <div
+      id={customId}
       className={`relative group transition-all duration-500 h-full flex flex-col justify-end ${
         isLocked ? "opacity-90" : "hover:scale-[1.02]"
       }`}

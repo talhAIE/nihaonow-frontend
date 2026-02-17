@@ -51,12 +51,23 @@ const Ribbon3rd = () => (
     </div>
 );
 
+import { LeaderboardGuide } from '@/components/leaderboard/LeaderboardGuide';
+
 export default function LeaderboardPage() {
     const { dir } = useAppContext()
     const isRtl = dir == 'rtl'
 
     // Track if we had initial cached data to avoid dependency on entries.length
     const hadInitialCachedData = useRef(false)
+    const [showGuide, setShowGuide] = useState(false)
+
+    useEffect(() => {
+        setShowGuide(true)
+    }, [])
+
+    const handleCloseGuide = () => {
+        setShowGuide(false)
+    }
 
     // Initialize state with cached data if available (instant load)
     const [entries, setEntries] = useState<UnifiedLeaderboardEntry[]>(() => {
@@ -66,6 +77,7 @@ export default function LeaderboardPage() {
         return cachedEntries
     })
     const [loading, setLoading] = useState(false)
+    const [initialLoad, setInitialLoad] = useState(true)
     const [student, setStudent] = useState<UnifiedLeaderboardEntry | null>(() => {
         const cached = leaderboardApi.getCachedLeaderboard(20, 0)
         if (cached?.userRank) return cached.userRank
@@ -134,7 +146,10 @@ export default function LeaderboardPage() {
                     setError((err as Error)?.message ?? 'An unexpected error occurred')
                 }
             } finally {
-                if (mounted) setLoading(false)
+                if (mounted) {
+                    setLoading(false)
+                    setInitialLoad(false)
+                }
             }
         }
 
@@ -208,8 +223,20 @@ export default function LeaderboardPage() {
         loadPage(1)
     }, [selectedTab, loadPage])
 
+    if (loading && initialLoad) {
+        return (
+            <div className="min-h-screen bg-white flex items-center justify-center font-almarai" dir="rtl">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#35AB4E] mx-auto mb-4"></div>
+                    <p className="text-slate-600 font-bold">جاري التحميل...</p>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className="min-h-screen w-[90%] bg-white mx-auto pt-4 sm:pt-6 pb-16" dir='rtl'>
+            <LeaderboardGuide isOpen={showGuide} onClose={handleCloseGuide} />
             <div className="mx-auto w-full">
                 {/* Tabs */}
                 <div className="flex gap-1 sm:gap-2 flex-wrap justify-start w-full mb-6">
@@ -246,7 +273,7 @@ export default function LeaderboardPage() {
                 </div>
 
                 {/* Top 3 Students Card */}
-                <Card className="mb-6 border-0 rounded-2xl shadow-sm relative overflow-hidden">
+                <Card id="leaderboard-top-cards" className="mb-6 border-0 rounded-2xl shadow-sm relative overflow-hidden">
                     {/* Background gradient */}
                     <div
                         className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-yellow-100"
@@ -394,7 +421,7 @@ export default function LeaderboardPage() {
                 </Card>
 
                 {/* All Students Card */}
-                <Card className="border-0 rounded-2xl shadow-sm bg-white overflow-hidden">
+                <Card id="leaderboard-all-students" className="border-0 rounded-2xl shadow-sm bg-white overflow-hidden">
                     <CardContent className="p-4 sm:p-6">
                         <div className="flex items-center gap-2 mb-8">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -476,7 +503,10 @@ export default function LeaderboardPage() {
                                         </div>
 
                                         {/* Far Right Section: Metrics */}
-                                        <div className="flex flex-col items-center justify-center gap-1 border-x border-gray-100 px-2 h-full">
+                                        <div 
+                                            id={displayRank === 4 ? "leaderboard-sample-metrics" : undefined}
+                                            className="flex flex-col items-center justify-center gap-1 border-x border-gray-100 px-2 h-full"
+                                        >
                                             <span className="font-almarai-bold text-[#E67E22] text-sm sm:text-base whitespace-nowrap">
                                                 {Math.round(entry.metrics?.avgCompletionTime || 0)} ساعة
                                             </span>

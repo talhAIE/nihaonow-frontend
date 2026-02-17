@@ -30,6 +30,7 @@ import CertificateScroll from "@/components/achievements/CertificateScroll";
 import CertificateTemplate from "@/components/achievements/CertificateTemplate";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
+import { AchievementsGuide } from "@/components/achievements/AchievementsGuide";
 
 export default function AchievementsPage() {
   const { state } = useAppContext();
@@ -45,6 +46,16 @@ export default function AchievementsPage() {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'awards' | 'certificates'>('awards');
   const [claimedAchievements, setClaimedAchievements] = useState<Set<string>>(new Set());
+  const [initialLoad, setInitialLoad] = useState(true);
+  const [showGuide, setShowGuide] = useState(false);
+
+  useEffect(() => {
+    setShowGuide(true);
+  }, []);
+
+  const handleCloseGuide = () => {
+    setShowGuide(false);
+  };
 
   // State for frontend PDF generation
   const [certToGenerate, setCertToGenerate] = useState<{
@@ -84,6 +95,7 @@ export default function AchievementsPage() {
       setError("فشل في تحميل البيانات. يرجى المحاولة مرة أخرى.");
     } finally {
       setLoading(false);
+      setInitialLoad(false);
     }
   }, [state.authUser?.id]);
 
@@ -216,12 +228,12 @@ export default function AchievementsPage() {
     }
   };
 
-  if (loading) {
+  if (loading && initialLoad) {
     return (
-      <div className="flex-1 flex items-center justify-center p-8 h-[80vh]">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#35AB4E] mx-auto"></div>
-          <p className="text-gray-500 font-medium">جاري تحميل إنجازاتك...</p>
+      <div className="min-h-screen bg-white flex items-center justify-center font-almarai" dir="rtl">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#35AB4E] mx-auto mb-4"></div>
+          <p className="text-slate-600 font-bold">جاري تحميل إنجازاتك...</p>
         </div>
       </div>
     );
@@ -274,11 +286,18 @@ export default function AchievementsPage() {
 
   return (
     <div className="flex-1 space-y-6 px-0 pt-4 bg-white" dir="rtl">
+      <AchievementsGuide 
+        isOpen={showGuide} 
+        onClose={handleCloseGuide} 
+        activeTab={activeTab} 
+        onTabChange={setActiveTab} 
+      />
       {/* Refined Header & Tab Switcher */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
         <div className="flex-1 w-full sm:w-auto flex justify-center sm:justify-start">
           <div className="bg-slate-50/50 p-1 rounded-2xl flex items-center gap-1.5 shadow-inner border border-slate-100 w-full sm:w-auto overflow-hidden">
             <button
+              id="awards-tab-btn"
               onClick={() => setActiveTab('awards')}
               className={`flex-1 sm:flex-none px-6 sm:px-8 py-3 rounded-xl font-almarai-bold text-sm sm:text-base transition-all duration-200 ${activeTab === 'awards'
                 ? "bg-[#35AB4E] text-white border-b-[4px] border-b-[#298E3E] shadow-md border border-[#35AB4E]"
@@ -288,6 +307,7 @@ export default function AchievementsPage() {
               المكافآت
             </button>
             <button
+              id="certs-tab-btn"
               onClick={() => setActiveTab('certificates')}
               className={`flex-1 sm:flex-none px-6 sm:px-8 py-3 rounded-xl font-almarai-bold text-sm sm:text-base transition-all duration-200 ${activeTab === 'certificates'
                 ? "bg-[#35AB4E] text-white border-b-[4px] border-b-[#298E3E] shadow-md border border-[#35AB4E]"
@@ -301,15 +321,15 @@ export default function AchievementsPage() {
       </div>
 
       {activeTab === 'awards' ? (
-        <div className="animate-in fade-in slide-in-from-bottom-3 duration-500 text-right">
+        <div id="awards-map-container" className="animate-in fade-in slide-in-from-bottom-3 duration-500 text-right">
           {/* Awards Map Section */}
             <AwardsMap achievements={mapData} onClaim={handleClaimBadge} claimedAchievements={claimedAchievements} />
         </div>
       ) : (
-        <div className="animate-in fade-in slide-in-from-bottom-5 duration-700">
+        <div id="certificates-grid" className="animate-in fade-in slide-in-from-bottom-5 duration-700">
           {/* Certificates Section */}
           <div className="grid gap-x-10 gap-y-16 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-            {certificates.earned.map((cert) => (
+            {certificates.earned.map((cert, index) => (
               <CertificateScroll
                 key={`earned-${cert.id}`}
                 id={cert.id}
@@ -319,6 +339,7 @@ export default function AchievementsPage() {
                 awardedAt={cert.awardedAt || undefined}
                 onDownload={() => handleDownloadCertificate(cert.id, cert.name, cert.description, cert.awardedAt || undefined)}
                 isDownloading={downloading === cert.id}
+                customId={index === 0 ? "certificate-scroll-highlight" : undefined}
               />
             ))}
 

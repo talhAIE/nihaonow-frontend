@@ -12,7 +12,7 @@ export default function TopicsPage() {
   useAuthProtection();
 
   const searchParams = useSearchParams();
-  const { goToStudentIntroduction } = useNavigation();
+  const { goToStudentScenario } = useNavigation();
   const chapterId = searchParams.get("chapterId")
     ? parseInt(searchParams.get("chapterId")!)
     : null;
@@ -27,7 +27,7 @@ export default function TopicsPage() {
     if (topic.status === "active") {
       try {
         await startSession(topic.id);
-        goToStudentIntroduction();
+        goToStudentScenario();
       } catch (err) {
         console.error("Failed to start session:", err);
       }

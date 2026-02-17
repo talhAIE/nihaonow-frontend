@@ -25,7 +25,7 @@ import type {
 import GuidePopup from "@/components/dashboard/GuidePopup";
 
 export default function Page() {
-  const { goToStudentIntroduction, goToStudentLevel } = useNavigation();
+  const { goToStudentScenario } = useNavigation();
   const [dashboardData, setDashboardData] =
     useState<ConsolidatedDashboardResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -57,22 +57,22 @@ export default function Page() {
 
   useEffect(() => {
     // Check user state for isFirstLogin
-    if (state.authUser?.isFirstLogin) {
+    // if (state.authUser?.isFirstLogin) {
       setShowGuide(true);
-    }
-  }, [state.authUser]);
+    // }
+  }, []);
 
   const handleCloseGuide = () => {
     setShowGuide(false);
-    if (state.authUser && state.authUser.isFirstLogin) {
-      const updatedUser = { ...state.authUser, isFirstLogin: false };
-      setState((prev) => ({
-        ...prev,
-        authUser: updatedUser,
-      }));
-      // Update storage so it doesn't show on reload
-      localStorage.setItem("authUser", JSON.stringify(updatedUser));
-    }
+    // if (state.authUser && state.authUser.isFirstLogin) {
+    //   const updatedUser = { ...state.authUser, isFirstLogin: false };
+    //   setState((prev) => ({
+    //     ...prev,
+    //     authUser: updatedUser,
+    //   }));
+    //   // Update storage so it doesn't show on reload
+    //   localStorage.setItem("authUser", JSON.stringify(updatedUser));
+    // }
   };
 
   const { startSession, startWordSession } = useSession();
@@ -81,7 +81,7 @@ export default function Page() {
     try {
       setStartingSession(topicId);
       await startSession(topicId);
-      goToStudentIntroduction();
+      goToStudentScenario();
     } catch (error) {
       console.error("Failed to start session:", error);
     } finally {
@@ -240,7 +240,7 @@ export default function Page() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 mb-8">
           {/* Level Progress */}
-          <div className="bg-white rounded-[24px] lg:rounded-[32px] border border-slate-100 p-0 shadow-sm flex flex-col sm:flex-row-reverse items-stretch overflow-hidden h-full">
+          <div id="levels-card" className="bg-white rounded-[24px] lg:rounded-[32px] border border-slate-100 p-0 shadow-sm flex flex-col sm:flex-row-reverse items-stretch overflow-hidden h-full">
             {/* Image decoration on the left - Hidden on mobile and tablet */}
             <div className="relative hidden lg:flex items-center justify-center">
               {/* Clouds from design */}
@@ -299,7 +299,7 @@ export default function Page() {
             </div>
           </div>
           {/* Word of the Week */}
-          <div className="bg-white rounded-[24px] lg:rounded-[32px] border border-slate-100 p-6 flex flex-col shadow-sm relative overflow-hidden h-full">
+          <div id="word-of-week-card" className="bg-white rounded-[24px] lg:rounded-[32px] border border-slate-100 p-6 flex flex-col shadow-sm relative overflow-hidden h-full">
             {/* Decorative Star */}
             <div className="absolute top-4 left-4">
               <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
@@ -350,7 +350,7 @@ export default function Page() {
                       const firstTopic = topics[0];
                       setStartingSession(firstTopic.id); // Or a negative number to indicate generic loading
                       await startWordSession(firstTopic.id);
-                      goToStudentIntroduction();
+                      goToStudentScenario();
                     } else {
                       console.warn("No topics found for this word");
                       // Fallback or toast
@@ -373,73 +373,72 @@ export default function Page() {
         </div>
 
         <div
+          id="streak-cards-container"
           className={`mt-4 grid gap-4 lg:gap-6 mb-8 items-stretch ${is1024Width ? "grid-cols-1" : "grid-cols-2 sm:grid-cols-2 lg:grid-cols-3"}`}
         >
           {/* Metrics Card - Always first */}
-                    <div className={`flex flex-col w-full min-h-[380px] sm:h-80 md:h-96 lg:h-[400px] px-6 py-6 gap-6 rounded-[24px] border border-slate-100 bg-white shadow-sm ${is1024Width ? 'max-w-2xl mx-auto' : 'col-span-2 sm:col-span-2 lg:col-span-1'}`}>
-                        <div className="flex flex-col items-start w-full">
-                            <h4 className="font-almarai-extrabold text-[#4B4B4B] text-base lg:text-lg mb-3">المؤشرات الرئيسة للأداء</h4>
-                            <div className="flex gap-1 sm:gap-2 flex-wrap justify-start w-full">
-                                {tabs.filter(t => t.key !== 'daily').map((tab) => (
-                                    <button
-                                        key={tab.key}
-                                        onClick={() => setActive(tab.key)}
-                                        className={`w-[80px] sm:w-[100px] px-3 sm:px-6 py-1.5 rounded-[8px] text-xs sm:text-sm font-bold transition-all border-2 ${active === tab.key
+          <div id="metrics-card" className={`flex flex-col w-full min-h-[380px] sm:h-80 md:h-96 lg:h-[400px] px-6 py-6 gap-6 rounded-[24px] border border-slate-100 bg-white shadow-sm ${is1024Width ? 'max-w-2xl mx-auto' : 'col-span-2 sm:col-span-2 lg:col-span-1'}`}>
+            <div className="flex flex-col items-start w-full">
+              <h4 className="font-almarai-extrabold text-[#4B4B4B] text-base lg:text-lg mb-3">المؤشرات الرئيسة للأداء</h4>
+              <div className="flex gap-1 sm:gap-2 flex-wrap justify-start w-full">
+                {tabs.filter(t => t.key !== 'daily').map((tab) => (
+                  <button
+                    key={tab.key}
+                    onClick={() => setActive(tab.key)}
+                    className={`w-[80px] sm:w-[100px] px-3 sm:px-6 py-1.5 rounded-[8px] text-xs sm:text-sm font-bold transition-all border-2 ${active === tab.key
                                             ? 'bg-[#35AB4E] border-[#35AB4E] text-white shadow-[0_2px_0_0_#20672F]'
                                             : 'bg-white border-[#4B4B4B] text-[#4B4B4B]'
                                             }`}
-                                    >
-                                        {tab.label}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                        {(() => {
-                            const currentMetrics =
-                                active === 'monthly' ? metrics?.monthly :
-                                    active === 'weekly' ? metrics?.weekly :
-                                        metrics?.daily;
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {(() => {
+              const currentMetrics =
+                active === 'monthly' ? metrics?.monthly :
+                  active === 'weekly' ? metrics?.weekly :
+                    metrics?.daily;
 
-                            const chartData = [
-                                {
-                                    name: 'مهارة النطق',
-                                    value: currentMetrics?.pronunciationScore || 0,
-                                    color: '#F98D00',
-                                    labelColor: '#F98D00',
-                                    label: `${Math.round(currentMetrics?.pronunciationScore || 0)}%`
-                                },
-                                {
-                                    name: 'مستوى الطلاقة',
-                                    value: currentMetrics?.fluencyScore || 0,
-                                    color: '#CA495A',
-                                    labelColor: '#00AEEF',
-                                    label: `${Math.round(currentMetrics?.fluencyScore || 0)}%`
-                                },
-                                {
-                                    name: 'معدل الدقة',
-                                    value: currentMetrics?.accuracyScore || 0,
-                                    color: '#8BD9B7',
-                                    labelColor: '#35AB4E',
-                                    label: `${Math.round(currentMetrics?.accuracyScore || 0)}%`
-                                }
-                            ];
-                            return <div className="w-full flex-1 flex items-center justify-center pb-4 mb-2"><ArabicStatsChart data={chartData} /></div>;
-                        })()}
-
-
-                    </div>
+              const chartData = [
+                {
+                  name: 'مهارة النطق',
+                  value: currentMetrics?.pronunciationScore || 0,
+                  color: '#F98D00',
+                  labelColor: '#F98D00',
+                  label: `${Math.round(currentMetrics?.pronunciationScore || 0)}%`
+                },
+                {
+                  name: 'مستوى الطلاقة',
+                  value: currentMetrics?.fluencyScore || 0,
+                  color: '#CA495A',
+                  labelColor: '#00AEEF',
+                  label: `${Math.round(currentMetrics?.fluencyScore || 0)}%`
+                },
+                {
+                  name: 'معدل الدقة',
+                  value: currentMetrics?.accuracyScore || 0,
+                  color: '#8BD9B7',
+                  labelColor: '#35AB4E',
+                  label: `${Math.round(currentMetrics?.accuracyScore || 0)}%`
+                }
+              ];
+              return <div className="w-full flex-1 flex items-center justify-center pb-4 mb-2"><ArabicStatsChart data={chartData} /></div>;
+            })()}
+          </div>
 
           {/* Streak Cards - Show after metrics for all screen sizes */}
           {!is1024Width && (
             <>
               {/* Pink Card (Middle): Longest Streak */}
-          <div className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[6px] w-[262.5px] h-[291px] bg-[#FBD4D3] border-b-[4px] border-[#F9BEBE] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
+          <div id="longest-streak-card" className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[6px] w-[262.5px] h-[291px] bg-[#FBD4D3] border-b-[4px] border-[#F9BEBE] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
             <div className="flex flex-col justify-center items-center gap-3">
               <span className="font-nunito font-semibold text-[16px] leading-[22px] text-[#2F0807]">
                 أطول خط
               </span>
               <span className="font-nunito font-extrabold text-[56px] leading-[76px] text-[#2F0807]">
-                20
+                {longestStreak}
               </span>
               <span className="font-nunito font-semibold text-[16px] leading-[22px] text-[#2F0807]">
                 أيام
@@ -452,13 +451,13 @@ export default function Page() {
           </div>
 
               {/* Skin Card (Left): Current Streak */}
-          <div className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[17px] w-[262.5px] h-[291px] bg-[#FFF5CE] border-b-[4px] border-[#FFEFB5] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
+          <div id="current-streak-card" className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[17px] w-[262.5px] h-[291px] bg-[#FFF5CE] border-b-[4px] border-[#FFEFB5] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
             <div className="flex flex-col justify-center items-center gap-3">
               <span className="font-nunito font-semibold text-[16px] leading-[22px] text-[#332902]">
                 الخط الحالي
               </span>
               <span className="font-nunito font-extrabold text-[56px] leading-[76px] text-[#332902]">
-                7
+                {currentStreak}
               </span>
               <span className="font-nunito font-semibold text-[16px] leading-[22px] text-[#332902]">
                 أيام
@@ -476,13 +475,13 @@ export default function Page() {
           {is1024Width && (
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {/* Pink Card (Middle): Longest Streak */}
-          <div className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[6px] w-[262.5px] h-[291px] bg-[#FBD4D3] border-b-[4px] border-[#F9BEBE] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
+          <div id="longest-streak-card" className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[6px] w-[262.5px] h-[291px] bg-[#FBD4D3] border-b-[4px] border-[#F9BEBE] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
             <div className="flex flex-col justify-center items-center gap-3">
               <span className="font-nunito font-semibold text-[16px] leading-[22px] text-[#2F0807]">
                 أطول خط
               </span>
               <span className="font-nunito font-extrabold text-[56px] leading-[76px] text-[#2F0807]">
-                20
+                {longestStreak} 
               </span>
               <span className="font-nunito font-semibold text-[16px] leading-[22px] text-[#2F0807]">
                 أيام
@@ -495,19 +494,19 @@ export default function Page() {
           </div>
 
               {/* Skin Card (Left): Current Streak */}
-          <div className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[17px] w-[262.5px] h-[291px] bg-[#FFF5CE] border-b-[4px] border-[#FFEFB5] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
+          <div id="current-streak-card" className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[17px] w-[262.5px] h-[291px] bg-[#FFF5CE] border-b-[4px] border-[#FFEFB5] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
             <div className="flex flex-col justify-center items-center gap-3">
               <span className="font-nunito font-semibold text-[16px] leading-[22px] text-[#332902]">
                 الخط الحالي
               </span>
               <span className="font-nunito font-extrabold text-[56px] leading-[76px] text-[#332902]">
-                7
+                {currentStreak}
               </span>
               <span className="font-nunito font-semibold text-[16px] leading-[22px] text-[#332902]">
                 أيام
               </span>
             </div>
-            {/* Fire Icon Placeholder */}
+            {/* Fire Icon */}
             <div className="absolute -left-[50px] top-[65px] w-[103px] h-[150px] z-10 -scale-x-200">
               <Image src={FireSVG} alt="Fire" />
             </div>
@@ -516,7 +515,7 @@ export default function Page() {
           )}
         </div>
 
-        <div className="bg-transparent sm:bg-white sm:shadow-sm h-auto py-[10px] px-0 sm:px-[16px] gap-[12px] rounded-[13px] overflow-y-auto sm:border-2 sm:border-[#E5E5E5] flex flex-col justify-start">
+        <div id="topic-progress-container" className="bg-transparent sm:bg-white sm:shadow-sm h-auto py-[10px] px-0 sm:px-[16px] gap-[12px] rounded-[13px] overflow-y-auto sm:border-2 sm:border-[#E5E5E5] flex flex-col justify-start">
           <h2 className="text-right text-xl sm:text-2xl font-bold text-slate-900 mb-6 px-2">
             مدى التقدم في المحاضرات
           </h2>

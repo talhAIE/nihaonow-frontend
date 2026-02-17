@@ -28,6 +28,7 @@ import { useAuthProtection } from "@/hooks/useAuthProtection";
 import ProgressBar from "@/components/ui/progressBar";
 import Image from "next/image";
 import AnimatedWaveform from "@/components/scenario";
+import SessionGuidePopup from "@/components/session/SessionGuidePopup";
 
 export default function ScenarioPage() {
   useAuthProtection();
@@ -49,6 +50,7 @@ export default function ScenarioPage() {
   const [lastAttemptScores, setLastAttemptScores] = useState<any>(null);
   const [lastTranscription, setLastTranscription] = useState<string>("");
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [showSessionGuide, setShowSessionGuide] = useState(false);
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -59,6 +61,16 @@ export default function ScenarioPage() {
     window.addEventListener('resize', checkScreenSize);
     
     return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+
+  useEffect(() => {
+    // Show guide only if it's the first scenario (likely start of session)
+    // or if coming from dashboard with guide pending.
+    // For now, let's just trigger it once per mount if intro exists.
+    const sessionData = sessionUtils.getCurrentSession();
+    if (sessionData && sessionData.scenarios && sessionData.scenarios[0]?.isIntroduction) {
+        setShowSessionGuide(true);
+    }
   }, []);
   const [audioProgress, setAudioProgress] = useState<number>(0);
   const [scenarioProgress, setScenarioProgress] = useState<number>(0);
@@ -76,16 +88,16 @@ export default function ScenarioPage() {
     const sessionData = sessionUtils.getCurrentSession();
 
     if (sessionData && sessionData.scenarios) {
-      const nonIntroScenarios = sessionData.scenarios.filter((s) => !s.isIntroduction);
-      setTotalScenarios(nonIntroScenarios.length);
+      const allScenarios = sessionData.scenarios;
+      setTotalScenarios(allScenarios.filter(s => !s.isIntroduction).length);
       let scenarioToLoad: Scenario | undefined;
 
       if (scenarioId) {
-        scenarioToLoad = nonIntroScenarios.find(
+        scenarioToLoad = allScenarios.find(
           (s) => s.id === parseInt(scenarioId, 10)
         );
       } else {
-        scenarioToLoad = nonIntroScenarios[0];
+        scenarioToLoad = allScenarios[0];
       }
 
       if (scenarioToLoad) {
@@ -100,8 +112,15 @@ export default function ScenarioPage() {
         setAudioProgress(0);
 
         // compute scenario-based progress: number of completed scenarios (those before current)
+        const nonIntroScenarios = allScenarios.filter(s => !s.isIntroduction);
         const currentIndex = nonIntroScenarios.findIndex((s) => s.id === scenarioToLoad!.id);
-        const progressValue = nonIntroScenarios.length > 0 ? Math.round((currentIndex / nonIntroScenarios.length) * 100) : 0;
+        
+        let progressValue = 0;
+        if (scenarioToLoad.isIntroduction) {
+            progressValue = 0;
+        } else if (currentIndex !== -1) {
+            progressValue = Math.round((currentIndex / nonIntroScenarios.length) * 100);
+        }
         setScenarioProgress(progressValue);
 
         setLastAttemptScores(null);
@@ -486,7 +505,7 @@ export default function ScenarioPage() {
                   arabicCompleted={arabicCompleted}
                   chineseCompleted={chineseCompleted}
                   showChineseRecording={!currentScenario.isIntroduction}
-                  showDiv={true}
+                  showDiv={!currentScenario.isIntroduction}
                   imageWidth={360}
                   imageHeight={360}
                   forceStopAudio={isVideoModalOpen}
@@ -588,6 +607,7 @@ export default function ScenarioPage() {
                           <div className="w-full">
                             {
                               <button
+                                id="record-button"
                                 onClick={handleRecordClick}
                                 disabled={!arabicCompleted}
                                 className={`relative rounded-full flex items-center justify-center transition-all duration-300 w-full ${!arabicCompleted
@@ -686,6 +706,7 @@ export default function ScenarioPage() {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 w-full max-w-full mx-auto">
             {/* Yellow User Guide Button */}
             <Button
+              id="user-guide-button"
               onClick={() => setIsVideoModalOpen(true)}
               className="w-full bg-[#FFCB08] h-14 hover:bg-[#FFCB08] text-[#1F1F1F] py-4 rounded-2xl flex items-center justify-center gap-2 md:gap-3 text-xs sm:text-sm md:text-lg font-almarai-bold border-b-[4px] border-b-[#DEA407] shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all font-almarai"
             >
@@ -695,6 +716,7 @@ export default function ScenarioPage() {
 
             {/* Grey Feedback Button */}
             <Button
+              id="feedback-button"
               onClick={() => setIsFeedbackOpen(true)}
               disabled={!lastAttemptScores}
               className="w-full bg-[#E5E5E5] h-14 hover:bg-[#E5E5E5] text-[#1F1F1F] py-4 rounded-2xl flex items-center justify-center gap-2 md:gap-3 text-xs sm:text-sm md:text-lg font-almarai-bold border-b-[4px] border-b-[#C4C4C4] disabled:opacity-50 disabled:border-none shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all font-almarai"
@@ -747,6 +769,11 @@ export default function ScenarioPage() {
         onClose={() => setIsVideoModalOpen(false)}
         videoUrl="https://jfxedbnofpaezykdssmk.supabase.co/storage/v1/object/public/nihaonow-bucket/User-Guide/UserGuide-Video.mp4"
         title="دليل المستخدم"
+      />
+
+      <SessionGuidePopup
+        isOpen={showSessionGuide}
+        onClose={() => setShowSessionGuide(false)}
       />
     </div>
   );

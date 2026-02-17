@@ -197,6 +197,7 @@ export default function LanguageLearningInterface({
       )}
 
       <button
+        id="context-button"
         onClick={handleContextPlay}
         className={`bg-[#FFCB08] hover:bg-[#FFCB08] border-b-[4px] border-b-[#E5B607] active:border-b-0 active:translate-y-[2px] transition-all duration-150 rounded-full pl-2 pr-8 py-2 flex items-center justify-between gap-4 shadow-sm w-fit min-w-[12rem] h-14 ${!arabicCompleted && !hasSubmittedSuccessfully ? "animate-guide-glow" : ""
           }`}
@@ -216,7 +217,7 @@ export default function LanguageLearningInterface({
       <div className="w-full flex flex-col items-center justify-center gap-8 md:gap-10">
 
         {/* Character Image - Clean Card */}
-        <div className="relative w-64 h-64 md:w-[400px] md:h-[320px] max-w-full flex-shrink-0">
+        <div id="character-frame" className="relative w-64 h-64 md:w-[400px] md:h-[320px] max-w-full flex-shrink-0">
           <div className="absolute inset-0 bg-white rounded-[32px] overflow-hidden shadow-sm border border-gray-100">
             <Image
               src={scenarioImageUrl}
@@ -229,7 +230,7 @@ export default function LanguageLearningInterface({
 
         {/* Phrase & Pronunciation - Centered Below */}
         {showDiv && (
-          <div className="flex flex-col items-center gap-4 text-center">
+          <div id="pronunciation-column" className="flex flex-col items-center gap-4 text-center">
             {/* Main Phrase */}
             <h2 className="text-4xl md:text-5xl font-black text-[#22C55E] tracking-tight">{targetPhrasePinyin}</h2>
 
