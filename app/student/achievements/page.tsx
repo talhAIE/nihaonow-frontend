@@ -50,11 +50,19 @@ export default function AchievementsPage() {
   const [showGuide, setShowGuide] = useState(false);
 
   useEffect(() => {
-    setShowGuide(true);
-  }, []);
+    if (state.authUser?.isFirstLogin && state.isInitialized) {
+      const guideSeen = localStorage.getItem(`guide_seen_${state.authUser.id}_achievements`);
+      if (!guideSeen) {
+        setShowGuide(true);
+      }
+    }
+  }, [state.authUser, state.isInitialized]);
 
   const handleCloseGuide = () => {
     setShowGuide(false);
+    if (state.authUser?.id) {
+      localStorage.setItem(`guide_seen_${state.authUser.id}_achievements`, 'true');
+    }
   };
 
   // State for frontend PDF generation

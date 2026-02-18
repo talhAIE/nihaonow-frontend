@@ -56,23 +56,19 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
-    // Check user state for isFirstLogin
-    // if (state.authUser?.isFirstLogin) {
-      setShowGuide(true);
-    // }
-  }, []);
+    if (state.authUser?.isFirstLogin && state.isInitialized) {
+      const guideSeen = localStorage.getItem(`guide_seen_${state.authUser.id}_dashboard`);
+      if (!guideSeen) {
+        setShowGuide(true);
+      }
+    }
+  }, [state.authUser, state.isInitialized]);
 
   const handleCloseGuide = () => {
     setShowGuide(false);
-    // if (state.authUser && state.authUser.isFirstLogin) {
-    //   const updatedUser = { ...state.authUser, isFirstLogin: false };
-    //   setState((prev) => ({
-    //     ...prev,
-    //     authUser: updatedUser,
-    //   }));
-    //   // Update storage so it doesn't show on reload
-    //   localStorage.setItem("authUser", JSON.stringify(updatedUser));
-    // }
+    if (state.authUser?.id) {
+      localStorage.setItem(`guide_seen_${state.authUser.id}_dashboard`, 'true');
+    }
   };
 
   const { startSession, startWordSession } = useSession();

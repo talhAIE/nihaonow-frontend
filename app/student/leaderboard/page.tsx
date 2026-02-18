@@ -54,7 +54,7 @@ const Ribbon3rd = () => (
 import { LeaderboardGuide } from '@/components/leaderboard/LeaderboardGuide';
 
 export default function LeaderboardPage() {
-    const { dir } = useAppContext()
+    const { dir, state } = useAppContext()
     const isRtl = dir == 'rtl'
 
     // Track if we had initial cached data to avoid dependency on entries.length
@@ -62,11 +62,19 @@ export default function LeaderboardPage() {
     const [showGuide, setShowGuide] = useState(false)
 
     useEffect(() => {
-        setShowGuide(true)
-    }, [])
+        if (state.authUser?.isFirstLogin && state.isInitialized) {
+            const guideSeen = localStorage.getItem(`guide_seen_${state.authUser.id}_leaderboard`);
+            if (!guideSeen) {
+                setShowGuide(true);
+            }
+        }
+    }, [state.authUser, state.isInitialized]);
 
     const handleCloseGuide = () => {
         setShowGuide(false)
+        if (state.authUser?.id) {
+            localStorage.setItem(`guide_seen_${state.authUser.id}_leaderboard`, 'true');
+        }
     }
 
     // Initialize state with cached data if available (instant load)

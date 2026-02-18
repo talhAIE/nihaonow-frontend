@@ -29,9 +29,11 @@ import ProgressBar from "@/components/ui/progressBar";
 import Image from "next/image";
 import AnimatedWaveform from "@/components/scenario";
 import SessionGuidePopup from "@/components/session/SessionGuidePopup";
+import { useAppContext } from "@/context/AppContext";
 
 export default function ScenarioPage() {
   useAuthProtection();
+  const { state } = useAppContext();
 
   const [currentScenario, setCurrentScenario] = useState<Scenario | null>(null);
   const [totalScenarios, setTotalScenarios] = useState(0);
@@ -64,14 +66,14 @@ export default function ScenarioPage() {
   }, []);
 
   useEffect(() => {
-    // Show guide only if it's the first scenario (likely start of session)
-    // or if coming from dashboard with guide pending.
-    // For now, let's just trigger it once per mount if intro exists.
-    const sessionData = sessionUtils.getCurrentSession();
-    if (sessionData && sessionData.scenarios && sessionData.scenarios[0]?.isIntroduction) {
+    if (state.authUser?.isFirstLogin && state.isInitialized) {
+      const guideSeen = localStorage.getItem(`guide_seen_${state.authUser.id}_session`);
+      const sessionData = sessionUtils.getCurrentSession();
+      if (!guideSeen && sessionData && sessionData.scenarios && sessionData.scenarios[0]?.isIntroduction) {
         setShowSessionGuide(true);
+      }
     }
-  }, []);
+  }, [state.authUser, state.isInitialized]);
   const [audioProgress, setAudioProgress] = useState<number>(0);
   const [scenarioProgress, setScenarioProgress] = useState<number>(0);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -778,7 +780,12 @@ export default function ScenarioPage() {
 
       <SessionGuidePopup
         isOpen={showSessionGuide}
-        onClose={() => setShowSessionGuide(false)}
+        onClose={() => {
+          setShowSessionGuide(false);
+          if (state.authUser?.id) {
+            localStorage.setItem(`guide_seen_${state.authUser.id}_session`, 'true');
+          }
+        }}
       />
     </div>
   );
