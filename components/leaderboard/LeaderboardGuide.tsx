@@ -78,6 +78,18 @@ export function LeaderboardGuide({ isOpen, onClose }: LeaderboardGuideProps) {
 
   useLayoutEffect(() => {
     if (isOpen) {
+      if (currentStep.id) {
+        const element = document.getElementById(currentStep.id);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          if (rect.bottom > window.innerHeight || rect.top < 0) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const timer = setTimeout(updateTargetRect, 500);
+            return () => clearTimeout(timer);
+          }
+        }
+      }
+
       const timer = setTimeout(updateTargetRect, 100);
       window.addEventListener("resize", updateTargetRect);
       return () => {
@@ -85,7 +97,7 @@ export function LeaderboardGuide({ isOpen, onClose }: LeaderboardGuideProps) {
         window.removeEventListener("resize", updateTargetRect);
       };
     }
-  }, [isOpen, stepIndex, updateTargetRect]);
+  }, [isOpen, stepIndex, updateTargetRect, currentStep?.id]);
 
   const handleNext = () => {
     if (stepIndex < STEPS.length - 1) {
@@ -105,12 +117,29 @@ export function LeaderboardGuide({ isOpen, onClose }: LeaderboardGuideProps) {
   const tooltipPosition = () => {
     if (!targetRect) return { top: "50%", left: "50%", transform: "translate(-50%, -50%)" };
     
+    const PADDING = 24;
+    const TOOLTIP_WIDTH = 305;
+    const TOOLTIP_HEIGHT = 200;
+
     if (isMobile) {
+        let mobileTop = targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2;
+        if (mobileTop + TOOLTIP_HEIGHT / 2 > window.innerHeight - 20) {
+            mobileTop = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
+        }
+
+        if (mobileTop < TOOLTIP_HEIGHT / 2 + 10) {
+            return { 
+                bottom: "10px", 
+                left: "50%", 
+                transform: "translateX(-50%)",
+                top: "auto"
+            };
+        }
+
         return { 
-            bottom: "20px", 
+            top: mobileTop, 
             left: "50%", 
-            transform: "translateX(-50%)",
-            top: "auto"
+            transform: "translate(-50%, -50%)"
         };
     }
 
@@ -118,21 +147,26 @@ export function LeaderboardGuide({ isOpen, onClose }: LeaderboardGuideProps) {
     let left = targetRect.left + targetRect.width / 2;
     let transform = "translate(-50%, -50%)";
 
-    if (currentStep.id === 'leaderboard-top-cards') {
-        top = targetRect.top + targetRect.height + 120;
-    } else if (currentStep.id === 'leaderboard-all-students') {
-        top = targetRect.top + 100;
+    // Default: try to place below
+    top = targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2;
+    
+    // If it goes off screen bottom, place above
+    if (top + TOOLTIP_HEIGHT / 2 > window.innerHeight - 20) {
+        top = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
+    }
+
+    if (currentStep.id === 'leaderboard-all-students') {
         left = targetRect.left + 50;
-    } else if (currentStep.id === 'leaderboard-sample-metrics') {
-        top = targetRect.top - 120;
-        left = targetRect.left + targetRect.width / 2;
     }
 
     // Safety checks for screen boundaries
-    if (top < 150) top = 150;
-    if (top > window.innerHeight - 150) top = window.innerHeight - 150;
-    if (left < 170) left = 170;
-    if (left > window.innerWidth - 170) left = window.innerWidth - 170;
+    const halfWidth = TOOLTIP_WIDTH / 2;
+    const halfHeight = TOOLTIP_HEIGHT / 2;
+
+    if (top < halfHeight + 20) top = halfHeight + 20;
+    if (top > window.innerHeight - halfHeight - 20) top = window.innerHeight - halfHeight - 20;
+    if (left < halfWidth + 20) left = halfWidth + 20;
+    if (left > window.innerWidth - halfWidth - 20) left = window.innerWidth - halfWidth - 20;
 
     return { top, left, transform };
   };

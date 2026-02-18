@@ -97,6 +97,19 @@ export function AchievementsGuide({ isOpen, onClose, activeTab, onTabChange }: A
 
   useLayoutEffect(() => {
     if (isOpen) {
+      if (currentStep.targetId) {
+        const element = document.getElementById(currentStep.targetId);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          if (rect.bottom > window.innerHeight || rect.top < 0) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Wait for scroll and tab switch
+            const timer = setTimeout(updateTargetRect, 600);
+            return () => clearTimeout(timer);
+          }
+        }
+      }
+
       // Give time for tab switch and rendering
       const timer = setTimeout(updateTargetRect, 400);
       window.addEventListener("resize", updateTargetRect);
@@ -105,7 +118,7 @@ export function AchievementsGuide({ isOpen, onClose, activeTab, onTabChange }: A
         window.removeEventListener("resize", updateTargetRect);
       };
     }
-  }, [isOpen, stepIndex, activeTab, updateTargetRect]);
+  }, [isOpen, stepIndex, activeTab, updateTargetRect, currentStep?.targetId]);
 
   const handleNext = () => {
     if (stepIndex < STEPS.length - 1) {
@@ -126,12 +139,29 @@ export function AchievementsGuide({ isOpen, onClose, activeTab, onTabChange }: A
   const tooltipPosition = () => {
     if (!targetRect) return { top: "50%", left: "50%", transform: "translate(-50%, -50%)" };
     
+    const PADDING = 24;
+    const TOOLTIP_WIDTH = 305;
+    const TOOLTIP_HEIGHT = 200;
+
     if (isMobile) {
+        let mobileTop = targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2;
+        if (mobileTop + TOOLTIP_HEIGHT / 2 > window.innerHeight - 20) {
+            mobileTop = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
+        }
+
+        if (mobileTop < TOOLTIP_HEIGHT / 2 + 10) {
+            return { 
+                bottom: "10px", 
+                left: "50%", 
+                transform: "translateX(-50%)",
+                top: "auto"
+            };
+        }
+
         return { 
-            bottom: "20px", 
+            top: mobileTop, 
             left: "50%", 
-            transform: "translateX(-50%)",
-            top: "auto"
+            transform: "translate(-50%, -50%)"
         };
     }
 
@@ -139,23 +169,29 @@ export function AchievementsGuide({ isOpen, onClose, activeTab, onTabChange }: A
     let left = targetRect.left + targetRect.width / 2;
     let transform = "translate(-50%, -50%)";
 
-    if (currentStep.targetId === 'awards-map-container') {
-        top = targetRect.top + 180;
-    } else if (currentStep.targetId === 'reward-node-highlight') {
-        top = targetRect.top - 120;
+    // Default: try to place below
+    top = targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2;
+    
+    // If it goes off screen bottom, place above
+    if (top + TOOLTIP_HEIGHT / 2 > window.innerHeight - 20) {
+        top = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
+    }
+
+    // Specific tweaks
+    if (currentStep.targetId === 'reward-node-highlight') {
         left = targetRect.left - 100;
-    } else if (currentStep.targetId === 'certificates-grid') {
-        top = targetRect.top - 140;
     } else if (currentStep.targetId === 'certificate-scroll-highlight') {
-        top = targetRect.top + targetRect.height / 2;
         left = targetRect.left - 200;
     }
 
     // Safety checks for screen boundaries
-    if (top < 150) top = 150;
-    if (top > window.innerHeight - 150) top = window.innerHeight - 150;
-    if (left < 170) left = 170;
-    if (left > window.innerWidth - 170) left = window.innerWidth - 170;
+    const halfWidth = TOOLTIP_WIDTH / 2;
+    const halfHeight = TOOLTIP_HEIGHT / 2;
+
+    if (top < halfHeight + 20) top = halfHeight + 20;
+    if (top > window.innerHeight - halfHeight - 20) top = window.innerHeight - halfHeight - 20;
+    if (left < halfWidth + 20) left = halfWidth + 20;
+    if (left > window.innerWidth - halfWidth - 20) left = window.innerWidth - halfWidth - 20;
 
     return { top, left, transform };
   };

@@ -80,6 +80,20 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
 
   useLayoutEffect(() => {
     if (isOpen) {
+      if (currentStep.id) {
+        const element = document.getElementById(currentStep.id);
+        if (element) {
+          // Check if element is below current viewport
+          const rect = element.getBoundingClientRect();
+          if (rect.bottom > window.innerHeight || rect.top < 0) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Wait for scroll to finish before updating rect
+            const timer = setTimeout(updateTargetRect, 500);
+            return () => clearTimeout(timer);
+          }
+        }
+      }
+      
       const timer = setTimeout(updateTargetRect, 100);
       window.addEventListener("resize", updateTargetRect);
       return () => {
@@ -87,7 +101,7 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
         window.removeEventListener("resize", updateTargetRect);
       };
     }
-  }, [isOpen, stepIndex, updateTargetRect]);
+  }, [isOpen, stepIndex, updateTargetRect, currentStep?.id]);
 
   const handleNext = () => {
     let nextIdx = stepIndex + 1;
@@ -127,13 +141,34 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
     if (currentStep.type === 'welcome' || currentStep.type === 'final_completion') return { top: "50%", left: "50%", transform: "translate(-50%, -50%)" };
     if (!targetRect) return { top: "50%", left: "50%", transform: "translate(-50%, -50%)" };
     
+    const PADDING = 24;
+    const TOOLTIP_WIDTH = 305;
+    const TOOLTIP_HEIGHT = 220;
+
     if (isMobile) {
-        // Position tooltips at the bottom for mobile to avoid obscuring content
+        // Dynamic mobile positioning: try below first, then above
+        let mobileTop = targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2;
+        
+        // If it goes off screen bottom, place above
+        if (mobileTop + TOOLTIP_HEIGHT / 2 > window.innerHeight - 20) {
+            mobileTop = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
+        }
+
+        // Safety check for top boundary
+        if (mobileTop < TOOLTIP_HEIGHT / 2 + 10) {
+            // Fallback to fixed bottom if neither fits well
+            return { 
+                bottom: "10px", 
+                left: "50%", 
+                transform: "translateX(-50%)",
+                top: "auto"
+            };
+        }
+
         return { 
-            bottom: "20px", 
+            top: mobileTop, 
             left: "50%", 
-            transform: "translateX(-50%)",
-            top: "auto"
+            transform: "translate(-50%, -50%)"
         };
     }
 
@@ -141,26 +176,50 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
     let left = targetRect.left + targetRect.width / 2;
     let transform = "translate(-50%, -50%)";
 
+    // Strategic positioning to avoid overlap
     if (currentStep.id?.startsWith('sidebar-')) {
-        left = targetRect.left - 180;
+        // Check if there is enough space on the left (for RTL where sidebar is on the right)
+        // or on the right (for LTR where sidebar is on the left)
+        const spaceRight = window.innerWidth - (targetRect.left + targetRect.width);
+        const spaceLeft = targetRect.left;
+
+        if (spaceLeft > spaceRight) {
+            // Position to the left of the sidebar item
+            left = targetRect.left - PADDING - TOOLTIP_WIDTH / 2;
+        } else {
+            // Position to the right of the sidebar item
+            left = targetRect.left + targetRect.width + PADDING + TOOLTIP_WIDTH / 2;
+        }
         top = targetRect.top + targetRect.height / 2;
-    } else if (currentStep.id === 'word-of-week-card') {
-        top = targetRect.top + targetRect.height + 140;
-    } else if (currentStep.id === 'metrics-card') {
-        top = targetRect.top + targetRect.height + 100;
-    } else if (currentStep.id?.includes('streak')) {
-        top = targetRect.top - 120;
-    } else if (currentStep.id === 'levels-card') {
-        top = targetRect.top + targetRect.height + 140;
-    } else if (currentStep.id === 'topic-progress-container') {
-        top = targetRect.top - 160;
+    } else {
+        // Default: try to place below
+        top = targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2;
+        
+        // If it goes off screen bottom, place above
+        if (top + TOOLTIP_HEIGHT / 2 > window.innerHeight - 20) {
+            top = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
+        }
+
+        // Specific adjustments for cards
+        if (currentStep.id === 'word-of-week-card') {
+            top = targetRect.top + targetRect.height + 60;
+        } else if (currentStep.id === 'metrics-card') {
+            top = targetRect.top + targetRect.height + 40;
+        } else if (currentStep.id?.includes('streak')) {
+            top = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
+        } else if (currentStep.id === 'topic-progress-container') {
+            top = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
+        }
     }
 
     // Safety checks for screen boundaries
-    if (top < 150) top = 150;
-    if (top > window.innerHeight - 150) top = window.innerHeight - 150;
-    if (left < 170) left = 170;
-    if (left > window.innerWidth - 170) left = window.innerWidth - 170;
+    const halfWidth = TOOLTIP_WIDTH / 2;
+    const halfHeight = TOOLTIP_HEIGHT / 2;
+
+    if (top < halfHeight + 20) top = halfHeight + 20;
+    if (top > window.innerHeight - halfHeight - 20) top = window.innerHeight - halfHeight - 20;
+    if (left < halfWidth + 20) left = halfWidth + 20;
+    if (left > window.innerWidth - halfWidth - 20) left = window.innerWidth - halfWidth - 20;
 
     return { top, left, transform };
   };

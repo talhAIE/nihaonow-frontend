@@ -67,6 +67,19 @@ export default function SessionGuidePopup({
 
   useLayoutEffect(() => {
     if (isOpen) {
+      const id = getTargetId(step);
+      if (id) {
+        const element = document.getElementById(id);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          if (rect.bottom > window.innerHeight || rect.top < 0) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const timer = setTimeout(updateTargetRect, 500);
+            return () => clearTimeout(timer);
+          }
+        }
+      }
+
       const timer = setTimeout(updateTargetRect, 100);
       window.addEventListener("resize", updateTargetRect);
       return () => {
@@ -74,7 +87,7 @@ export default function SessionGuidePopup({
         window.removeEventListener("resize", updateTargetRect);
       };
     }
-  }, [isOpen, step, updateTargetRect]);
+  }, [isOpen, step, updateTargetRect, getTargetId]);
 
   const handleNext = () => setStep((prev) => prev + 1);
   const handleFinish = () => {
@@ -87,22 +100,52 @@ export default function SessionGuidePopup({
   const tooltipPosition = () => {
     if (!targetRect) return { top: "50%", left: "50%", transform: "translate(-50%, -50%)" };
     
+    const PADDING = 24;
+    const TOOLTIP_WIDTH = 340;
+    const TOOLTIP_HEIGHT = 280;
+
     if (isMobile) {
+        let mobileTop = targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2;
+        if (mobileTop + TOOLTIP_HEIGHT / 2 > window.innerHeight - 20) {
+            mobileTop = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
+        }
+
+        if (mobileTop < TOOLTIP_HEIGHT / 2 + 10) {
+            return { 
+                bottom: "10px", 
+                left: "50%", 
+                transform: "translateX(-50%)",
+                top: "auto"
+            };
+        }
+
         return { 
-            bottom: "20px", 
+            top: mobileTop, 
             left: "50%", 
-            transform: "translateX(-50%)",
-            top: "auto"
+            transform: "translate(-50%, -50%)"
         };
     }
 
-    let top = targetRect.top + targetRect.height + 20;
+    let top = targetRect.top + targetRect.height / 2;
     let left = targetRect.left + targetRect.width / 2;
-    let transform = "translateX(-50%)";
+    let transform = "translate(-50%, -50%)";
 
-    if (top + 280 > window.innerHeight) {
-        top = targetRect.top - 300; 
+    // Default: try to place below
+    top = targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2;
+    
+    // If it goes off screen bottom, place above
+    if (top + TOOLTIP_HEIGHT / 2 > window.innerHeight - 20) {
+        top = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
     }
+
+    // Safety checks for screen boundaries
+    const halfWidth = TOOLTIP_WIDTH / 2;
+    const halfHeight = TOOLTIP_HEIGHT / 2;
+
+    if (top < halfHeight + 20) top = halfHeight + 20;
+    if (top > window.innerHeight - halfHeight - 20) top = window.innerHeight - halfHeight - 20;
+    if (left < halfWidth + 20) left = halfWidth + 20;
+    if (left > window.innerWidth - halfWidth - 20) left = window.innerWidth - halfWidth - 20;
 
     return { top, left, transform };
   };
