@@ -102,6 +102,7 @@ export interface AuthResponse {
     username?: string;
     role?: string;
     createdAt?: string;
+    isFirstLogin?: boolean;
   };
 }
 

@@ -188,7 +188,7 @@ export default function LanguageLearningInterface({
   };
 
   return (
-    <div className="flex flex-col items-center space-y-6">
+    <div className={`flex flex-col items-center space-y-6 ${!showDiv ? "mb-8" : ""}`}>
       {arabicAudioUrl && (
         <audio ref={arabicAudioRef} src={arabicAudioUrl} preload="metadata" />
       )}
@@ -197,6 +197,7 @@ export default function LanguageLearningInterface({
       )}
 
       <button
+        id="context-button"
         onClick={handleContextPlay}
         className={`bg-[#FFCB08] hover:bg-[#FFCB08] border-b-[4px] border-b-[#E5B607] active:border-b-0 active:translate-y-[2px] transition-all duration-150 rounded-full pl-2 pr-8 py-2 flex items-center justify-between gap-4 shadow-sm w-fit min-w-[12rem] h-14 ${!arabicCompleted && !hasSubmittedSuccessfully ? "animate-guide-glow" : ""
           }`}
@@ -216,7 +217,7 @@ export default function LanguageLearningInterface({
       <div className="w-full flex flex-col items-center justify-center gap-8 md:gap-10">
 
         {/* Character Image - Clean Card */}
-        <div className="relative w-64 h-64 md:w-[400px] md:h-[320px] max-w-full flex-shrink-0">
+        <div id="character-frame" className="relative w-64 h-64 md:w-[400px] md:h-[320px] max-w-full flex-shrink-0">
           <div className="absolute inset-0 bg-white rounded-[32px] overflow-hidden shadow-sm border border-gray-100">
             <Image
               src={scenarioImageUrl}
@@ -228,28 +229,29 @@ export default function LanguageLearningInterface({
         </div>
 
         {/* Phrase & Pronunciation - Centered Below */}
-        {showDiv && (
-          <div className="flex flex-col items-center gap-4 text-center">
-            {/* Main Phrase */}
-            <h2 className="text-4xl md:text-5xl font-black text-[#22C55E] tracking-tight">{targetPhrasePinyin}</h2>
+        <div 
+          id="pronunciation-column" 
+          className={`flex flex-col items-center gap-4 text-center transition-opacity duration-300 ${!showDiv ? "hidden" : "visible"}`}
+        >
+          {/* Main Phrase */}
+          <h2 className="text-4xl md:text-5xl font-black text-[#22C55E] tracking-tight">{targetPhrasePinyin}</h2>
 
-            {/* Audio & Pinyin Row */}
-            <div className="flex items-center justify-center gap-3 text-gray-500 mt-2">
-              <button
-                onClick={handlePronunciationPlay}
-                className={`w-10 h-10 rounded-full bg-[#35AB4E] flex items-center justify-center shadow-md hover:scale-110 active:scale-95 transition-all ${isPronunciationPlaying ? "bg-[#298E3E]" : ""} ${arabicCompleted && !chineseCompleted && !hasSubmittedSuccessfully ? "animate-guide-glow" : ""}`}
-              >
-                {isPronunciationPlaying ? (
-                  <Pause className="w-5 h-5 text-white fill-current" />
-                ) : (
-                  <Play className="w-5 h-5 text-white fill-current ml-0.5" />
-                )}
-              </button>
-              <span className="text-xl md:text-2xl font-medium text-gray-600 font-sans">{targetPhraseChinese}</span>
-              <Volume2 className="w-6 h-6 opacity-40" />
-            </div>
+          {/* Audio & Pinyin Row */}
+          <div className="flex items-center justify-center gap-3 text-gray-500 mt-2">
+            <button
+              onClick={handlePronunciationPlay}
+              className={`w-10 h-10 rounded-full bg-[#35AB4E] flex items-center justify-center shadow-md hover:scale-110 active:scale-95 transition-all ${isPronunciationPlaying ? "bg-[#298E3E]" : ""} ${arabicCompleted && !chineseCompleted && !hasSubmittedSuccessfully ? "animate-guide-glow" : ""}`}
+            >
+              {isPronunciationPlaying ? (
+                <Pause className="w-5 h-5 text-white fill-current" />
+              ) : (
+                <Play className="w-5 h-5 text-white fill-current ml-0.5" />
+              )}
+            </button>
+            <span className="text-xl md:text-2xl font-medium text-gray-600 font-sans">{targetPhraseChinese}</span>
+            <Volume2 className="w-6 h-6 opacity-40" />
           </div>
-        )}
+        </div>
       </div>
 
 

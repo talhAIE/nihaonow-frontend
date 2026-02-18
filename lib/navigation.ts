@@ -23,7 +23,7 @@ export const routes = {
     topics: (chapterId?: number) =>
       chapterId ? `/student/topics?chapterId=${chapterId}` : '/student/topics',
     introduction: (topicId?: number) =>
-      topicId ? `/student/introduction?topicId=${topicId}` : '/student/introduction',
+      topicId ? `/student/scenario?topicId=${topicId}` : '/student/scenario',
     scenario: (scenarioId?: number) =>
       scenarioId ? `/student/scenario?scenarioId=${scenarioId}` : '/student/scenario',
     feedback: '/student/feedback',
@@ -62,7 +62,7 @@ export function useNavigation() {
     goToStudentDashboard: () => router.push(routes.student.dashboard),
     goToStudentUnits: () => router.push(routes.student.units),
     goToStudentTopics: (chapterId?: number) => router.push(routes.student.topics(chapterId)),
-    goToStudentIntroduction: (topicId?: number) => router.push(routes.student.introduction(topicId)),
+    goToStudentIntroduction: (topicId?: number) => router.push(routes.student.scenario()), // Redirect to scenario
     goToStudentScenario: (scenarioId?: number) => router.push(routes.student.scenario(scenarioId)),
     goToStudentFeedback: () => router.push(routes.student.feedback),
     goToStudentLevel: () => router.push(routes.student.level),

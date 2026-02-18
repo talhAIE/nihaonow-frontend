@@ -9,6 +9,7 @@ export interface User {
   username?: string;
   role?: string;
   image?: string;
+  isFirstLogin?: boolean;
 }
 
 interface AppState {

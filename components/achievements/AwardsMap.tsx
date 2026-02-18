@@ -379,6 +379,7 @@ export default function AwardsMap({ achievements, onClaim, claimedAchievements =
         return (
           <div
             key={index}
+            id={index === 0 ? "reward-node-highlight" : undefined}
             className="absolute group z-20 hover:z-50"
             style={{
               top: `${node.y}%`,
