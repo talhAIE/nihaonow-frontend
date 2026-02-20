@@ -57,18 +57,12 @@ export default function Page() {
 
   useEffect(() => {
     if (state.authUser?.isFirstLogin && state.isInitialized) {
-      const guideSeen = localStorage.getItem(`guide_seen_${state.authUser.id}_dashboard`);
-      if (!guideSeen) {
-        setShowGuide(true);
-      }
+      setShowGuide(true);
     }
   }, [state.authUser, state.isInitialized]);
 
   const handleCloseGuide = () => {
     setShowGuide(false);
-    if (state.authUser?.id) {
-      localStorage.setItem(`guide_seen_${state.authUser.id}_dashboard`, 'true');
-    }
   };
 
   const { startSession, startWordSession } = useSession();

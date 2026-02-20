@@ -32,13 +32,6 @@ interface TargetRect {
 
 const STEPS = [
   { id: null, type: 'welcome' },
-  // Sidebar Items
-  { id: 'sidebar-dashboard', icon: <Sparkles className="text-[#FFCB08]" size={24} />, title: 'لوحة التحكم', desc: 'استعرض ملخص تقدمك وإحصائياتك اليومية.' },
-  { id: 'sidebar-units', icon: <Sparkles className="text-[#FFCB08]" size={24} />, title: 'الوحدات التدريبية', desc: 'ابدأ دروسك الصينية المنظمة حسب المستويات.' },
-  { id: 'sidebar-leaderboard', icon: <Sparkles className="text-[#FFCB08]" size={24} />, title: 'قائمة المتفوقين', desc: 'نافس زملاءك وشاهد ترتيبك العالمي.' },
-  { id: 'sidebar-achievements', icon: <Sparkles className="text-[#FFCB08]" size={24} />, title: 'الشارات التعليمية', desc: 'استعرض الإنجازات والأوسمة التي حصلت عليها.' },
-  { id: 'sidebar-account', icon: <Sparkles className="text-[#FFCB08]" size={24} />, title: 'حساب المستخدم', desc: 'إدارة ملفك الشخصي وإعدادات حسابك.' },
-  { id: 'sidebar-logout', icon: <Sparkles className="text-[#FFCB08]" size={24} />, title: 'تسجيل الخروج', desc: 'قم بتسجيل الخروج بأمان من حسابك.' },
   // Dashboard Cards (Fixed Sequence per implementation)
   { id: 'levels-card', icon: <Sparkles className="text-[#FFCB08]" size={24} />, title: 'المستوى التعليمي', desc: 'تتبع تقدمك للوصول إلى المستوى القادم من الباندا.' },
   { id: 'word-of-week-card', icon: <Sparkles className="text-[#FFCB08]" size={24} />, title: 'كلمة الأسبوع', desc: 'تعلم كلمة جديدة كل أسبوع مع النطق والمعنى.' },
@@ -46,6 +39,13 @@ const STEPS = [
   { id: 'longest-streak-card', icon: <Sparkles className="text-[#FFCB08]" size={24} />, title: 'أطول خط للمتابعة', desc: 'هذا هو الرقم القياسي لأطول سلسلة تعلم متواصلة لديك.' },
   { id: 'current-streak-card', icon: <Sparkles className="text-[#FFCB08]" size={24} />, title: 'الخطالية', desc: 'حافظ على استمرارية التعلم يومياً لزيادة هذا الرقم!' },
   { id: 'topic-progress-container', icon: <Sparkles className="text-[#FFCB08]" size={24} />, title: 'التقدم في المحاضرات', desc: 'شاهد مدى تقدمك في كل درس ووحدة تدريبية.' },
+  // Sidebar Items
+  { id: 'sidebar-dashboard', icon: <Sparkles className="text-[#FFCB08]" size={24} />, title: 'لوحة التحكم', desc: 'استعرض ملخص تقدمك وإحصائياتك اليومية.' },
+  { id: 'sidebar-units', icon: <Sparkles className="text-[#FFCB08]" size={24} />, title: 'الوحدات التدريبية', desc: 'ابدأ دروسك الصينية المنظمة حسب المستويات.' },
+  { id: 'sidebar-leaderboard', icon: <Sparkles className="text-[#FFCB08]" size={24} />, title: 'قائمة المتفوقين', desc: 'نافس زملاءك وشاهد ترتيبك العالمي.' },
+  { id: 'sidebar-achievements', icon: <Sparkles className="text-[#FFCB08]" size={24} />, title: 'الشارات التعليمية', desc: 'استعرض الإنجازات والأوسمة التي حصلت عليها.' },
+  { id: 'sidebar-account', icon: <Sparkles className="text-[#FFCB08]" size={24} />, title: 'حساب المستخدم', desc: 'إدارة ملفك الشخصي وإعدادات حسابك.' },
+  { id: 'sidebar-logout', icon: <Sparkles className="text-[#FFCB08]" size={24} />, title: 'تسجيل الخروج', desc: 'قم بتسجيل الخروج بأمان من حسابك.' },
   { id: null, type: 'final_completion' },
 ];
 
@@ -120,16 +120,13 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
 
   const handleFinish = () => {
     onClose();
-    localStorage.setItem('dashboard_guide_seen', 'true');
     setTimeout(() => setStepIndex(0), 300);
   };
 
   if (!isOpen) return null;
 
   const showFinalCompletion = () => {
-    const leaderboardSeen = typeof window !== 'undefined' ? localStorage.getItem('leaderboard_guide_seen') : null;
-    const achievementsSeen = typeof window !== 'undefined' ? localStorage.getItem('achievements_guide_seen') : null;
-    return leaderboardSeen === 'true' && achievementsSeen === 'true';
+    return true; 
   };
 
   // If it's the final completion step, check if requirements are met
@@ -143,30 +140,29 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
     
     const PADDING = 24;
     const TOOLTIP_WIDTH = 305;
-    const TOOLTIP_HEIGHT = 220;
+    const TOOLTIP_HEIGHT = 280; // Safer height for measurement
 
     if (isMobile) {
-        // Dynamic mobile positioning: try below first, then above
-        let mobileTop = targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2;
-        
-        // If it goes off screen bottom, place above
-        if (mobileTop + TOOLTIP_HEIGHT / 2 > window.innerHeight - 20) {
-            mobileTop = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
+        // ... (Mobile logic is already okay but let's harden it with a centered fallback too)
+        let mobileTop = targetRect.top + targetRect.height + PADDING;
+        if (mobileTop + TOOLTIP_HEIGHT > window.innerHeight - 20) {
+            mobileTop = targetRect.top - PADDING - TOOLTIP_HEIGHT;
         }
 
-        // Safety check for top boundary
-        if (mobileTop < TOOLTIP_HEIGHT / 2 + 10) {
-            // Fallback to fixed bottom if neither fits well
+        if (mobileTop < 20 || mobileTop + TOOLTIP_HEIGHT > window.innerHeight - 20) {
             return { 
-                bottom: "10px", 
+                top: "50%", 
                 left: "50%", 
-                transform: "translateX(-50%)",
-                top: "auto"
+                transform: "translate(-50%, -50%)",
+                width: TOOLTIP_WIDTH,
+                maxWidth: "calc(100vw - 40px)",
+                maxHeight: "calc(100vh - 40px)",
+                overflowY: "auto" as "auto"
             };
         }
 
         return { 
-            top: mobileTop, 
+            top: mobileTop + TOOLTIP_HEIGHT / 2, 
             left: "50%", 
             transform: "translate(-50%, -50%)"
         };
@@ -178,38 +174,50 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
 
     // Strategic positioning to avoid overlap
     if (currentStep.id?.startsWith('sidebar-')) {
-        // Check if there is enough space on the left (for RTL where sidebar is on the right)
-        // or on the right (for LTR where sidebar is on the left)
         const spaceRight = window.innerWidth - (targetRect.left + targetRect.width);
         const spaceLeft = targetRect.left;
 
-        if (spaceLeft > spaceRight) {
-            // Position to the left of the sidebar item
+        if (spaceLeft > spaceRight && spaceLeft > TOOLTIP_WIDTH + PADDING + 20) {
             left = targetRect.left - PADDING - TOOLTIP_WIDTH / 2;
-        } else {
-            // Position to the right of the sidebar item
+        } else if (spaceRight > TOOLTIP_WIDTH + PADDING + 20) {
             left = targetRect.left + targetRect.width + PADDING + TOOLTIP_WIDTH / 2;
+        } else {
+            // Fallback to centered if neither side fits
+            return { 
+                top: "50%", 
+                left: "50%", 
+                transform: "translate(-50%, -50%)",
+                width: TOOLTIP_WIDTH,
+                maxWidth: "calc(100vw - 40px)",
+                maxHeight: "calc(100vh - 40px)",
+                overflowY: "auto" as "auto"
+            };
         }
         top = targetRect.top + targetRect.height / 2;
     } else {
         // Default: try to place below
-        top = targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2;
+        top = targetRect.top + targetRect.height + PADDING;
         
         // If it goes off screen bottom, place above
-        if (top + TOOLTIP_HEIGHT / 2 > window.innerHeight - 20) {
-            top = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
+        if (top + TOOLTIP_HEIGHT > window.innerHeight - 20) {
+            top = targetRect.top - PADDING - TOOLTIP_HEIGHT;
         }
 
-        // Specific adjustments for cards
-        if (currentStep.id === 'word-of-week-card') {
-            top = targetRect.top + targetRect.height + 60;
-        } else if (currentStep.id === 'metrics-card') {
-            top = targetRect.top + targetRect.height + 40;
-        } else if (currentStep.id?.includes('streak')) {
-            top = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
-        } else if (currentStep.id === 'topic-progress-container') {
-            top = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
+        // Safety check for centered fallback
+        if (top < 20 || top + TOOLTIP_HEIGHT > window.innerHeight - 20) {
+            return { 
+                top: "50%", 
+                left: "50%", 
+                transform: "translate(-50%, -50%)",
+                width: TOOLTIP_WIDTH,
+                maxWidth: "calc(100vw - 40px)",
+                maxHeight: "calc(100vh - 40px)",
+                overflowY: "auto" as "auto"
+            };
         }
+        
+        // Center the calculated point
+        top = top + TOOLTIP_HEIGHT / 2;
     }
 
     // Safety checks for screen boundaries

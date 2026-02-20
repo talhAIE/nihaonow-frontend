@@ -63,18 +63,12 @@ export default function LeaderboardPage() {
 
     useEffect(() => {
         if (state.authUser?.isFirstLogin && state.isInitialized) {
-            const guideSeen = localStorage.getItem(`guide_seen_${state.authUser.id}_leaderboard`);
-            if (!guideSeen) {
-                setShowGuide(true);
-            }
+            setShowGuide(true);
         }
     }, [state.authUser, state.isInitialized]);
 
     const handleCloseGuide = () => {
         setShowGuide(false)
-        if (state.authUser?.id) {
-            localStorage.setItem(`guide_seen_${state.authUser.id}_leaderboard`, 'true');
-        }
     }
 
     // Initialize state with cached data if available (instant load)
