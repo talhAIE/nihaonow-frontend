@@ -1,5 +1,5 @@
 "use client";
-import { useState, useLayoutEffect, useCallback, useEffect } from "react";
+import { useState, useLayoutEffect, useCallback, useEffect, useRef } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { 
   ChevronLeft, 
@@ -63,6 +63,8 @@ export function AchievementsGuide({ isOpen, onClose, activeTab, onTabChange }: A
   const [stepIndex, setStepIndex] = useState(0);
   const [targetRect, setTargetRect] = useState<TargetRect | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const tooltipRef = useRef<HTMLDivElement>(null);
+  const [tooltipSize, setTooltipSize] = useState({ width: 305, height: 200 });
 
   const currentStep = STEPS[stepIndex] || STEPS[0];
 
@@ -101,8 +103,9 @@ export function AchievementsGuide({ isOpen, onClose, activeTab, onTabChange }: A
         const element = document.getElementById(currentStep.targetId);
         if (element) {
           const rect = element.getBoundingClientRect();
-          if (rect.bottom > window.innerHeight || rect.top < 0) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // Only scroll if the TOP of the element is completely outside the viewport
+          if (rect.top > window.innerHeight || rect.top < 0) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
             // Wait for scroll and tab switch
             const timer = setTimeout(updateTargetRect, 600);
             return () => clearTimeout(timer);
@@ -119,6 +122,16 @@ export function AchievementsGuide({ isOpen, onClose, activeTab, onTabChange }: A
       };
     }
   }, [isOpen, stepIndex, activeTab, updateTargetRect, currentStep?.targetId]);
+
+  // Measure tooltip size whenever step changes
+  useLayoutEffect(() => {
+    if (isOpen && tooltipRef.current) {
+      const { width, height } = tooltipRef.current.getBoundingClientRect();
+      if (width > 0 && height > 0) {
+        setTooltipSize({ width, height });
+      }
+    }
+  }, [isOpen, stepIndex, targetRect]);
 
   const handleNext = () => {
     if (stepIndex < STEPS.length - 1) {
@@ -139,60 +152,72 @@ export function AchievementsGuide({ isOpen, onClose, activeTab, onTabChange }: A
     if (!targetRect) return { top: "50%", left: "50%", transform: "translate(-50%, -50%)" };
     
     const PADDING = 24;
-    const TOOLTIP_WIDTH = 305;
-    const TOOLTIP_HEIGHT = 200;
+    const TOOLTIP_WIDTH = tooltipSize.width;
+    const TOOLTIP_HEIGHT = tooltipSize.height;
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+
+    // Helper to check if a position overlaps with targetRect
+    const overlaps = (t: number, l: number) => {
+      const tooltipRect = {
+        top: t - TOOLTIP_HEIGHT / 2,
+        bottom: t + TOOLTIP_HEIGHT / 2,
+        left: l - TOOLTIP_WIDTH / 2,
+        right: l + TOOLTIP_WIDTH / 2
+      };
+      const targetWithPadding = {
+        top: targetRect.top - 20,
+        bottom: targetRect.top + targetRect.height + 20,
+        left: targetRect.left - 20,
+        right: targetRect.left + targetRect.width + 20
+      };
+      return !(tooltipRect.right < targetWithPadding.left ||
+               tooltipRect.left > targetWithPadding.right ||
+               tooltipRect.bottom < targetWithPadding.top ||
+               tooltipRect.top > targetWithPadding.bottom);
+    };
 
     if (isMobile) {
-        let mobileTop = targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2;
-        if (mobileTop + TOOLTIP_HEIGHT / 2 > window.innerHeight - 20) {
-            mobileTop = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
-        }
-
-        if (mobileTop < TOOLTIP_HEIGHT / 2 + 10) {
-            return { 
-                bottom: "10px", 
-                left: "50%", 
-                transform: "translateX(-50%)",
-                top: "auto"
-            };
-        }
-
-        return { 
-            top: mobileTop, 
-            left: "50%", 
-            transform: "translate(-50%, -50%)"
-        };
+      let mobileTop = targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2;
+      if (mobileTop + TOOLTIP_HEIGHT / 2 > screenHeight - 20) {
+        mobileTop = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
+      }
+      if (mobileTop - TOOLTIP_HEIGHT / 2 < 20 || mobileTop + TOOLTIP_HEIGHT / 2 > screenHeight - 20 || overlaps(mobileTop, screenWidth / 2)) {
+        return { top: "50%", left: "50%", transform: "translate(-50%, -50%)", maxWidth: "calc(100vw - 40px)", maxHeight: "calc(100vh - 40px)", overflowY: "auto" as "auto" };
+      }
+      return { top: mobileTop, left: "50%", transform: "translate(-50%, -50%)" };
     }
 
-    let top = targetRect.top + targetRect.height / 2;
+    // Desktop: try Right -> Left -> Top -> Bottom (sections are wide, side placement is best)
+    const positions = [
+      { top: targetRect.top + targetRect.height / 2, left: targetRect.left + targetRect.width + PADDING + TOOLTIP_WIDTH / 2 }, // Right
+      { top: targetRect.top + targetRect.height / 2, left: targetRect.left - PADDING - TOOLTIP_WIDTH / 2 }, // Left
+      { top: targetRect.top - PADDING - TOOLTIP_HEIGHT / 2, left: Math.min(targetRect.left + TOOLTIP_WIDTH / 2 + 20, screenWidth - TOOLTIP_WIDTH / 2 - 20) }, // Top
+      { top: targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2, left: Math.min(targetRect.left + TOOLTIP_WIDTH / 2 + 20, screenWidth - TOOLTIP_WIDTH / 2 - 20) }, // Bottom
+    ];
+
+    for (const pos of positions) {
+      const inScreen = pos.top - TOOLTIP_HEIGHT / 2 > 10 &&
+                       pos.top + TOOLTIP_HEIGHT / 2 < screenHeight - 10 &&
+                       pos.left - TOOLTIP_WIDTH / 2 > 10 &&
+                       pos.left + TOOLTIP_WIDTH / 2 < screenWidth - 10;
+      if (inScreen && !overlaps(pos.top, pos.left)) {
+        return { top: pos.top, left: pos.left, transform: "translate(-50%, -50%)" };
+      }
+    }
+
+    // Last resort fallback
+    let top = targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2;
     let left = targetRect.left + targetRect.width / 2;
-    let transform = "translate(-50%, -50%)";
-
-    // Default: try to place below
-    top = targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2;
-    
-    // If it goes off screen bottom, place above
-    if (top + TOOLTIP_HEIGHT / 2 > window.innerHeight - 20) {
-        top = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
+    if (top + TOOLTIP_HEIGHT / 2 > screenHeight - 20) {
+      top = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
     }
-
-    // Specific tweaks
-    if (currentStep.targetId === 'reward-node-highlight') {
-        left = targetRect.left - 100;
-    } else if (currentStep.targetId === 'certificate-scroll-highlight') {
-        left = targetRect.left - 200;
+    if (top - TOOLTIP_HEIGHT / 2 < 20 || top + TOOLTIP_HEIGHT / 2 > screenHeight - 20) {
+      return { top: "50%", left: "50%", transform: "translate(-50%, -50%)", maxWidth: "calc(100vw - 40px)", maxHeight: "calc(100vh - 40px)", overflowY: "auto" as "auto" };
     }
-
-    // Safety checks for screen boundaries
-    const halfWidth = TOOLTIP_WIDTH / 2;
-    const halfHeight = TOOLTIP_HEIGHT / 2;
-
-    if (top < halfHeight + 20) top = halfHeight + 20;
-    if (top > window.innerHeight - halfHeight - 20) top = window.innerHeight - halfHeight - 20;
-    if (left < halfWidth + 20) left = halfWidth + 20;
-    if (left > window.innerWidth - halfWidth - 20) left = window.innerWidth - halfWidth - 20;
-
-    return { top, left, transform };
+    top = Math.max(TOOLTIP_HEIGHT / 2 + 20, Math.min(screenHeight - TOOLTIP_HEIGHT / 2 - 20, top));
+    left = Math.max(TOOLTIP_WIDTH / 2 + 20, Math.min(screenWidth - TOOLTIP_WIDTH / 2 - 20, left));
+    return { top, left, transform: "translate(-50%, -50%)" };
   };
 
   return (
@@ -220,6 +245,7 @@ export function AchievementsGuide({ isOpen, onClose, activeTab, onTabChange }: A
 
           {/* Content Wrapper */}
           <div 
+            ref={tooltipRef}
             className="absolute z-20 animate-in fade-in zoom-in-95 duration-500 pointer-events-auto"
             style={tooltipPosition()}
           >
@@ -230,19 +256,19 @@ export function AchievementsGuide({ isOpen, onClose, activeTab, onTabChange }: A
                 style={{ borderRadius: "16px 16px 16px 16px" }}
               >
                 {/* Header */}
-                <div className="relative flex flex-row items-center w-full h-[36px]">
-                  <button
-                    onClick={handleFinish}
-                    className="box-border flex items-center justify-center p-2 w-8 h-8 bg-[#E2E2E2] border border-[#ECECEC] rounded-[8px] hover:bg-gray-300 transition-colors"
-                  >
-                    <X className="w-4 h-4 text-[#454545]" />
-                  </button>
-                  <div className="flex flex-row items-center justify-center gap-2 w-full">
+                <div className="flex flex-row items-center justify-between w-full h-[36px]">
+                  <div className="flex flex-row items-center justify-center gap-2 flex-1">
                     <Sparkles className="text-[#FFCB08]" size={24} />
                     <h3 className="font-almarai font-bold text-[20px] sm:text-[22px] leading-[26px] sm:leading-[28px] text-[#282828] text-center">
                       {currentStep.title}
                     </h3>
                   </div>
+                  <button
+                    onClick={handleFinish}
+                    className="box-border flex items-center justify-center p-2 w-8 h-8 bg-[#E2E2E2] border border-[#ECECEC] rounded-[8px] hover:bg-gray-300 transition-colors shrink-0"
+                  >
+                    <X className="w-4 h-4 text-[#454545]" />
+                  </button>
                 </div>
 
                 {/* Description */}

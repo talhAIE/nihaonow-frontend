@@ -345,7 +345,7 @@ export default function AchievementsPage() {
               />
             ))}
 
-            {certificates.locked.map((cert) => (
+            {certificates.locked.map((cert, index) => (
               <CertificateScroll
                 key={cert.id}
                 id={cert.id}
@@ -354,11 +354,12 @@ export default function AchievementsPage() {
                 status="locked"
                 onDownload={() => { }}
                 isDownloading={false}
+                customId={certificates.earned.length === 0 && index === 0 ? "certificate-scroll-highlight" : undefined}
               />
             ))}
 
             {certificates.earned.length === 0 && certificates.locked.length === 0 && (
-              <div className="col-span-full py-20 text-center">
+              <div id="certificate-scroll-highlight" className="col-span-full py-20 text-center">
                 <div className="bg-gray-100 w-24 h-24 rounded-[32px] flex items-center justify-center mx-auto mb-6">
                   <Scroll className="w-12 h-12 text-gray-300" />
                 </div>
