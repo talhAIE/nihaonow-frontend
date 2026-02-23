@@ -748,6 +748,7 @@ export default function ScenarioPage() {
 
             {/* Green Continue Button */}
             <Button
+              id="continue-button"
               onClick={handleContinueClick}
               disabled={
                 isSubmitting ||
