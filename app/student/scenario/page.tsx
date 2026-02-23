@@ -53,6 +53,8 @@ export default function ScenarioPage() {
   const [lastTranscription, setLastTranscription] = useState<string>("");
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   const [showSessionGuide, setShowSessionGuide] = useState(false);
+  const [hasShownGuide, setHasShownGuide] = useState(false);
+  const [hasShownRealGuide, setHasShownRealGuide] = useState(false);
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -66,14 +68,22 @@ export default function ScenarioPage() {
   }, []);
 
   useEffect(() => {
-    if (state.authUser?.isFirstLogin && state.isInitialized) {
-      const guideSeen = localStorage.getItem(`guide_seen_${state.authUser.id}_session`);
-      const sessionData = sessionUtils.getCurrentSession();
-      if (!guideSeen && sessionData && sessionData.scenarios && sessionData.scenarios[0]?.isIntroduction) {
-        setShowSessionGuide(true);
+    // Show guide if it's the user's first login and either:
+    // 1. They haven't seen any guide yet.
+    // 2. They've only seen the "intro" guide and are now on a real scenario.
+    if (!state.authUser?.isFirstLogin || !state.isInitialized || !currentScenario) return;
+
+    const isIntro = currentScenario.isIntroduction;
+    const shouldShow = !hasShownGuide || (!hasShownRealGuide && !isIntro);
+
+    if (shouldShow) {
+      setShowSessionGuide(true);
+      setHasShownGuide(true);
+      if (!isIntro) {
+        setHasShownRealGuide(true);
       }
     }
-  }, [state.authUser, state.isInitialized]);
+  }, [state.authUser?.isFirstLogin, state.isInitialized, currentScenario, hasShownGuide, hasShownRealGuide]);
   const [audioProgress, setAudioProgress] = useState<number>(0);
   const [scenarioProgress, setScenarioProgress] = useState<number>(0);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -782,10 +792,9 @@ export default function ScenarioPage() {
         isOpen={showSessionGuide}
         onClose={() => {
           setShowSessionGuide(false);
-          if (state.authUser?.id) {
-            localStorage.setItem(`guide_seen_${state.authUser.id}_session`, 'true');
-          }
         }}
+        isIntroduction={currentScenario?.isIntroduction}
+        isSecondStage={hasShownGuide && !currentScenario?.isIntroduction}
       />
     </div>
   );

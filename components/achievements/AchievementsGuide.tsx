@@ -130,7 +130,6 @@ export function AchievementsGuide({ isOpen, onClose, activeTab, onTabChange }: A
 
   const handleFinish = () => {
     onClose();
-    localStorage.setItem('achievements_guide_seen', 'true');
     setTimeout(() => setStepIndex(0), 300);
   };
 

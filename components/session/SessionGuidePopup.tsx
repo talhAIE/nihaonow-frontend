@@ -13,6 +13,8 @@ const nunito = Nunito({
 interface SessionGuidePopupProps {
   isOpen: boolean;
   onClose: () => void;
+  isIntroduction?: boolean;
+  isSecondStage?: boolean;
 }
 
 interface TargetRect {
@@ -25,6 +27,8 @@ interface TargetRect {
 export default function SessionGuidePopup({
   isOpen,
   onClose,
+  isIntroduction = false,
+  isSecondStage = false,
 }: SessionGuidePopupProps) {
   const [step, setStep] = useState(1);
   const [targetRect, setTargetRect] = useState<TargetRect | null>(null);
@@ -35,6 +39,15 @@ export default function SessionGuidePopup({
   }, []);
 
   const getTargetId = useCallback((currentStep: number) => {
+    // If this is the "Stage 2" guide (triggered on first real scenario after intro),
+    // only show the pronunciation and record steps (3 and 4).
+    if (isSecondStage) {
+      if (currentStep !== 3 && currentStep !== 4) return null;
+    }
+    
+    // On introductory scenarios, always skip the pronunciation column (3).
+    if (isIntroduction && currentStep === 3) return null;
+    
     switch (currentStep) {
       case 1: return "context-button";
       case 2: return "character-frame";
@@ -44,7 +57,7 @@ export default function SessionGuidePopup({
       case 6: return "user-guide-button";
       default: return null;
     }
-  }, []);
+  }, [isIntroduction, isSecondStage]);
 
   const updateTargetRect = useCallback(() => {
     checkMobile();
@@ -65,18 +78,48 @@ export default function SessionGuidePopup({
     }
   }, [step, getTargetId, checkMobile]);
 
+  const handleFinish = useCallback(() => {
+    onClose();
+    setTimeout(() => setStep(1), 300);
+  }, [onClose]);
+
+  const handleNext = useCallback(() => {
+    let nextStep = step + 1;
+    while (nextStep <= 6) {
+      const id = getTargetId(nextStep);
+      const element = id ? document.getElementById(id) : null;
+      // Skip if explicitly returned null OR if ID exists but element is missing from DOM
+      if (id === null || (id && !element)) {
+        nextStep++;
+        continue;
+      }
+      break;
+    }
+
+    if (nextStep <= 6) {
+      setStep(nextStep);
+    } else {
+      handleFinish();
+    }
+  }, [step, getTargetId, handleFinish]);
+
   useLayoutEffect(() => {
     if (isOpen) {
       const id = getTargetId(step);
-      if (id) {
-        const element = document.getElementById(id);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          if (rect.bottom > window.innerHeight || rect.top < 0) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            const timer = setTimeout(updateTargetRect, 500);
-            return () => clearTimeout(timer);
-          }
+      const element = id ? document.getElementById(id) : null;
+      
+      // If the target element for current step doesn't exist (or step is skipped), find next valid step
+      if (id === null || (id && !element)) {
+        handleNext();
+        return;
+      }
+
+      if (element) {
+        const rect = element.getBoundingClientRect();
+        if (rect.bottom > window.innerHeight || rect.top < 0) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          const timer = setTimeout(updateTargetRect, 500);
+          return () => clearTimeout(timer);
         }
       }
 
@@ -87,13 +130,7 @@ export default function SessionGuidePopup({
         window.removeEventListener("resize", updateTargetRect);
       };
     }
-  }, [isOpen, step, updateTargetRect, getTargetId]);
-
-  const handleNext = () => setStep((prev) => prev + 1);
-  const handleFinish = () => {
-    onClose();
-    setTimeout(() => setStep(1), 300);
-  };
+  }, [isOpen, step, updateTargetRect, getTargetId, handleNext]);
 
   if (!isOpen) return null;
 
@@ -102,53 +139,51 @@ export default function SessionGuidePopup({
     
     const PADDING = 24;
     const TOOLTIP_WIDTH = 340;
-    const TOOLTIP_HEIGHT = 280;
+    const TOOLTIP_HEIGHT = 320; // Increased to be safer
+    const halfWidth = TOOLTIP_WIDTH / 2;
 
-    if (isMobile) {
-        let mobileTop = targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2;
-        if (mobileTop + TOOLTIP_HEIGHT / 2 > window.innerHeight - 20) {
-            mobileTop = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
-        }
+    let top = targetRect.top + targetRect.height + PADDING;
+    let left = targetRect.left + targetRect.width / 2;
+    let transform = "translateX(-50%)";
 
-        if (mobileTop < TOOLTIP_HEIGHT / 2 + 10) {
+    // Check if it fits BELOW
+    const fitsBelow = top + TOOLTIP_HEIGHT < window.innerHeight - 20;
+    
+    if (!fitsBelow) {
+        // Try ABOVE
+        top = targetRect.top - PADDING - TOOLTIP_HEIGHT;
+        const fitsAbove = top > 20;
+        
+        if (!fitsAbove) {
+            // FALLBACK: Centered in viewport
             return { 
-                bottom: "10px", 
+                top: "50%", 
                 left: "50%", 
-                transform: "translateX(-50%)",
-                top: "auto"
+                transform: "translate(-50%, -50%)",
+                width: TOOLTIP_WIDTH,
+                maxWidth: "calc(100vw - 40px)",
+                maxHeight: "calc(100vh - 40px)",
+                overflowY: "auto" as "auto"
             };
         }
-
-        return { 
-            top: mobileTop, 
-            left: "50%", 
-            transform: "translate(-50%, -50%)"
-        };
     }
 
-    let top = targetRect.top + targetRect.height / 2;
-    let left = targetRect.left + targetRect.width / 2;
-    let transform = "translate(-50%, -50%)";
-
-    // Default: try to place below
-    top = targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2;
-    
-    // If it goes off screen bottom, place above
-    if (top + TOOLTIP_HEIGHT / 2 > window.innerHeight - 20) {
-        top = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
+    if (left < halfWidth + 20) {
+        left = 20;
+        transform = "none";
+    } else if (left > window.innerWidth - halfWidth - 20) {
+        left = window.innerWidth - TOOLTIP_WIDTH - 20;
+        transform = "none";
     }
 
-    // Safety checks for screen boundaries
-    const halfWidth = TOOLTIP_WIDTH / 2;
-    const halfHeight = TOOLTIP_HEIGHT / 2;
-
-    if (top < halfHeight + 20) top = halfHeight + 20;
-    if (top > window.innerHeight - halfHeight - 20) top = window.innerHeight - halfHeight - 20;
-    if (left < halfWidth + 20) left = halfWidth + 20;
-    if (left > window.innerWidth - halfWidth - 20) left = window.innerWidth - halfWidth - 20;
-
-    return { top, left, transform };
-  };
+    return { 
+        top, 
+        left, 
+        transform,
+        width: TOOLTIP_WIDTH,
+        maxWidth: "calc(100vw - 40px)"
+    };
+};
 
   return (
     <DialogPrimitive.Root open={isOpen} onOpenChange={(open) => !open && handleFinish()}>
