@@ -85,7 +85,7 @@ export function LeaderboardGuide({ isOpen, onClose }: LeaderboardGuideProps) {
         if (element) {
           const rect = element.getBoundingClientRect();
           // Only scroll if the TOP of the element is completely outside the viewport
-          if (rect.top > window.innerHeight || rect.top < 0) {
+          if (rect.top < 0 || rect.bottom > window.innerHeight) {
             element.scrollIntoView({ behavior: 'smooth', block: 'start' });
             const timer = setTimeout(updateTargetRect, 500);
             return () => clearTimeout(timer);
