@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import { getAuthToken } from './authUtils';
 import { routes } from './navigation';
+
 import { useAppContext } from '@/context/AppContext';
 
 /**
@@ -13,21 +15,10 @@ export function hasRequiredLocalStorageData(): boolean {
   if (typeof window === 'undefined') return true; // Skip check on server side
   
   try {
-    // Check for essential authentication and user data
-    const hasAuthToken = localStorage.getItem('authToken') !== null;
+    // Check for essential authentication and user data in both localStorage and cookies
+    const hasAuthToken = localStorage.getItem('authToken') !== null || !!getAuthToken();
     const hasAuthUser = localStorage.getItem('authUser') !== null;
     const hasUserName = localStorage.getItem('userName') !== null;
-    
-    // If on login/register/forget-password pages, allow access without auth data
-    const publicRoutes = [
-      routes.login,
-      routes.register,
-      routes.forgetPassword,
-      routes.home,
-      routes.welcome,
-      routes.comingSoon,
-      routes.onboarding
-    ];
     
     return hasAuthToken && hasAuthUser && hasUserName;
   } catch (error) {
@@ -50,6 +41,9 @@ export function useLocalStorageRedirect() {
     // Skip check on server side
     if (typeof window === 'undefined') return;
 
+    // WAIT for AppContext to initialize from storage/cookies before running redirect logic
+    if (!state.isInitialized) return;
+
     // Public routes that don't require localStorage data
     const publicRoutes = [
       routes.login,
@@ -69,7 +63,6 @@ export function useLocalStorageRedirect() {
     
     if (!isProtectedRoute) return;
 
-    // Wait a bit for AppContext to initialize after login
     const checkAuth = () => {
       // First check if AppContext says user is authenticated
       if (state.isAuthenticated && state.authUser) {
@@ -88,11 +81,11 @@ export function useLocalStorageRedirect() {
       setHasChecked(true);
     };
 
-    // Add a small delay to allow AppContext to update after login
-    const timer = setTimeout(checkAuth, 500);
+    // Small delay to allow AppContext state to settle
+    const timer = setTimeout(checkAuth, 100);
     
     return () => clearTimeout(timer);
-  }, [pathname, router, state.isAuthenticated, state.authUser]);
+  }, [pathname, router, state.isInitialized, state.isAuthenticated, state.authUser]);
 
   return hasChecked;
 }

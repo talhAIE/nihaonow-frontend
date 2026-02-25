@@ -18,6 +18,10 @@ export function setAuthToken(token: string, options?: { maxAge?: number }) {
   const maxAge = options?.maxAge ?? 7 * 24 * 60 * 60;
   try {
     setCookie('authToken', token, { path: '/', maxAge });
+    // Also persist in localStorage for client-side guards
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('authToken', token);
+    }
   } catch (err) {
     // ignore client/server mismatch silently
     // callers should still update client state
@@ -38,6 +42,10 @@ export function setUserRole(role: string, options?: { maxAge?: number }) {
   const maxAge = options?.maxAge ?? 7 * 24 * 60 * 60;
   try {
     setCookie('userRole', role, { path: '/', maxAge });
+    // Also persist in localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('userRole', role);
+    }
   } catch (err) {
     // ignore
   }
@@ -46,6 +54,9 @@ export function setUserRole(role: string, options?: { maxAge?: number }) {
 export function clearUserRole() {
   try {
     deleteCookie('userRole', { path: '/' });
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('userRole');
+    }
   } catch (err) {
     // ignore
   }
@@ -54,6 +65,9 @@ export function clearUserRole() {
 export function clearAuthToken() {
   try {
     deleteCookie('authToken', { path: '/' });
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('authToken');
+    }
   } catch (err) {
     // ignore
   }

@@ -33,55 +33,66 @@ export default function ArabicStatsChart({ data: propData }: ArabicStatsChartPro
   }, [data]);
 
   return (
-    <div className="flex bg-white h-full" dir="rtl">
-      <div className="w-full p-2 sm:p-2 flex flex-col h-full min-h-0">
-        <div className="flex-1 min-h-[200px] sm:min-h-0 flex items-end justify-center gap-4 px-6">
+    <div className="flex bg-white h-full w-full" dir="rtl">
+      <div className="w-full p-2 flex flex-col h-full min-h-0">
+        {/* Bars Container - Aligns all bars to a common bottom baseline */}
+        <div className="flex-1 flex items-end justify-center gap-6 sm:gap-8 px-4 h-[180px] sm:h-[220px]">
           {animatedData.map((item, index) => (
-            <div key={index} className="flex flex-col items-center justify-center w-16 max-w-[80px] relative">
+            <div key={index} className="flex-1 max-w-[56px] sm:max-w-[70px] flex flex-col items-center relative group h-full justify-end">
               {/* Percentage label on top of bar */}
               <div 
-                className="absolute -top-6 text-sm sm:text-base lg:text-lg font-black transition-all duration-300 ease-out"
+                className="mb-2 text-sm sm:text-base lg:text-lg font-black transition-all duration-300 ease-out"
                 style={{ 
                   color: item.labelColor || item.color,
-                  transform: `translateY(${item.animatedValue > 0 ? '0px' : '10px'})`,
-                  opacity: item.animatedValue > 0 ? 1 : 0
+                  opacity: item.animatedValue > 0 ? 1 : 0,
+                  transform: `translateY(${item.animatedValue > 0 ? '0' : '10px'})`
                 }}
               >
                 %{Math.round(item.animatedValue)}
               </div>
               
-              <div className="w-full h-40 flex items-end relative">
+              <div className="w-full relative flex items-end justify-center h-[70%]">
                 <div 
-                  className="w-full rounded-t-lg transition-all duration-500 ease-out relative"
+                  className="w-full rounded-t-xl transition-all duration-700 ease-out relative shadow-sm"
                   style={{ 
                     height: `${item.animatedValue}%`,
-                    minHeight: '4px',
+                    minHeight: '6px',
                     backgroundColor: item.color,
-                    maxHeight: '100%'
                   }}
                 >
-                  {/* Add a subtle glow effect when value is high */}
+                  {/* Subtle highlight effect on high values */}
                   {item.animatedValue > 70 && (
                     <div 
-                      className="absolute inset-0 rounded-t-lg opacity-30"
-                      style={{ 
-                        backgroundColor: item.color,
-                        boxShadow: `0 0 20px ${item.color}`
-                      }}
+                      className="absolute inset-x-0 top-0 h-4 bg-white/20 rounded-t-xl"
                     />
                   )}
+                  
+                  {/* Outer Glow */}
+                  <div 
+                    className="absolute inset-0 rounded-t-xl -z-10 blur-md opacity-20 transition-opacity group-hover:opacity-40"
+                    style={{ backgroundColor: item.color }}
+                  />
                 </div>
               </div>
-              
-              <div className="mt-2 text-center">
-                <span className="text-xs sm:text-sm font-bold text-slate-500 mb-1 block">
-                  {item.name}
-                </span>
-              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Horizontal Baseline Divider */}
+        <div className="w-full h-[1.5px] bg-[#F2F2F2] mt-0 mb-3 mx-auto max-w-[90%]"></div>
+
+        {/* Labels Container - Aligns all labels to a common top baseline */}
+        <div className="flex justify-center gap-6 sm:gap-8 px-4">
+          {animatedData.map((item, index) => (
+            <div key={index} className="flex-1 max-w-[56px] sm:max-w-[70px] text-center">
+              <span className="text-[10px] sm:text-[12px] lg:text-[13px] font-bold text-[#4B4B4B] leading-tight block">
+                {item.name}
+              </span>
             </div>
           ))}
         </div>
       </div>
     </div>
   );
+
 }

@@ -165,8 +165,8 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
             // Steps 0 & 1 are already in view. Steps 2, 4, 6... trigger a scroll.
             if (mobileNow && stepIndex >= 2 && stepIndex % 2 === 0) {
               element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            } else if (rect.top > window.innerHeight || rect.top < 0) {
-              // Desktop / odd steps: only scroll if element is off-screen
+            } else if (rect.top < 0 || rect.bottom > window.innerHeight) {
+              // Desktop: scroll if any part of the element is off-screen
               element.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
           }

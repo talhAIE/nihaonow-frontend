@@ -127,7 +127,7 @@ export default function SessionGuidePopup({
           element.scrollIntoView({ behavior: 'smooth', block: 'start' });
           const timer = setTimeout(updateTargetRect, 500);
           return () => clearTimeout(timer);
-        } else if (rect.top > window.innerHeight || rect.top < 0) {
+        } else if (rect.top < 0 || rect.bottom > window.innerHeight) {
           element.scrollIntoView({ behavior: 'smooth', block: 'center' });
           const timer = setTimeout(updateTargetRect, 500);
           return () => clearTimeout(timer);
