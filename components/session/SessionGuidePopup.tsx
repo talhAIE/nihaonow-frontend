@@ -119,8 +119,15 @@ export default function SessionGuidePopup({
 
       if (element) {
         const rect = element.getBoundingClientRect();
-        // Only scroll if the TOP of the element is completely outside the viewport
-        if (rect.top > window.innerHeight || rect.top < 0) {
+        const mobileNow = window.innerWidth < 1024;
+
+        // On mobile: always scroll the target element into view so it's clearly visible
+        // and properly highlighted below the mobile header. Desktop: only scroll if off-screen.
+        if (mobileNow) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          const timer = setTimeout(updateTargetRect, 500);
+          return () => clearTimeout(timer);
+        } else if (rect.top > window.innerHeight || rect.top < 0) {
           element.scrollIntoView({ behavior: 'smooth', block: 'center' });
           const timer = setTimeout(updateTargetRect, 500);
           return () => clearTimeout(timer);
@@ -135,6 +142,7 @@ export default function SessionGuidePopup({
       };
     }
   }, [isOpen, step, updateTargetRect, getTargetId, handleNext]);
+
 
   // Measure tooltip size
   useLayoutEffect(() => {
@@ -181,29 +189,40 @@ export default function SessionGuidePopup({
     };
 
     if (isMobile) {
-        let mobileTop = targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2;
-        
-        if (mobileTop + TOOLTIP_HEIGHT / 2 > screenHeight - 20) {
-            mobileTop = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
+        // Try below the element
+        const belowTop = targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2;
+        if (
+          belowTop + TOOLTIP_HEIGHT / 2 <= screenHeight - 20 &&
+          !overlaps(belowTop, screenWidth / 2)
+        ) {
+          return { top: belowTop, left: "50%", transform: "translate(-50%, -50%)" };
         }
 
-        if (mobileTop - TOOLTIP_HEIGHT / 2 < 20 || mobileTop + TOOLTIP_HEIGHT / 2 > screenHeight - 20 || overlaps(mobileTop, screenWidth / 2)) {
-            return { 
-                top: "50%", 
-                left: "50%", 
-                transform: "translate(-50%, -50%)",
-                width: TOOLTIP_WIDTH,
-                maxWidth: "calc(100vw - 40px)",
-                maxHeight: "calc(100vh - 40px)",
-                overflowY: "auto" as "auto"
-            };
+        // Try above the element
+        const aboveTop = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
+        if (
+          aboveTop - TOOLTIP_HEIGHT / 2 >= 20 &&
+          !overlaps(aboveTop, screenWidth / 2)
+        ) {
+          return { top: aboveTop, left: "50%", transform: "translate(-50%, -50%)" };
         }
 
-        return { 
-            top: mobileTop, 
-            left: "50%", 
-            transform: "translate(-50%, -50%)"
-        };
+        // Pick the vertical half with the most free space
+        const spaceBelow = screenHeight - (targetRect.top + targetRect.height);
+        const spaceAbove = targetRect.top;
+        if (spaceBelow >= spaceAbove) {
+          const clampedTop = Math.min(
+            screenHeight - TOOLTIP_HEIGHT / 2 - 20,
+            Math.max(targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2, screenHeight - TOOLTIP_HEIGHT / 2 - 20)
+          );
+          return { top: clampedTop, left: "50%", transform: "translate(-50%, -50%)" };
+        } else {
+          const clampedTop = Math.max(
+            TOOLTIP_HEIGHT / 2 + 20,
+            Math.min(targetRect.top - PADDING - TOOLTIP_HEIGHT / 2, TOOLTIP_HEIGHT / 2 + 20)
+          );
+          return { top: clampedTop, left: "50%", transform: "translate(-50%, -50%)" };
+        }
     }
 
     // Desktop strategies: Preference for bottom/top for session guide
@@ -321,14 +340,30 @@ export default function SessionGuidePopup({
                   {step === 7 ? <Sparkles className="w-6 h-6" /> : <ChevronLeft className="w-6 h-6" />}
                 </button>
                 
-                <div className="flex justify-center gap-1.5 mt-1">
-                  {[1, 2, 3, 4, 5, 6, 7].map((i) => (
-                    <div 
-                      key={i} 
-                      className={`h-1.5 rounded-full transition-all duration-300 ${i === step ? "w-6 bg-[#35AB4E]" : "w-1.5 bg-slate-200"}`} 
-                    />
-                  ))}
-              </div>
+                {/* Pagination dots — derived from the actual visible step sequence for this mode */}
+                {(() => {
+                  // Build the ordered list of step numbers that will actually be shown
+                  const visibleSteps = [1, 2, 3, 4, 5, 6, 7].filter((s) => {
+                    const id = getTargetId(s);
+                    if (id === null) return false;
+                    // Also check the element exists in DOM (same logic as handleNext)
+                    const el = document.getElementById(id);
+                    return !!el;
+                  });
+                  const currentIndex = visibleSteps.indexOf(step);
+                  return (
+                    <div className="flex justify-center gap-1.5 mt-1">
+                      {visibleSteps.map((s, i) => (
+                        <div
+                          key={s}
+                          className={`h-1.5 rounded-full transition-all duration-300 ${
+                            i === currentIndex ? "w-6 bg-[#35AB4E]" : "w-1.5 bg-slate-200"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           </div>

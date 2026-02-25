@@ -157,14 +157,40 @@ export function LeaderboardGuide({ isOpen, onClose }: LeaderboardGuideProps) {
     };
 
     if (isMobile) {
-      let mobileTop = targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2;
-      if (mobileTop + TOOLTIP_HEIGHT / 2 > screenHeight - 20) {
-        mobileTop = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
+      // Try below the element
+      const belowTop = targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2;
+      if (
+        belowTop + TOOLTIP_HEIGHT / 2 <= screenHeight - 20 &&
+        !overlaps(belowTop, screenWidth / 2)
+      ) {
+        return { top: belowTop, left: "50%", transform: "translate(-50%, -50%)" };
       }
-      if (mobileTop - TOOLTIP_HEIGHT / 2 < 20 || mobileTop + TOOLTIP_HEIGHT / 2 > screenHeight - 20 || overlaps(mobileTop, screenWidth / 2)) {
-        return { top: "50%", left: "50%", transform: "translate(-50%, -50%)", maxWidth: "calc(100vw - 40px)", maxHeight: "calc(100vh - 40px)", overflowY: "auto" as "auto" };
+
+      // Try above the element
+      const aboveTop = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
+      if (
+        aboveTop - TOOLTIP_HEIGHT / 2 >= 20 &&
+        !overlaps(aboveTop, screenWidth / 2)
+      ) {
+        return { top: aboveTop, left: "50%", transform: "translate(-50%, -50%)" };
       }
-      return { top: mobileTop, left: "50%", transform: "translate(-50%, -50%)" };
+
+      // Pick the vertical half with the most free space
+      const spaceBelow = screenHeight - (targetRect.top + targetRect.height);
+      const spaceAbove = targetRect.top;
+      if (spaceBelow >= spaceAbove) {
+        const clampedTop = Math.min(
+          screenHeight - TOOLTIP_HEIGHT / 2 - 20,
+          Math.max(targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2, screenHeight - TOOLTIP_HEIGHT / 2 - 20)
+        );
+        return { top: clampedTop, left: "50%", transform: "translate(-50%, -50%)" };
+      } else {
+        const clampedTop = Math.max(
+          TOOLTIP_HEIGHT / 2 + 20,
+          Math.min(targetRect.top - PADDING - TOOLTIP_HEIGHT / 2, TOOLTIP_HEIGHT / 2 + 20)
+        );
+        return { top: clampedTop, left: "50%", transform: "translate(-50%, -50%)" };
+      }
     }
 
     // Desktop: try Right -> Left -> Top -> Bottom (sections are wide, side placement is best)

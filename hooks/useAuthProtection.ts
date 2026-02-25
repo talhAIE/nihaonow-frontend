@@ -29,8 +29,11 @@ export function useAuthProtection(options: UseAuthProtectionOptions = {}) {
   const { redirectTo, allowedRoles, unauthorizedRedirectTo } = options;
 
   useEffect(() => {
-    // Only check after state is initialized
-    // Delay to allow AppContext to load from storage
+    // Only check after AppContext has fully initialized from storage/cookies.
+    // Without this guard, the effect can fire with isAuthenticated=false during
+    // hydration/page transitions before the stored token has been read.
+    if (!state.isInitialized) return;
+
     const checkAuth = () => {
       if (!state.isAuthenticated) {
         redirectTo ? goTo(redirectTo) : goToLogin();
@@ -52,10 +55,10 @@ export function useAuthProtection(options: UseAuthProtectionOptions = {}) {
       }
     };
 
-    // Small delay to ensure AppContext has loaded
-    const timer = setTimeout(checkAuth, 100);
+    // Small delay to ensure any in-flight state updates have settled
+    const timer = setTimeout(checkAuth, 50);
     return () => clearTimeout(timer);
-  }, [state.isAuthenticated, state.authUser, redirectTo, allowedRoles, unauthorizedRedirectTo, goTo, goToLogin]);
+  }, [state.isInitialized, state.isAuthenticated, state.authUser, redirectTo, allowedRoles, unauthorizedRedirectTo, goTo, goToLogin]);
 
   const userRole = String(state.authUser?.role || '').toLowerCase();
   const normalizedAllowed = (allowedRoles || []).map((r) => String(r).toLowerCase());

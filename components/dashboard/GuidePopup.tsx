@@ -145,6 +145,8 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
       if (currentStep.id) {
         const element = document.getElementById(currentStep.id);
         if (element) {
+          const mobileNow = window.innerWidth < 1024;
+
           // Check if it's a sidebar element inside the scrollable nav
           if (currentStep.id.startsWith('sidebar-') && currentStep.id !== 'sidebar-logout') {
             const sidebarNav = element.closest('nav');
@@ -157,14 +159,18 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
               }
             }
           } else {
-             // For regular elements or the container itself, check against the window viewport
-             const rect = element.getBoundingClientRect();
-             // Only scroll if the TOP of the element is completely outside the viewport
-             if (rect.top > window.innerHeight || rect.top < 0) {
-               element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-             }
+            const rect = element.getBoundingClientRect();
+            // On mobile: scroll every 2nd step (even stepIndex >= 2) so the element is
+            // clearly visible without scrolling on every single card advance.
+            // Steps 0 & 1 are already in view. Steps 2, 4, 6... trigger a scroll.
+            if (mobileNow && stepIndex >= 2 && stepIndex % 2 === 0) {
+              element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else if (rect.top > window.innerHeight || rect.top < 0) {
+              // Desktop / odd steps: only scroll if element is off-screen
+              element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
           }
-          
+
           // Wait for scroll to finish before updating rect
           const timer = setTimeout(updateTargetRect, 500);
           return () => clearTimeout(timer);
@@ -179,6 +185,7 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
       };
     }
   }, [isOpen, stepIndex, updateTargetRect, currentStep?.id]);
+
 
   // Measure tooltip size whenever step changes or it's opened
   useLayoutEffect(() => {
@@ -266,36 +273,43 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
     };
 
     if (isMobile) {
-      let mobileTop =
-        targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2;
-
-      // If bottom doesn't work, try top
-      if (mobileTop + TOOLTIP_HEIGHT / 2 > screenHeight - 20) {
-        mobileTop = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
-      }
-
-      // If neither works without overlap or going off-screen, center it
+      // Try below the element
+      const belowTop = targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2;
       if (
-        mobileTop - TOOLTIP_HEIGHT / 2 < 20 ||
-        mobileTop + TOOLTIP_HEIGHT / 2 > screenHeight - 20 ||
-        overlaps(mobileTop, screenWidth / 2)
+        belowTop + TOOLTIP_HEIGHT / 2 <= screenHeight - 20 &&
+        !overlaps(belowTop, screenWidth / 2)
       ) {
-        return {
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: TOOLTIP_WIDTH,
-          maxWidth: "calc(100vw - 40px)",
-          maxHeight: "calc(100vh - 40px)",
-          overflowY: "auto" as "auto",
-        };
+        return { top: belowTop, left: "50%", transform: "translate(-50%, -50%)" };
       }
 
-      return {
-        top: mobileTop,
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-      };
+      // Try above the element
+      const aboveTop = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
+      if (
+        aboveTop - TOOLTIP_HEIGHT / 2 >= 20 &&
+        !overlaps(aboveTop, screenWidth / 2)
+      ) {
+        return { top: aboveTop, left: "50%", transform: "translate(-50%, -50%)" };
+      }
+
+      // Neither below nor above works — pick the vertical half with more free space
+      // and clamp the popup so it doesn't overlap
+      const spaceBelow = screenHeight - (targetRect.top + targetRect.height);
+      const spaceAbove = targetRect.top;
+      if (spaceBelow >= spaceAbove) {
+        // Anchor to bottom of screen
+        const clampedTop = Math.min(
+          screenHeight - TOOLTIP_HEIGHT / 2 - 20,
+          Math.max(targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2, screenHeight - TOOLTIP_HEIGHT / 2 - 20)
+        );
+        return { top: clampedTop, left: "50%", transform: "translate(-50%, -50%)" };
+      } else {
+        // Anchor to top of screen
+        const clampedTop = Math.max(
+          TOOLTIP_HEIGHT / 2 + 20,
+          Math.min(targetRect.top - PADDING - TOOLTIP_HEIGHT / 2, TOOLTIP_HEIGHT / 2 + 20)
+        );
+        return { top: clampedTop, left: "50%", transform: "translate(-50%, -50%)" };
+      }
     }
 
     // Desktop strategies
