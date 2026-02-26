@@ -52,6 +52,7 @@ const Ribbon3rd = () => (
 );
 
 import { LeaderboardGuide } from '@/components/leaderboard/LeaderboardGuide';
+import { guidePersistence } from '@/lib/guidePersistence';
 
 export default function LeaderboardPage() {
     const { dir, state } = useAppContext()
@@ -62,13 +63,19 @@ export default function LeaderboardPage() {
     const [showGuide, setShowGuide] = useState(false)
 
     useEffect(() => {
-        if (state.authUser?.isFirstLogin && state.isInitialized) {
-            setShowGuide(true);
+        if (state.authUser?.id && state.authUser?.isFirstLogin && state.isInitialized) {
+            const isCompleted = guidePersistence.isCompleted(state.authUser.id, 'leaderboard');
+            if (!isCompleted) {
+                setShowGuide(true);
+            }
         }
     }, [state.authUser, state.isInitialized]);
 
     const handleCloseGuide = () => {
         setShowGuide(false)
+        if (state.authUser?.id) {
+            guidePersistence.setCompleted(state.authUser.id, 'leaderboard');
+        }
     }
 
     // Initialize state with cached data if available (instant load)

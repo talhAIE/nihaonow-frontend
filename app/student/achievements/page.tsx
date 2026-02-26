@@ -31,6 +31,7 @@ import CertificateTemplate from "@/components/achievements/CertificateTemplate";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import { AchievementsGuide } from "@/components/achievements/AchievementsGuide";
+import { guidePersistence } from "@/lib/guidePersistence";
 
 export default function AchievementsPage() {
   const { state } = useAppContext();
@@ -50,13 +51,19 @@ export default function AchievementsPage() {
   const [showGuide, setShowGuide] = useState(false);
 
   useEffect(() => {
-    if (state.authUser?.isFirstLogin && state.isInitialized) {
-      setShowGuide(true);
+    if (state.authUser?.id && state.authUser?.isFirstLogin && state.isInitialized) {
+      const isCompleted = guidePersistence.isCompleted(state.authUser.id, 'achievements');
+      if (!isCompleted) {
+        setShowGuide(true);
+      }
     }
   }, [state.authUser, state.isInitialized]);
 
   const handleCloseGuide = () => {
     setShowGuide(false);
+    if (state.authUser?.id) {
+      guidePersistence.setCompleted(state.authUser.id, 'achievements');
+    }
   };
 
   // State for frontend PDF generation
