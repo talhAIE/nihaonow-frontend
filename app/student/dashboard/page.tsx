@@ -23,6 +23,7 @@ import type {
   LevelDefinition,
 } from "@/lib/types";
 import GuidePopup from "@/components/dashboard/GuidePopup";
+import { guidePersistence } from "@/lib/guidePersistence";
 
 export default function Page() {
   const { goToStudentScenario } = useNavigation();
@@ -56,13 +57,20 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
-    if (state.authUser?.isFirstLogin && state.isInitialized) {
-      setShowGuide(true);
+    if (state.authUser?.id && state.authUser?.isFirstLogin && state.isInitialized) {
+      // Check if already completed in localStorage
+      const isCompleted = guidePersistence.isCompleted(state.authUser.id, 'dashboard');
+      if (!isCompleted) {
+        setShowGuide(true);
+      }
     }
   }, [state.authUser, state.isInitialized]);
 
   const handleCloseGuide = () => {
     setShowGuide(false);
+    if (state.authUser?.id) {
+      guidePersistence.setCompleted(state.authUser.id, 'dashboard');
+    }
   };
 
   const { startSession, startWordSession } = useSession();

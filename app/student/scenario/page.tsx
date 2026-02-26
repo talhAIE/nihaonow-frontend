@@ -30,6 +30,7 @@ import Image from "next/image";
 import AnimatedWaveform from "@/components/scenario";
 import SessionGuidePopup from "@/components/session/SessionGuidePopup";
 import { useAppContext } from "@/context/AppContext";
+import { guidePersistence } from "@/lib/guidePersistence";
 
 export default function ScenarioPage() {
   useAuthProtection();
@@ -77,13 +78,17 @@ export default function ScenarioPage() {
     const shouldShow = !hasShownGuide || (!hasShownRealGuide && !isIntro);
 
     if (shouldShow) {
+      if (state.authUser?.id) {
+        const isCompleted = guidePersistence.isCompleted(state.authUser.id, 'session');
+        if (isCompleted) return;
+      }
       setShowSessionGuide(true);
       setHasShownGuide(true);
       if (!isIntro) {
         setHasShownRealGuide(true);
       }
     }
-  }, [state.authUser?.isFirstLogin, state.isInitialized, currentScenario, hasShownGuide, hasShownRealGuide]);
+  }, [state.authUser?.isFirstLogin, state.authUser?.id, state.isInitialized, currentScenario, hasShownGuide, hasShownRealGuide]);
   const [audioProgress, setAudioProgress] = useState<number>(0);
   const [scenarioProgress, setScenarioProgress] = useState<number>(0);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -790,6 +795,9 @@ export default function ScenarioPage() {
         isOpen={showSessionGuide}
         onClose={() => {
           setShowSessionGuide(false);
+          if (state.authUser?.id) {
+            guidePersistence.setCompleted(state.authUser.id, 'session');
+          }
         }}
         isIntroduction={currentScenario?.isIntroduction}
         isSecondStage={hasShownGuide && !currentScenario?.isIntroduction}
