@@ -498,9 +498,6 @@ export default function ScenarioPage() {
                 <p className="text-lg font-medium text-gray-700">
                   جاري تحميل السيناريو التالي...
                 </p>
-                <p className="text-sm text-gray-500 mt-1">
-                  Loading next scenario...
-                </p>
               </div>
             </div>
           ) : (

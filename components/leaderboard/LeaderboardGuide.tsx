@@ -87,7 +87,7 @@ export function LeaderboardGuide({ isOpen, onClose }: LeaderboardGuideProps) {
           // Only scroll if the TOP of the element is completely outside the viewport
           if (rect.top < 0 || rect.bottom > window.innerHeight) {
             element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            const timer = setTimeout(updateTargetRect, 500);
+            const timer = setTimeout(updateTargetRect, 800);
             return () => clearTimeout(timer);
           }
         }
@@ -159,26 +159,34 @@ export function LeaderboardGuide({ isOpen, onClose }: LeaderboardGuideProps) {
     if (isMobile) {
       // Try below the element
       const belowTop = targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2;
+      const overlapsBelow = overlaps(belowTop, screenWidth / 2);
       if (
         belowTop + TOOLTIP_HEIGHT / 2 <= screenHeight - 20 &&
-        !overlaps(belowTop, screenWidth / 2)
+        !overlapsBelow
       ) {
         return { top: belowTop, left: "50%", transform: "translate(-50%, -50%)" };
       }
 
       // Try above the element
       const aboveTop = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
+      const overlapsAbove = overlaps(aboveTop, screenWidth / 2);
       if (
         aboveTop - TOOLTIP_HEIGHT / 2 >= 20 &&
-        !overlaps(aboveTop, screenWidth / 2)
+        !overlapsAbove
       ) {
         return { top: aboveTop, left: "50%", transform: "translate(-50%, -50%)" };
       }
 
-      // Pick the vertical half with the most free space
+      // If both standard positions overlap (likely tall/wide element), pick the side with most space.
+      // However, if the element is at the top (typical for scrolled-to-start), prefer the bottom.
       const spaceBelow = screenHeight - (targetRect.top + targetRect.height);
       const spaceAbove = targetRect.top;
-      if (spaceBelow >= spaceAbove) {
+      
+      // If the top is very close to screen top (e.g. scrolled to start), forcedly prefer bottom 
+      // even if spaceBelow is negative (overlap least important part).
+      const preferBottom = (targetRect.top < 60) || (spaceBelow >= spaceAbove);
+
+      if (preferBottom) {
         const clampedTop = Math.min(
           screenHeight - TOOLTIP_HEIGHT / 2 - 20,
           Math.max(targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2, screenHeight - TOOLTIP_HEIGHT / 2 - 20)
@@ -193,12 +201,12 @@ export function LeaderboardGuide({ isOpen, onClose }: LeaderboardGuideProps) {
       }
     }
 
-    // Desktop: try Right -> Left -> Top -> Bottom (sections are wide, side placement is best)
+    // Desktop: try Bottom -> Top -> Right -> Left (leaderboard sections are typically wide, vertical placement is safer)
     const positions = [
+      { top: targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2, left: Math.min(targetRect.left + TOOLTIP_WIDTH / 2 + 20, screenWidth - TOOLTIP_WIDTH / 2 - 20) }, // Bottom (left-alignedish)
+      { top: targetRect.top - PADDING - TOOLTIP_HEIGHT / 2, left: Math.min(targetRect.left + TOOLTIP_WIDTH / 2 + 20, screenWidth - TOOLTIP_WIDTH / 2 - 20) }, // Top (left-alignedish)
       { top: targetRect.top + targetRect.height / 2, left: targetRect.left + targetRect.width + PADDING + TOOLTIP_WIDTH / 2 }, // Right
       { top: targetRect.top + targetRect.height / 2, left: targetRect.left - PADDING - TOOLTIP_WIDTH / 2 }, // Left
-      { top: targetRect.top - PADDING - TOOLTIP_HEIGHT / 2, left: Math.min(targetRect.left + TOOLTIP_WIDTH / 2 + 20, screenWidth - TOOLTIP_WIDTH / 2 - 20) }, // Top (left-clamped)
-      { top: targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2, left: Math.min(targetRect.left + TOOLTIP_WIDTH / 2 + 20, screenWidth - TOOLTIP_WIDTH / 2 - 20) }, // Bottom (left-clamped)
     ];
 
     for (const pos of positions) {

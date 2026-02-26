@@ -102,14 +102,7 @@ export function AchievementsGuide({ isOpen, onClose, activeTab, onTabChange }: A
       if (currentStep.targetId) {
         const element = document.getElementById(currentStep.targetId);
         if (element) {
-          const rect = element.getBoundingClientRect();
-          // Only scroll if the TOP of the element is completely outside the viewport
-          if (rect.top < 0 || rect.bottom > window.innerHeight) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            // Wait for scroll and tab switch
-            const timer = setTimeout(updateTargetRect, 600);
-            return () => clearTimeout(timer);
-          }
+          // Automatic scrolling removed as per user request
         }
       }
 
@@ -121,7 +114,7 @@ export function AchievementsGuide({ isOpen, onClose, activeTab, onTabChange }: A
         window.removeEventListener("resize", updateTargetRect);
       };
     }
-  }, [isOpen, stepIndex, activeTab, updateTargetRect, currentStep?.targetId]);
+  }, [isOpen, stepIndex, activeTab, updateTargetRect, currentStep?.targetId, currentStep.tab]);
 
   // Measure tooltip size whenever step changes
   useLayoutEffect(() => {
@@ -180,26 +173,34 @@ export function AchievementsGuide({ isOpen, onClose, activeTab, onTabChange }: A
     if (isMobile) {
       // Try below the element
       const belowTop = targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2;
+      const overlapsBelow = overlaps(belowTop, screenWidth / 2);
       if (
         belowTop + TOOLTIP_HEIGHT / 2 <= screenHeight - 20 &&
-        !overlaps(belowTop, screenWidth / 2)
+        !overlapsBelow
       ) {
         return { top: belowTop, left: "50%", transform: "translate(-50%, -50%)" };
       }
 
       // Try above the element
       const aboveTop = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
+      const overlapsAbove = overlaps(aboveTop, screenWidth / 2);
       if (
         aboveTop - TOOLTIP_HEIGHT / 2 >= 20 &&
-        !overlaps(aboveTop, screenWidth / 2)
+        !overlapsAbove
       ) {
         return { top: aboveTop, left: "50%", transform: "translate(-50%, -50%)" };
       }
 
-      // Pick the vertical half with the most free space
+      // If both standard positions overlap (likely tall/wide element), pick the side with most space.
+      // However, if the element is at the top (typical for scrolled-to-start), prefer the bottom.
       const spaceBelow = screenHeight - (targetRect.top + targetRect.height);
       const spaceAbove = targetRect.top;
-      if (spaceBelow >= spaceAbove) {
+      
+      // If the top is very close to screen top (e.g. scrolled to start), forcedly prefer bottom 
+      // even if spaceBelow is negative (overlap least important part).
+      const preferBottom = (targetRect.top < 60) || (spaceBelow >= spaceAbove);
+
+      if (preferBottom) {
         const clampedTop = Math.min(
           screenHeight - TOOLTIP_HEIGHT / 2 - 20,
           Math.max(targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2, screenHeight - TOOLTIP_HEIGHT / 2 - 20)
