@@ -164,15 +164,17 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
             // clearly visible without scrolling on every single card advance.
             // Steps 0 & 1 are already in view. Steps 2, 4, 6... trigger a scroll.
             if (mobileNow && stepIndex >= 2 && stepIndex % 2 === 0) {
+              element.style.scrollMarginTop = "100px";
               element.scrollIntoView({ behavior: 'smooth', block: 'start' });
             } else if (rect.top < 0 || rect.bottom > window.innerHeight) {
               // Desktop: scroll if any part of the element is off-screen
-              element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              element.style.scrollMarginTop = "100px";
+              element.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
           }
 
           // Wait for scroll to finish before updating rect
-          const timer = setTimeout(updateTargetRect, 500);
+          const timer = setTimeout(updateTargetRect, 800);
           return () => clearTimeout(timer);
         }
       }
@@ -275,27 +277,35 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
     if (isMobile) {
       // Try below the element
       const belowTop = targetRect.top + targetRect.height + PADDING + TOOLTIP_HEIGHT / 2;
+      const overlapsBelow = overlaps(belowTop, screenWidth / 2);
       if (
         belowTop + TOOLTIP_HEIGHT / 2 <= screenHeight - 20 &&
-        !overlaps(belowTop, screenWidth / 2)
+        !overlapsBelow
       ) {
         return { top: belowTop, left: "50%", transform: "translate(-50%, -50%)" };
       }
 
       // Try above the element
       const aboveTop = targetRect.top - PADDING - TOOLTIP_HEIGHT / 2;
+      const overlapsAbove = overlaps(aboveTop, screenWidth / 2);
       if (
         aboveTop - TOOLTIP_HEIGHT / 2 >= 20 &&
-        !overlaps(aboveTop, screenWidth / 2)
+        !overlapsAbove
       ) {
         return { top: aboveTop, left: "50%", transform: "translate(-50%, -50%)" };
       }
 
       // Neither below nor above works — pick the vertical half with more free space
-      // and clamp the popup so it doesn't overlap
+      // and clamp the popup so it doesn't overlap.
+      // However, if the element is at the top (typical for scrolled-to-start), prefer the bottom.
       const spaceBelow = screenHeight - (targetRect.top + targetRect.height);
       const spaceAbove = targetRect.top;
-      if (spaceBelow >= spaceAbove) {
+      
+      // If the top is very close to screen top (e.g. scrolled to start), forcedly prefer bottom 
+      // even if spaceBelow is negative (overlap least important part).
+      const preferBottom = (targetRect.top < 60) || (spaceBelow >= spaceAbove);
+
+      if (preferBottom) {
         // Anchor to bottom of screen
         const clampedTop = Math.min(
           screenHeight - TOOLTIP_HEIGHT / 2 - 20,
