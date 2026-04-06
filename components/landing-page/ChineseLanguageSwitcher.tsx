@@ -3,10 +3,13 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import flagUK from "@/assets/svgs/flag-united-kingdom.svg";
 import flagChina from "@/assets/svgs/flag-china.svg";
+import { useLanguage } from "@/components/language-provider";
 
 export default function ChineseLanguageSwitcher() {
   const router = useRouter();
   const pathname = usePathname();
+  const { language } = useLanguage();
+  const isAr = language === "ar";
   const [activeTab, setActiveTab] = useState<"english" | "chinese">("chinese");
 
   useEffect(() => {
@@ -39,7 +42,7 @@ export default function ChineseLanguageSwitcher() {
           whileTap={{ scale: 0.98 }}
         >
           <img src={flagChina.src} alt="China Flag" className="w-6 h-6 rounded-full object-cover" />
-          <span>الصينية</span>
+          <span>{isAr ? "الصينية" : "Chinese"}</span>
         </motion.button>
 
         {/* English Tab */}
@@ -53,7 +56,7 @@ export default function ChineseLanguageSwitcher() {
           whileTap={{ scale: 0.98 }}
         >
           <img src={flagUK.src} alt="UK Flag" className="w-6 h-6 rounded-full object-cover" />
-          <span>الإنجليزية</span>
+          <span>{isAr ? "الإنجليزية" : "English"}</span>
         </motion.button>
       </div>
     </div>

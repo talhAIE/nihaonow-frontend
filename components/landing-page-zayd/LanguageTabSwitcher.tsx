@@ -10,7 +10,6 @@ export default function LanguageTabSwitcher() {
   const pathname = usePathname();
   const { language } = useLanguage();
   const [activeTab, setActiveTab] = useState<"english" | "chinese">("english");
-  const isAr = language === "ar";
   
   // Dynamic colors based on current page
   const isChinesePage = pathname === "/" || pathname === "/chinese";
@@ -55,7 +54,7 @@ export default function LanguageTabSwitcher() {
           whileTap={{ scale: 0.98 }}
         >
           <img src={flagUK.src} alt="UK Flag" className="w-4 h-4 sm:w-5 sm:h-5" />
-          {isAr ? "الإنجليزية" : "English"}
+          {"English"}
         </motion.button>
         <motion.button
           className={`flex items-center gap-1 sm:gap-3 px-3 sm:px-8 py-2 sm:py-3 rounded-full text-sm sm:text-base font-bold transition-all duration-300 ${
@@ -73,7 +72,7 @@ export default function LanguageTabSwitcher() {
           whileTap={{ scale: 0.98 }}
         >
           <img src={flagChina.src} alt="China Flag" className="w-4 h-4 sm:w-5 sm:h-5" />
-          {isAr ? "الصينية" : "Chinese"}
+          {"Chinese"}
         </motion.button>
       </div>
     </div>
