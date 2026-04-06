@@ -1,10 +1,23 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   images: { unoptimized: true },
+  turbopack: {
+    root: __dirname,
+  },
+  webpack: (config) => {
+    config.watchOptions = {
+      ...config.watchOptions,
+      ignored: [
+        "**/.next/**",
+        "**/node_modules/**",
+        "**/.git/**",
+        "**/.npm-cache/**",
+        "**/coverage/**",
+        "**/dist/**",
+      ],
+    };
+    return config;
+  },
 };
 
 module.exports = nextConfig;
