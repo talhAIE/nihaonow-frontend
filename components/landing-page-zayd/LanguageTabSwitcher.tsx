@@ -28,6 +28,7 @@ export default function LanguageTabSwitcher() {
   }, [pathname]);
 
   const handleTabClick = (tab: "english" | "chinese") => {
+    setActiveTab(tab);
     if (tab === "chinese") {
       router.push("/");
     } else {
@@ -36,26 +37,9 @@ export default function LanguageTabSwitcher() {
   };
 
   return (
-    <div className="flex justify-center mt-2 sm:mt-6 mb-4 sm:mb-8">
+    <div className="flex justify-center mt-2 sm:mt-6 mb-4 sm:mb-8" dir="ltr">
       <div className="inline-flex rounded-full bg-[#F3F4F6] p-1 border border-gray-100 shadow-sm">
-        <motion.button
-          className={`flex items-center gap-1 sm:gap-3 px-3 sm:px-8 py-2 sm:py-3 rounded-full text-sm sm:text-base font-bold transition-all duration-300 ${
-            activeTab === "english"
-              ? "text-white"
-              : isChinesePage ? "text-green-600 hover:brightness-110" : "text-blue-500 hover:brightness-110"
-          }`}
-          style={{
-            background: activeTab === "english" ? activeGradient : "transparent",
-            boxShadow: activeTab === "english" 
-              ? isChinesePage ? "0px 3px 0px #20672F" : "0px 3px 0px #0472C6"
-              : "none"
-          }}
-          onClick={() => handleTabClick("english")}
-          whileTap={{ scale: 0.98 }}
-        >
-          <img src={flagUK.src} alt="UK Flag" className="w-4 h-4 sm:w-5 sm:h-5" />
-          {"English"}
-        </motion.button>
+        {/* Chinese Tab - always LEFT */}
         <motion.button
           className={`flex items-center gap-1 sm:gap-3 px-3 sm:px-8 py-2 sm:py-3 rounded-full text-sm sm:text-base font-bold transition-all duration-300 ${
             activeTab === "chinese"
@@ -73,6 +57,25 @@ export default function LanguageTabSwitcher() {
         >
           <img src={flagChina.src} alt="China Flag" className="w-4 h-4 sm:w-5 sm:h-5" />
           {"Chinese"}
+        </motion.button>
+        {/* English Tab - always RIGHT */}
+        <motion.button
+          className={`flex items-center gap-1 sm:gap-3 px-3 sm:px-8 py-2 sm:py-3 rounded-full text-sm sm:text-base font-bold transition-all duration-300 ${
+            activeTab === "english"
+              ? "text-white"
+              : isChinesePage ? "text-green-600 hover:brightness-110" : "text-blue-500 hover:brightness-110"
+          }`}
+          style={{
+            background: activeTab === "english" ? activeGradient : "transparent",
+            boxShadow: activeTab === "english" 
+              ? isChinesePage ? "0px 3px 0px #20672F" : "0px 3px 0px #0472C6"
+              : "none"
+          }}
+          onClick={() => handleTabClick("english")}
+          whileTap={{ scale: 0.98 }}
+        >
+          <img src={flagUK.src} alt="UK Flag" className="w-4 h-4 sm:w-5 sm:h-5" />
+          {"English"}
         </motion.button>
       </div>
     </div>

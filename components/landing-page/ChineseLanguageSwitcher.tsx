@@ -13,7 +13,7 @@ export default function ChineseLanguageSwitcher() {
   const [activeTab, setActiveTab] = useState<"english" | "chinese">("chinese");
 
   useEffect(() => {
-    if (pathname === "/" || pathname === "/") {
+    if (pathname === "/" || pathname === "/chinese") {
       setActiveTab("chinese");
     } else {
       setActiveTab("english");
@@ -21,6 +21,7 @@ export default function ChineseLanguageSwitcher() {
   }, [pathname]);
 
   const handleTabClick = (tab: "english" | "chinese") => {
+    setActiveTab(tab);
     if (tab === "english") {
       router.push("/english");
     } else {
@@ -29,7 +30,7 @@ export default function ChineseLanguageSwitcher() {
   };
 
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center" dir="ltr">
       <div className="inline-flex rounded-full bg-[#D8EFE0] p-1.5 gap-2 border border-[#C1E2CE]">
         {/* Chinese Tab */}
         <motion.button
