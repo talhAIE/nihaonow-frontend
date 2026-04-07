@@ -149,7 +149,7 @@ export default function LanguageGymSection() {
       >
         <div className={`relative transform ${isAr ? '-translate-x-[5%]' : 'translate-x-[5%]'} -translate-y-[20%]`}>
             <img
-                src={dumbbellRack}
+                src={dumbbellRack.src}
                 alt="Dumbbell Rack"
                 className="w-full h-auto object-contain drop-shadow-xl"
                 draggable={false}

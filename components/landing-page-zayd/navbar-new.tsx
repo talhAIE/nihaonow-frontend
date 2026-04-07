@@ -96,6 +96,7 @@ export default function Navbar() {
         {/* Logo - Left aligned */}
         <div className="absolute left-4 md:relative md:left-auto w-24 sm:w-32 lg:w-40 h-8 sm:h-10 lg:h-14 flex items-center cursor-pointer z-10" dir="ltr" onClick={() => scrollToSection("#home")}>
           <Image
+            priority={true}
             src={navLogoPng}
             alt="Zayd AI Logo"
             className="w-full h-full object-contain"
@@ -191,7 +192,7 @@ export default function Navbar() {
           {/* Mobile header */}
           <div className="flex justify-between items-center p-4 border-b">
             <div className="w-24 h-8 sm:w-32 sm:h-10 flex items-center" dir="ltr">
-              <Image src={navLogoPng} alt="Zayd AI Logo" className="w-full h-full object-contain" />
+              <Image priority={true} src={navLogoPng} alt="Zayd AI Logo" className="w-full h-full object-contain" />
             </div>
             <button
               onClick={toggleMobileMenu}

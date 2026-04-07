@@ -24,7 +24,9 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
 } from '@/components/ui/dialog';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { contactService, ContactUserType } from '@/lib/services/contactService';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
@@ -87,8 +89,8 @@ function ContactUsPage() {
     defaultValues: {
       firstName: '',
       lastName: '',
-      age: undefined,
-      userType: undefined,
+      age: '' as unknown as number,
+      userType: '' as unknown as ContactUserType,
       email: '',
       phoneNumber: '',
       hearAboutUs: '',
@@ -193,17 +195,7 @@ function ContactUsPage() {
 
   return (
     <>
-      <style>{`
-        .gradient-hover-animate {
-          background: linear-gradient(to right, #71C781 0%, #35AB4E 50%, #71C781 100%);
-          background-size: 200% 100%;
-          background-position: 0% 50%;
-          transition: background-position 0.6s ease;
-        }
-        .gradient-hover-animate:hover {
-          background-position: 100% 50%;
-        }
-      `}</style>
+
       <ReactLenis
         root
         options={{
@@ -552,7 +544,8 @@ function ContactUsPage() {
                     <div className="flex justify-center">
                       <Button
                         type="submit"
-                        className="gradient-hover-animate w-[60%] rounded-2xl h-14 text-white font-semibold text-lg flex items-center justify-center"
+                        className="w-[60%] rounded-full h-14 text-white font-bold text-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity border-none"
+                        style={{ background: "linear-gradient(135deg, #71C781 0%, #35AB4E 50%, #20672F 100%)" }}
                         disabled={isSubmitting}
                       >
                         {isSubmitting
@@ -577,6 +570,9 @@ function ContactUsPage() {
       {/* Success Modal */}
       <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
         <DialogContent className="sm:max-w-md p-0 overflow-hidden border-0 bg-transparent shadow-none">
+          <VisuallyHidden>
+            <DialogTitle>Submission Successful</DialogTitle>
+          </VisuallyHidden>
           <motion.div
             initial={{ opacity: 0, scale: 0.8, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -650,7 +646,7 @@ function ContactUsPage() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.9 }}
               >
-                {language === "ar" ? "شكراً لك!" : "Thank You!"}
+                {language === "ar" ? "شكراً لك" : "Thank You"}
               </motion.h3>
               <motion.p
                 className="text-lg text-gray-600 mb-6 leading-relaxed"
@@ -677,7 +673,8 @@ function ContactUsPage() {
               >
                 <Button
                   onClick={() => setShowSuccessModal(false)}
-                  className="gradient-hover-animate w-[110%] -mx-[5%] rounded-2xl h-14 text-white font-semibold text-lg flex items-center justify-center"
+                  className="w-[110%] -mx-[5%] rounded-full h-14 text-white font-bold text-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity border-none"
+                  style={{ background: "linear-gradient(135deg, #71C781 0%, #35AB4E 50%, #20672F 100%)" }}
                 >
                   {language === "ar" ? "حسناً" : "Got it"}
                 </Button>

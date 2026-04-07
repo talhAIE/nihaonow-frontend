@@ -96,7 +96,7 @@ export default function CTASection() {
           className="hidden lg:block absolute -left-12 xl:-left-36 -bottom-12 pointer-events-none select-none"
         >
           <img 
-            src={birdClock} 
+            src={birdClock.src} 
             alt="Mascot with clock" 
             className="w-[180px] xl:w-[320px] h-auto drop-shadow-2xl" 
             draggable={false}
@@ -116,7 +116,7 @@ export default function CTASection() {
           className="hidden lg:block absolute -right-12 xl:-right-24 -top-12 xl:-top-24 pointer-events-none select-none overflow-visible"
         >
           <img 
-            src={birdFire} 
+            src={birdFire.src} 
             alt="Mascot with fire" 
             className="w-[140px] xl:w-[240px] h-auto drop-shadow-2xl" 
             draggable={false}

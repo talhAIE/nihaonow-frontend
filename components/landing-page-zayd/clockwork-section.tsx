@@ -94,7 +94,7 @@ export default function ClockworkSection() {
               <motion.img
                 animate={{ y: [0, -10, 0] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                src={stopwatchImg}
+                src={stopwatchImg.src}
                 alt="60 Minute Challenge Stopwatch"
                 className="relative w-full h-auto object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.1)]"
                 draggable={false}

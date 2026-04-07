@@ -28,7 +28,7 @@ export default function ChineseHeroSection() {
       </motion.div>
 
       {/* Language Switcher */}
-      <div className="mb-2">
+      <div className="mb-8 mt-4">
         <LanguageTabSwitcher />
       </div>
 

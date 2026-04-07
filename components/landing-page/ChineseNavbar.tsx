@@ -113,7 +113,7 @@ export default function ChineseNavbar() {
             alt="Zayd AI Logo"
             width={100}
             height={100}
-            style={{ objectFit: "contain" }}
+            style={{ objectFit: "contain", width: "auto", height: "auto" }}
           />
         </div>
 
@@ -250,7 +250,7 @@ export default function ChineseNavbar() {
                 alt="Zayd AI Logo"
                 width={50}
                 height={50}
-                style={{ objectFit: "contain" }}
+                style={{ objectFit: "contain", width: "auto", height: "auto" }}
               />
             </div>
             <button
