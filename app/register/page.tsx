@@ -87,10 +87,22 @@ export default function RegisterPage() {
           password: formData.password,
         });
 
-        const { token, user, message } = normalizeResponse(response);
+        // Handle both direct response and wrapped response formats
+        let token, userData;
+        if (response && typeof response === "object") {
+          if ("data" in response && response.data) {
+            const wrappedResponse = response as any;
+            token = wrappedResponse.data.access_token ?? wrappedResponse.data.token;
+            userData = wrappedResponse.data.user;
+          } else {
+            const resAny = response as any;
+            token = resAny.access_token ?? resAny.token;
+            userData = resAny.user;
+          }
+        }
 
-        if (!token || !user) {
-          toast({ title: 'خطأ في التسجيل', description: message || 'فشل التسجيل', variant: 'destructive', duration: 5000 });
+        if (!token || !userData) {
+          toast({ title: 'خطأ في التحقق', description: 'لم يتم العثور على التوكن', variant: 'destructive', duration: 5000 });
           return;
         }
 
@@ -102,17 +114,25 @@ export default function RegisterPage() {
           return;
         }
 
-        login({
-          id: user.id?.toString?.() ?? '',
-          email: user.email ?? '',
-          username: user.username ?? user.name ?? '',
-          role: user.role ?? 'student', // Ensure role is set to 'student' if not provided
-          isFirstLogin: user.isFirstLogin,
+        let userRole = String(userData.role || "student").toLowerCase();
+
+        import('@/lib/authUtils').then(({ setUserRole }) => {
+            setUserRole(userRole);
         });
 
+        login({
+          id: String(userData.id ?? ""),
+          email: userData.email ?? "",
+          username: userData.username ?? userData.name ?? "",
+          role: userRole,
+          isFirstLogin: userData.isFirstLogin,
+        });
 
-        toast({ title: 'تم بنجاح', description: 'مرحبًا بعودتك', duration: 5000 });
-        goToStudentDashboard();
+        toast({ title: 'تم بنجاح', description: 'مرحبًا بك', duration: 5000 });
+        
+        setTimeout(() => {
+          goToStudentDashboard();
+        }, 100);
       } catch (error: any) {
         console.error('Registration error:', error);
         const message = error?.response?.data?.message ?? error?.message ?? 'حدث خطأ غير متوقع';
@@ -255,17 +275,17 @@ export default function RegisterPage() {
             </Button>
 
             <div className="w-full sm:max-w-[470.5px] flex items-center justify-center">
-              <Button
-                className="font-bold w-full h-11 sm:h-[45px] px-4 rounded-[12px] hover:bg-[#E5E5E5] bg-[#E5E5E5] border-b-[3px] border-b-[rgba(0,0,0,0.08)] text-[#282828] text-[14px] sm:text-[16px] transition duration-200 whitespace-nowrap"
-                asChild
-              >
-                <div>
-                  <span>لديك حساب بالفعل؟{' '}</span>
-                  <Link href="/login" className="font-semibold text-green-600 hover:text-green-700 transition-colors">
+              <Link href="/login" className="block w-full">
+                <Button
+                  type="button"
+                  className="font-bold w-full h-11 sm:h-[45px] px-4 rounded-[12px] hover:bg-[#E5E5E5] bg-[#E5E5E5] border-b-[3px] border-b-[rgba(0,0,0,0.08)] text-[#282828] text-[14px] sm:text-[16px] transition duration-200 whitespace-nowrap"
+                >
+                  <span className="whitespace-nowrap">لديك حساب بالفعل؟{' '}</span>
+                  <span className="font-semibold text-green-600 hover:text-green-700 transition-colors mr-1">
                     تسجيل الدخول
-                  </Link>
-                </div>
-              </Button>
+                  </span>
+                </Button>
+              </Link>
             </div>
 
           </form>

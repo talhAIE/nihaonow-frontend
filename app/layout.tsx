@@ -12,8 +12,15 @@ const almarai = Almarai({
 });
 
 export const metadata: Metadata = {
-  title: "Ni hao now",
-  description: "Ni hao now",
+  title: "Ni Hao Now",
+  description: "Ni Hao Now",
+  icons: {
+    icon: [
+      { url: "/four.ico" },
+      { url: "/six.ico" },
+      { url: "/two.ico" },
+    ],
+  },
 };
 
 export default function RootLayout({
