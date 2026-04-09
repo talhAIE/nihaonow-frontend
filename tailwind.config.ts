@@ -16,6 +16,7 @@ const config: Config = {
       },
       fontFamily: {
         almarai: ['var(--font-almarai)', 'Almarai', 'sans-serif'],
+        nunito: ['var(--font-nunito)', 'Nunito', 'sans-serif'],
         sans: ['var(--font-almarai)', 'Almarai', 'sans-serif', 'Nunito', 'Inter', 'ui-sans-serif', 'system-ui'],
       },
       borderRadius: {
