@@ -18,11 +18,13 @@ import { authApi } from "@/lib/services/auth";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import AuthLanguageToggle from "@/components/auth/AuthLanguageToggle";
 
 export default function StudentAccountPage() {
-    const { state } = useAppContext();
+    const { state, dir } = useAppContext();
+    const isAr = dir === "rtl";
     const user = state.authUser;
-    const displayName = state.user || user?.username || "الطالب";
+    const displayName = state.user || user?.username || (isAr ? "الطالب" : "Student");
     const userEmail = user?.email || "student@example.com";
 
     const [oldPassword, setOldPassword] = useState("");
@@ -38,22 +40,88 @@ export default function StudentAccountPage() {
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+    const copy = {
+        ar: {
+            accountSettings: "إعدادات الحساب",
+            accountSubtitle: "تحديث ملفك الشخصي وإعدادات الأمان",
+            student: "طالب",
+            active: "نشط",
+            password: "كلمة المرور",
+            passwordHelp: "تغيير كلمة المرور الخاصة بك أو إعادة تعيينها.",
+            currentPassword: "كلمة المرور الحالية",
+            newPassword: "كلمة المرور الجديدة",
+            confirmPassword: "تأكيد كلمة المرور",
+            savePassword: "حفظ كلمة المرور",
+            resetPassword: "إعادة تعيين كلمة المرور",
+            resetHelp: "سنرسل لك رابطاً لإعادة تعيين كلمة المرور عبر البريد الإلكتروني.",
+            email: "البريد الإلكتروني",
+            sendReset: "إرسال رابط إعادة تعيين",
+            errorMismatch: "كلمات المرور غير متطابقة",
+            errorMinLength: "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
+            errorMissingOld: "يرجى إدخال كلمة المرور الحالية",
+            successUpdate: "تم تحديث كلمة المرور بنجاح",
+            errorUpdate: "فشل تحديث كلمة المرور. تأكد من كلمة المرور الحالية.",
+            verifyError: "خطأ في التحقق",
+            verifyEmail: "يرجى إدخال بريدك الإلكتروني",
+            resetSuccessTitle: "تم بنجاح",
+            resetSuccessDesc: "إذا كان هذا البريد الإلكتروني موجوداً، فقد تم إرسال رابط إعادة التعيين.",
+            resetErrorTitle: "خطأ",
+            resetErrorFallback: "فشل إرسال الرابط. حاول مرة أخرى.",
+            resetErrorEnglishFallback: "فشل إرسال بريد إلكتروني لإعادة تعيين كلمة المرور. يرجى المحاولة مرة أخرى لاحقاً.",
+        },
+        en: {
+            accountSettings: "Account Settings",
+            accountSubtitle: "Update your profile and security settings",
+            student: "Student",
+            active: "Active",
+            password: "Password",
+            passwordHelp: "Change or reset your password.",
+            currentPassword: "Current password",
+            newPassword: "New password",
+            confirmPassword: "Confirm password",
+            savePassword: "Save password",
+            resetPassword: "Reset password",
+            resetHelp: "We will email you a reset link.",
+            email: "Email",
+            sendReset: "Send reset link",
+            errorMismatch: "Passwords do not match",
+            errorMinLength: "Password must be at least 6 characters",
+            errorMissingOld: "Please enter your current password",
+            successUpdate: "Password updated successfully",
+            errorUpdate: "Failed to update password. Check your current password.",
+            verifyError: "Verification error",
+            verifyEmail: "Please enter your email",
+            resetSuccessTitle: "Success",
+            resetSuccessDesc: "If that email exists, a reset link was sent.",
+            resetErrorTitle: "Error",
+            resetErrorFallback: "Failed to send link. Please try again.",
+            resetErrorEnglishFallback: "Failed to send password reset email. Please try again later.",
+        },
+    } as const;
+
+    const t = isAr ? copy.ar : copy.en;
+    const headingWeight = isAr ? "font-black" : "font-extrabold";
+    const bodyWeight = isAr ? "font-bold" : "font-medium";
+    const labelWeight = isAr ? "font-black" : "font-semibold";
+    const buttonWeight = isAr ? "font-black" : "font-bold";
+    const inputWeight = isAr ? "font-bold" : "font-medium";
+
     const handlePasswordChange = async (e: React.FormEvent) => {
         e.preventDefault();
         setMessage(null);
 
         if (newPassword !== confirmPassword) {
-            setMessage({ type: 'error', text: 'كلمات المرور غير متطابقة' });
+            setMessage({ type: 'error', text: t.errorMismatch });
             return;
         }
 
         if (newPassword.length < 6) {
-            setMessage({ type: 'error', text: 'كلمة المرور يجب أن تكون 6 أحرف على الأقل' });
+            setMessage({ type: 'error', text: t.errorMinLength });
             return;
         }
 
         if (!oldPassword) {
-            setMessage({ type: 'error', text: 'يرجى إدخال كلمة المرور الحالية' });
+            setMessage({ type: 'error', text: t.errorMissingOld });
             return;
         }
 
@@ -62,14 +130,14 @@ export default function StudentAccountPage() {
         try {
             await authApi.changePassword({ currentPassword: oldPassword, newPassword });
 
-            setMessage({ type: 'success', text: 'تم تحديث كلمة المرور بنجاح' });
+            setMessage({ type: 'success', text: t.successUpdate });
             setOldPassword("");
             setNewPassword("");
             setConfirmPassword("");
 
         } catch (error: any) {
             console.error('Password change error:', error);
-            const errorMsg = error.message || error?.response?.data?.message || 'فشل تحديث كلمة المرور. تأكد من كلمة المرور الحالية.';
+            const errorMsg = error.message || error?.response?.data?.message || t.errorUpdate;
             setMessage({ type: 'error', text: errorMsg });
         } finally {
             setIsLoading(false);
@@ -79,7 +147,7 @@ export default function StudentAccountPage() {
     const handleSendResetLink = async () => {
         const trimmedEmail = resetEmail.trim();
         if (!trimmedEmail) {
-            toast({ title: 'خطأ في التحقق', description: 'يرجى إدخال بريدك الإلكتروني', variant: 'destructive', duration: 5000 });
+            toast({ title: t.verifyError, description: t.verifyEmail, variant: 'destructive', duration: 5000 });
             return;
         }
 
@@ -87,21 +155,21 @@ export default function StudentAccountPage() {
         try {
             const res = await authApi.forgetPassword({ email: trimmedEmail });
             toast({
-                title: 'تم بنجاح',
-                description: res?.message || 'إذا كان هذا البريد الإلكتروني موجوداً، فقد تم إرسال رابط إعادة التعيين.',
+                title: t.resetSuccessTitle,
+                description: res?.message || t.resetSuccessDesc,
                 duration: 5000
             });
         } catch (error: any) {
             console.error('Reset link error:', error);
-            let description = error.message || error?.response?.data?.message || 'فشل إرسال الرابط. حاول مرة أخرى.';
+            let description = error.message || error?.response?.data?.message || t.resetErrorFallback;
 
             // Fallback translation for common English error message from backend
-            if (description === 'Failed to send password reset email. Please try again later.') {
-                description = 'فشل إرسال بريد إلكتروني لإعادة تعيين كلمة المرور. يرجى المحاولة مرة أخرى لاحقاً.';
+            if (description === t.resetErrorEnglishFallback) {
+                description = isAr ? t.resetErrorEnglishFallback : t.resetErrorFallback;
             }
 
             toast({
-                title: 'خطأ',
+                title: t.resetErrorTitle,
                 description: description,
                 variant: 'destructive',
                 duration: 5000
@@ -112,10 +180,13 @@ export default function StudentAccountPage() {
     }
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8 p-4 sm:p-8 pt-6" dir="rtl">
+        <div className={`relative max-w-4xl mx-auto space-y-8 p-4 sm:p-8 pt-6 ${isAr ? "font-almarai" : "font-nunito"}`} dir={dir} lang={isAr ? "ar" : "en"}>
+            <div className={`absolute top-4 ${isAr ? "left-4" : "right-4"} z-20`}>
+                <AuthLanguageToggle />
+            </div>
             <div>
-                <h2 className="text-2xl font-black text-slate-800 ">إعدادات الحساب</h2>
-                <p className="text-slate-500 font-bold text-sm">تحديث ملفك الشخصي وإعدادات الأمان</p>
+                <h2 className={`text-2xl text-slate-800 ${headingWeight}`}>{t.accountSettings}</h2>
+                <p className={`text-slate-500 text-sm ${bodyWeight}`}>{t.accountSubtitle}</p>
             </div>
 
             <div className="bg-white rounded-[24px] border border-slate-100 shadow-sm overflow-hidden">
@@ -130,18 +201,18 @@ export default function StudentAccountPage() {
                             )}
                         </div>
                     </div>
-                    <div className="text-center sm:text-right space-y-1">
-                        <h3 className="text-xl font-black text-slate-800">{displayName}</h3>
-                        <p className="text-slate-500 font-bold text-sm flex items-center justify-center sm:justify-start gap-1.5">
+                    <div className={`text-center ${isAr ? "sm:text-right" : "sm:text-left"} space-y-1`}>
+                        <h3 className={`text-xl text-slate-800 ${headingWeight}`}>{displayName}</h3>
+                        <p className={`text-slate-500 text-sm flex items-center justify-center ${isAr ? "sm:justify-start" : "sm:justify-end"} gap-1.5 ${bodyWeight}`}>
                             <Mail className="w-4 h-4" />
                             {userEmail}
                         </p>
-                        <div className="pt-2 flex flex-wrap justify-center sm:justify-start gap-3">
-                            <span className="bg-[#35AB4E]/10 text-[#35AB4E] px-4 py-1.5 rounded-full backdrop-blur-md border border-[#35AB4E]/20 text-sm font-black">
-                                طالب
+                        <div className={`pt-2 flex flex-wrap justify-center ${isAr ? "sm:justify-start" : "sm:justify-end"} gap-3`}>
+                            <span className={`bg-[#35AB4E]/10 text-[#35AB4E] px-4 py-1.5 rounded-full backdrop-blur-md border border-[#35AB4E]/20 text-sm ${buttonWeight}`}>
+                                {t.student}
                             </span>
-                            <span className="bg-[#35AB4E]/10 text-[#35AB4E] px-4 py-1.5 rounded-full backdrop-blur-md border border-[#35AB4E]/20 text-sm font-black">
-                                نشط
+                            <span className={`bg-[#35AB4E]/10 text-[#35AB4E] px-4 py-1.5 rounded-full backdrop-blur-md border border-[#35AB4E]/20 text-sm ${buttonWeight}`}>
+                                {t.active}
                             </span>
                         </div>
                     </div>
@@ -152,67 +223,67 @@ export default function StudentAccountPage() {
                     {/* Password Section */}
                     <section className="space-y-6">
                         <div className="space-y-1">
-                            <h4 className="text-lg font-black text-slate-800">كلمة المرور</h4>
-                            <p className="text-slate-400 text-xs font-bold">تغيير كلمة المرور الخاصة بك أو إعادة تعيينها.</p>
+                            <h4 className={`text-lg text-slate-800 ${headingWeight}`}>{t.password}</h4>
+                            <p className={`text-slate-400 text-xs ${bodyWeight}`}>{t.passwordHelp}</p>
                         </div>
 
                         <form onSubmit={handlePasswordChange} className="space-y-6 max-w-xl">
                             <div className="space-y-4">
                                 <div className="space-y-1.5">
-                                    <label className="text-xs font-black text-slate-600">كلمة المرور الحالية</label>
+                                    <label className={`text-xs text-slate-600 ${labelWeight}`}>{t.currentPassword}</label>
                                     <div className="relative">
-                                        <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                        <Lock className={`absolute ${isAr ? "right-3" : "left-3"} top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400`} />
                                         <input
                                             type={showOldPassword ? "text" : "password"}
                                             value={oldPassword}
                                             onChange={(e) => setOldPassword(e.target.value)}
-                                            className="w-full pl-12 pr-10 py-3 bg-white rounded-xl border border-slate-200 text-slate-700 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#35AB4E] transition-all placeholder:text-slate-300"
+                                            className={`w-full ${isAr ? "pl-12 pr-10" : "pl-10 pr-12"} py-3 bg-white rounded-xl border border-slate-200 text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-[#35AB4E] transition-all placeholder:text-slate-300 ${inputWeight}`}
                                             placeholder="••••••••"
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowOldPassword(!showOldPassword)}
-                                            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#35AB4E] transition-colors"
+                                            className={`absolute ${isAr ? "left-3" : "right-3"} top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#35AB4E] transition-colors`}
                                         >
                                             {showOldPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                         </button>
                                     </div>
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-xs font-black text-slate-600">كلمة المرور الجديدة</label>
+                                    <label className={`text-xs text-slate-600 ${labelWeight}`}>{t.newPassword}</label>
                                     <div className="relative">
-                                        <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                        <Lock className={`absolute ${isAr ? "right-3" : "left-3"} top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400`} />
                                         <input
                                             type={showNewPassword ? "text" : "password"}
                                             value={newPassword}
                                             onChange={(e) => setNewPassword(e.target.value)}
-                                            className="w-full pl-12 pr-10 py-3 bg-white rounded-xl border border-slate-200 text-slate-700 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#35AB4E] transition-all placeholder:text-slate-300"
+                                            className={`w-full ${isAr ? "pl-12 pr-10" : "pl-10 pr-12"} py-3 bg-white rounded-xl border border-slate-200 text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-[#35AB4E] transition-all placeholder:text-slate-300 ${inputWeight}`}
                                             placeholder="••••••••"
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowNewPassword(!showNewPassword)}
-                                            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#35AB4E] transition-colors"
+                                            className={`absolute ${isAr ? "left-3" : "right-3"} top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#35AB4E] transition-colors`}
                                         >
                                             {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                         </button>
                                     </div>
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-xs font-black text-slate-600">تأكيد كلمة المرور</label>
+                                    <label className={`text-xs text-slate-600 ${labelWeight}`}>{t.confirmPassword}</label>
                                     <div className="relative">
-                                        <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                        <Lock className={`absolute ${isAr ? "right-3" : "left-3"} top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400`} />
                                         <input
                                             type={showConfirmPassword ? "text" : "password"}
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
-                                            className="w-full pl-12 pr-10 py-3 bg-white rounded-xl border border-slate-200 text-slate-700 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#35AB4E] transition-all placeholder:text-slate-300"
+                                            className={`w-full ${isAr ? "pl-12 pr-10" : "pl-10 pr-12"} py-3 bg-white rounded-xl border border-slate-200 text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-[#35AB4E] transition-all placeholder:text-slate-300 ${inputWeight}`}
                                             placeholder="••••••••"
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#35AB4E] transition-colors"
+                                            className={`absolute ${isAr ? "left-3" : "right-3"} top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#35AB4E] transition-colors`}
                                         >
                                             {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                         </button>
@@ -221,7 +292,7 @@ export default function StudentAccountPage() {
                             </div>
 
                             {message && (
-                                <div className={`p-3 rounded-xl text-xs font-bold flex items-center gap-2 ${message.type === 'success' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
+                                <div className={`p-3 rounded-xl text-xs flex items-center gap-2 ${message.type === 'success' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'} ${bodyWeight}`}>
                                     <Shield className="w-3.5 h-3.5" />
                                     {message.text}
                                 </div>
@@ -231,10 +302,10 @@ export default function StudentAccountPage() {
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="flex items-center justify-center gap-2 bg-[#35AB4E] text-white px-6 py-2.5 rounded-xl text-sm font-black hover:bg-[#2d9344] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                                    className={`flex items-center justify-center gap-2 bg-[#35AB4E] text-white px-6 py-2.5 rounded-xl text-sm hover:bg-[#2d9344] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm ${buttonWeight}`}
                                 >
                                     {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                                    <span>حفظ كلمة المرور</span>
+                                    <span>{t.savePassword}</span>
                                 </button>
                             </div>
                         </form>
@@ -245,15 +316,15 @@ export default function StudentAccountPage() {
                     {/* Separate Forget Password Section to match main screen flow */}
                     <section className="space-y-6">
                         <div className="space-y-1">
-                            <h4 className="text-lg font-black text-slate-800">إعادة تعيين كلمة المرور</h4>
-                            <p className="text-slate-400 text-xs font-bold">سنرسل لك رابطاً لإعادة تعيين كلمة المرور عبر البريد الإلكتروني.</p>
+                            <h4 className={`text-lg text-slate-800 ${headingWeight}`}>{t.resetPassword}</h4>
+                            <p className={`text-slate-400 text-xs ${bodyWeight}`}>{t.resetHelp}</p>
                         </div>
 
                         <div className="space-y-4 max-w-xl">
                             <div className="space-y-1.5">
-                                <label className="text-xs font-black text-slate-600">البريد الإلكتروني</label>
+                                <label className={`text-xs text-slate-600 ${labelWeight}`}>{t.email}</label>
                                 <div className="relative">
-                                    <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                    <Mail className={`absolute ${isAr ? "right-3" : "left-3"} top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400`} />
                                     <Input
                                         dir="ltr"
                                         type="email"
@@ -261,7 +332,7 @@ export default function StudentAccountPage() {
                                         onChange={(e) => setResetEmail(e.target.value)}
                                         disabled={isLoading}
                                         readOnly
-                                        className="w-full pl-4 pr-10 py-3 bg-white rounded-xl border border-slate-200 text-slate-700 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#35AB4E] transition-all placeholder:text-slate-300"
+                                        className={`w-full ${isAr ? "pl-4 pr-10" : "pl-10 pr-4"} py-3 bg-white rounded-xl border border-slate-200 text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-[#35AB4E] transition-all placeholder:text-slate-300 ${inputWeight}`}
                                         placeholder="your-email@example.com"
                                     />
                                 </div>
@@ -271,10 +342,10 @@ export default function StudentAccountPage() {
                                 type="button"
                                 onClick={handleSendResetLink}
                                 disabled={isLoading}
-                                className="flex items-center justify-center gap-2 bg-white border border-slate-200 text-slate-600 px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-50 transition-all disabled:opacity-50"
+                                className={`flex items-center justify-center gap-2 bg-white border border-slate-200 text-slate-600 px-5 py-2.5 rounded-xl text-sm hover:bg-slate-50 transition-all disabled:opacity-50 ${buttonWeight}`}
                             >
                                 {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                                <span>إرسال رابط إعادة تعيين</span>
+                                <span>{t.sendReset}</span>
                             </button>
                         </div>
                     </section>

@@ -11,7 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 
 const navItems = [
   { href: '/student/dashboard', label: { ar: 'لوحة التحكم', en: 'Dashboard' }, Icon: LayoutDashboard },
-  { href: '/student/units', label: { ar: 'الوحدات التدريبية', en: 'Training Units' }, Icon: BookCheck },
+  { href: '/student/units', label: { ar: 'الوحدات التدريبية', en: 'Chapters' }, Icon: BookCheck },
   { href: '/student/leaderboard', label: { ar: 'قائمة المتفوقين', en: 'Leaderboard' }, Icon: Trophy },
   { href: '/student/achievements', label: { ar: 'الشارات التعليمية', en: 'Achievements' }, Icon: Medal },
   { href: '/student/account', label: { ar: 'حساب المستخدم', en: 'Account' }, Icon: User },

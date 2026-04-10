@@ -7,16 +7,12 @@ import { Card, CardContent } from "@/components/ui/card"
 import { leaderboardApi } from '@/lib/api'
 import type { UnifiedLeaderboardEntry, UnifiedLeaderboardResponse } from '@/lib/types'
 import { useAppContext } from '@/context/AppContext'
-const getLevelInfo = (score: number) => {
-    if (score >= 100) return { label: 'متقدم', color: 'text-[#35AB4E]' }
-    if (score >= 50) return { label: 'متوسط', color: 'text-[#00AEEF]' }
-    return { label: 'مبتدئ', color: 'text-[#35AB4E]' }
-}
+import AuthLanguageToggle from "@/components/auth/AuthLanguageToggle";
 
 // --- High Fidelity Ribbon Components ---
 
-const Ribbon1st = () => (
-    <div className="absolute -top-1 -right-2 z-20">
+const Ribbon1st = ({ className }: { className?: string }) => (
+    <div className={`absolute -top-1 ${className ?? ""} z-20`}>
         <Image
             src="/Leaderboardicons/first.svg"
             alt="1st Place"
@@ -27,8 +23,8 @@ const Ribbon1st = () => (
     </div>
 );
 
-const Ribbon2nd = () => (
-    <div className="absolute -top-1 -right-1 z-20">
+const Ribbon2nd = ({ className }: { className?: string }) => (
+    <div className={`absolute -top-1 ${className ?? ""} z-20`}>
         <Image
             src="/Leaderboardicons/second.svg"
             alt="2nd Place"
@@ -39,8 +35,8 @@ const Ribbon2nd = () => (
     </div>
 );
 
-const Ribbon3rd = () => (
-    <div className="absolute -top-1 -right-1 z-20">
+const Ribbon3rd = ({ className }: { className?: string }) => (
+    <div className={`absolute -top-1 ${className ?? ""} z-20`}>
         <Image
             src="/Leaderboardicons/Third.svg"
             alt="3rd Place"
@@ -56,7 +52,52 @@ import { guidePersistence } from '@/lib/guidePersistence';
 
 export default function LeaderboardPage() {
     const { dir, state } = useAppContext()
-    const isRtl = dir == 'rtl'
+    const isAr = dir === 'rtl'
+
+    const copy = {
+        ar: {
+            loading: "جاري التحميل...",
+            retry: "إعادة المحاولة",
+            failedLoad: "تعذر تحميل لوحة المتصدرين",
+            topThree: "أفضل 3 طلاب",
+            allStudents: "جميع الطلاب",
+            noMore: "لا يوجد المزيد من الطلاب",
+            hours: "ساعة",
+            topics: "موضوع",
+            topicsPlural: "مواضيع",
+            tabAll: "الكل",
+            tabMonthly: "شهري",
+            tabWeekly: "أسبوعي",
+            levelAdvanced: "متقدم",
+            levelIntermediate: "متوسط",
+            levelBeginner: "مبتدئ",
+        },
+        en: {
+            loading: "Loading...",
+            retry: "Try again",
+            failedLoad: "Failed to load leaderboard",
+            topThree: "Top 3 Students",
+            allStudents: "All Students",
+            noMore: "No more students",
+            hours: "Hours",
+            topics: "Topic",
+            topicsPlural: "Topics",
+            tabAll: "All",
+            tabMonthly: "Monthly",
+            tabWeekly: "Weekly",
+            levelAdvanced: "Advanced",
+            levelIntermediate: "Intermediate",
+            levelBeginner: "Beginner",
+        },
+    } as const;
+
+    const t = isAr ? copy.ar : copy.en;
+
+    const getLevelInfo = (score: number) => {
+        if (score >= 100) return { label: t.levelAdvanced, color: 'text-[#35AB4E]' }
+        if (score >= 50) return { label: t.levelIntermediate, color: 'text-[#00AEEF]' }
+        return { label: t.levelBeginner, color: 'text-[#35AB4E]' }
+    }
 
     // Track if we had initial cached data to avoid dependency on entries.length
     const hadInitialCachedData = useRef(false)
@@ -234,19 +275,22 @@ export default function LeaderboardPage() {
 
     if (loading && initialLoad) {
         return (
-            <div className="min-h-screen bg-white flex items-center justify-center font-almarai" dir="rtl">
+            <div className={`min-h-screen bg-white flex items-center justify-center ${isAr ? "font-almarai" : "font-nunito"}`} dir={dir} lang={isAr ? "ar" : "en"}>
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#35AB4E] mx-auto mb-4"></div>
-                    <p className="text-slate-600 font-bold">جاري التحميل...</p>
+                    <p className="text-slate-600 font-bold">{t.loading}</p>
                 </div>
             </div>
         )
     }
 
     return (
-        <div className="min-h-screen w-[90%] bg-white mx-auto pt-4 sm:pt-6 pb-16" dir='rtl'>
+        <div className={`relative min-h-screen w-[90%] bg-white mx-auto pt-4 sm:pt-6 pb-16 ${isAr ? "font-almarai" : "font-nunito"}`} dir={dir} lang={isAr ? "ar" : "en"}>
+            <div className={`absolute top-4 ${isAr ? "left-4" : "right-4"} z-20`}>
+                <AuthLanguageToggle />
+            </div>
             <LeaderboardGuide isOpen={showGuide} onClose={handleCloseGuide} />
-            <div className="mx-auto w-full">
+            <div className="mx-auto w-full pt-10">
                 {/* Tabs */}
                 <div className="flex gap-1 sm:gap-2 flex-wrap justify-start w-full mb-6">
                     <button
@@ -257,7 +301,7 @@ export default function LeaderboardPage() {
                             : 'bg-white border-[#4B4B4B] text-[#4B4B4B]'
                             }`}
                     >
-                        شهري
+                        {t.tabAll}
                     </button>
                     <button
                         type="button"
@@ -267,7 +311,7 @@ export default function LeaderboardPage() {
                             : 'bg-white border-[#4B4B4B] text-[#4B4B4B]'
                             }`}
                     >
-                        سنوي
+                        {t.tabMonthly}
                     </button>
                     <button
                         type="button"
@@ -277,7 +321,7 @@ export default function LeaderboardPage() {
                             : 'bg-white border-[#4B4B4B] text-[#4B4B4B]'
                             }`}
                     >
-                        أسبوعي
+                        {t.tabWeekly}
                     </button>
                 </div>
 
@@ -292,32 +336,32 @@ export default function LeaderboardPage() {
                     >
                         <div className="hidden xl:block">
                             {/* Decorative elements */}
-                            <div className="absolute top-0 left-0 bottom-0 w-[500px] -translate-x-32 z-0">
+                            <div className={`absolute top-0 ${isAr ? "left-0 -translate-x-32" : "right-0 translate-x-32"} bottom-0 w-[500px] z-0`}>
                                 <Image
                                     src="/images/Road Vector - 2.png"
                                     alt=""
                                     width={400}
                                     height={500}
-                                    className="w-full h-full object-cover"
+                                    className={`w-full h-full object-cover ${isAr ? "" : "-scale-x-100"}`}
                                     style={{ height: 'auto' }}
                                 />
                             </div>
-                            <div className="absolute top-0 left-0 bottom-0 w-48 translate-x-3 z-0">
+                            <div className={`absolute top-0 ${isAr ? "left-0 translate-x-3" : "right-0 -translate-x-3"} bottom-0 w-48 z-0`}>
                                 <Image
                                     src="/images/cup.png"
                                     alt=""
                                     width={65}
                                     height={65}
-                                    className="w-full h-full object-contain"
+                                    className={`w-full h-full object-contain ${isAr ? "" : "-scale-x-100"}`}
                                 />
                             </div>
-                            <div className="absolute bottom-0 right-0 translate-y-52 translate-x-16 z-0">
+                            <div className={`absolute bottom-0 ${isAr ? "right-0 translate-x-16" : "left-0 -translate-x-16"} translate-y-52 z-0`}>
                                 <Image
                                     src="/images/Road Vector -1.png"
                                     alt=""
                                     width={320}
                                     height={500}
-                                    className="w-full h-full object-cover"
+                                    className={`w-full h-full object-cover ${isAr ? "" : "-scale-x-100"}`}
                                     style={{ height: 'auto' }}
                                 />
                             </div>
@@ -334,7 +378,7 @@ export default function LeaderboardPage() {
                                     className="w-full h-full object-contain"
                                 />
                             </div>
-                            <h3 className="text-lg sm:text-xl font-almarai-extrabold text-[#4B4B4B]">أفضل 3 طلاب</h3>
+                            <h3 className={`text-lg sm:text-xl ${isAr ? "font-almarai-extrabold" : "font-nunito font-extrabold"} text-[#4B4B4B]`}>{t.topThree}</h3>
                         </div>
 
                         <div className="flex flex-row items-center justify-center gap-1 sm:gap-8 lg:gap-14 pt-4 sm:pt-10 px-2 sm:px-4 relative z-30">
@@ -348,22 +392,22 @@ export default function LeaderboardPage() {
                                             <div className="absolute inset-0 z-0">
                                                 <Image src="/Leaderboardicons/circle2.svg" alt="" fill className="object-contain" />
                                             </div>
-                                            <span className="text-xl sm:text-3xl font-almarai-bold text-white relative z-10">
+                                            <span className={`text-xl sm:text-3xl text-white relative z-10 ${isAr ? "font-almarai-bold" : "font-nunito font-bold"}`}>
                                                 {topThree[1].username?.charAt(0).toUpperCase()}
                                             </span>
                                         </div>
-                                        <Ribbon2nd />
+                                        <Ribbon2nd className={isAr ? "-right-1" : "-left-1"} />
                                     </div>
                                     <div className="text-center w-full">
                                         <div className="min-h-[40px] sm:min-h-[52px] flex items-center justify-center mb-1">
-                                            <h4 className="font-almarai-extrabold text-[#4B4B4B] text-[12px] sm:text-base truncate leading-tight max-w-full">
+                                            <h4 className={`text-[#4B4B4B] text-[12px] sm:text-base truncate leading-tight max-w-full ${isAr ? "font-almarai-extrabold" : "font-nunito font-extrabold"}`}>
                                                 {topThree[1].username}
                                             </h4>
                                         </div>
-                                        <p className={`font-almarai-bold text-[10px] sm:text-sm mb-0.5 sm:mb-1 ${getLevelInfo(topThree[1].score || 0).color}`}>
+                                        <p className={`text-[10px] sm:text-sm mb-0.5 sm:mb-1 ${getLevelInfo(topThree[1].score || 0).color} ${isAr ? "font-almarai-bold" : "font-nunito font-bold"}`}>
                                             {getLevelInfo(topThree[1].score || 0).label}
                                         </p>
-                                        <p className="font-almarai-regular text-[#4B4B4B] text-[10px] sm:text-sm">{topThree[1].metrics?.topicsCompleted || 0} موضوع</p>
+                                        <p className={`text-[#4B4B4B] text-[10px] sm:text-sm ${isAr ? "font-almarai-regular" : "font-nunito font-normal"}`}>{topThree[1].metrics?.topicsCompleted || 0} {t.topics}</p>
                                     </div>
                                 </div>
                             )}
@@ -377,22 +421,22 @@ export default function LeaderboardPage() {
                                             <div className="absolute inset-0 z-0">
                                                 <Image src="/Leaderboardicons/circle1.svg" alt="" fill className="object-contain" />
                                             </div>
-                                            <span className="text-2xl sm:text-4xl font-almarai-bold text-white relative z-10">
+                                            <span className={`text-2xl sm:text-4xl text-white relative z-10 ${isAr ? "font-almarai-bold" : "font-nunito font-bold"}`}>
                                                 {topThree[0].username?.charAt(0).toUpperCase()}
                                             </span>
                                         </div>
-                                        <Ribbon1st />
+                                        <Ribbon1st className={isAr ? "-right-2" : "-left-2"} />
                                     </div>
                                     <div className="text-center w-full">
                                         <div className="min-h-[40px] sm:min-h-[52px] flex items-center justify-center mb-1">
-                                            <h4 className="font-almarai-extrabold text-[#4B4B4B] text-sm sm:text-lg truncate leading-tight max-w-full">
+                                            <h4 className={`text-[#4B4B4B] text-sm sm:text-lg truncate leading-tight max-w-full ${isAr ? "font-almarai-extrabold" : "font-nunito font-extrabold"}`}>
                                                 {topThree[0].username}
                                             </h4>
                                         </div>
-                                        <p className={`font-almarai-bold text-xs sm:text-base mb-0.5 sm:mb-1 ${getLevelInfo(topThree[0].score || 0).color}`}>
+                                        <p className={`text-xs sm:text-base mb-0.5 sm:mb-1 ${getLevelInfo(topThree[0].score || 0).color} ${isAr ? "font-almarai-bold" : "font-nunito font-bold"}`}>
                                             {getLevelInfo(topThree[0].score || 0).label}
                                         </p>
-                                        <p className="font-almarai-regular text-[#4B4B4B] text-xs sm:text-base">{topThree[0].metrics?.topicsCompleted || 0} مواضيع</p>
+                                        <p className={`text-[#4B4B4B] text-xs sm:text-base ${isAr ? "font-almarai-regular" : "font-nunito font-normal"}`}>{topThree[0].metrics?.topicsCompleted || 0} {t.topicsPlural}</p>
                                     </div>
                                 </div>
                             )}
@@ -406,22 +450,22 @@ export default function LeaderboardPage() {
                                             <div className="absolute inset-0 z-0">
                                                 <Image src="/Leaderboardicons/circle3.svg" alt="" fill className="object-contain" />
                                             </div>
-                                            <span className="text-xl sm:text-3xl font-almarai-bold text-white relative z-10">
+                                            <span className={`text-xl sm:text-3xl text-white relative z-10 ${isAr ? "font-almarai-bold" : "font-nunito font-bold"}`}>
                                                 {topThree[2].username?.charAt(0).toUpperCase()}
                                             </span>
                                         </div>
-                                        <Ribbon3rd />
+                                        <Ribbon3rd className={isAr ? "-right-1" : "-left-1"} />
                                     </div>
                                     <div className="text-center w-full">
                                         <div className="min-h-[40px] sm:min-h-[52px] flex items-center justify-center mb-1">
-                                            <h4 className="font-almarai-extrabold text-[#4B4B4B] text-[12px] sm:text-base truncate leading-tight max-w-full">
+                                            <h4 className={`text-[#4B4B4B] text-[12px] sm:text-base truncate leading-tight max-w-full ${isAr ? "font-almarai-extrabold" : "font-nunito font-extrabold"}`}>
                                                 {topThree[2].username}
                                             </h4>
                                         </div>
-                                        <p className={`font-almarai-bold text-[10px] sm:text-sm mb-0.5 sm:mb-1 ${getLevelInfo(topThree[2].score || 0).color}`}>
+                                        <p className={`text-[10px] sm:text-sm mb-0.5 sm:mb-1 ${getLevelInfo(topThree[2].score || 0).color} ${isAr ? "font-almarai-bold" : "font-nunito font-bold"}`}>
                                             {getLevelInfo(topThree[2].score || 0).label}
                                         </p>
-                                        <p className="font-almarai-regular text-[#4B4B4B] text-[10px] sm:text-sm">{topThree[2].metrics?.topicsCompleted || 0} موضوع</p>
+                                        <p className={`text-[#4B4B4B] text-[10px] sm:text-sm ${isAr ? "font-almarai-regular" : "font-nunito font-normal"}`}>{topThree[2].metrics?.topicsCompleted || 0} {t.topics}</p>
                                     </div>
                                 </div>
                             )}
@@ -437,21 +481,21 @@ export default function LeaderboardPage() {
                                 <path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5Z" stroke="#4B4B4B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                 <path d="M5 19H19" stroke="#4B4B4B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
-                            <h2 className="text-lg sm:text-xl font-almarai-extrabold text-[#4B4B4B]">جميع الطلاب</h2>
+                            <h2 className={`text-lg sm:text-xl text-[#4B4B4B] ${isAr ? "font-almarai-extrabold" : "font-nunito font-extrabold"}`}>{t.allStudents}</h2>
                         </div>
 
                         <div className="space-y-4">
                             {loading && entries.length === 0 && (
-                                <div className="p-8 text-center text-sm text-gray-500 font-almarai-regular">جاري التحميل...</div>
+                                <div className={`p-8 text-center text-sm text-gray-500 ${isAr ? "font-almarai-regular" : "font-nunito font-normal"}`}>{t.loading}</div>
                             )}
                             {error && (
                                 <div className="p-6 text-center">
-                                    <div className="text-sm text-red-600 mb-3 font-almarai-regular">{error}</div>
+                                    <div className={`text-sm text-red-600 mb-3 ${isAr ? "font-almarai-regular" : "font-nunito font-normal"}`}>{error}</div>
                                     <button
-                                        className="px-4 py-2 bg-[#35AB4E] text-white rounded-lg hover:bg-[#2f9c46] transition-colors font-almarai-bold"
+                                        className={`px-4 py-2 bg-[#35AB4E] text-white rounded-lg hover:bg-[#2f9c46] transition-colors ${isAr ? "font-almarai-bold" : "font-nunito font-bold"}`}
                                         onClick={retry}
                                     >
-                                        إعادة المحاولة
+                                        {t.retry}
                                     </button>
                                 </div>
                             )}
@@ -463,11 +507,6 @@ export default function LeaderboardPage() {
                                 const isRank4 = displayRank === 4
 
                                 // Determine level label and trend color
-                                const getLevelInfo = (score: number) => {
-                                    if (score >= 100) return { label: 'متقدم', color: 'text-[#35AB4E]' }
-                                    if (score >= 50) return { label: 'متوسط', color: 'text-[#00AEEF]' }
-                                    return { label: 'مبتدئ', color: 'text-[#35AB4E]' }
-                                }
                                 const levelInfo = getLevelInfo(entry.score || 0)
 
                                 // Rank circle color
@@ -484,28 +523,28 @@ export default function LeaderboardPage() {
                                         className={`grid grid-cols-[1fr_auto] sm:grid-cols-[1fr_auto] gap-2 sm:gap-4 items-center p-3 sm:p-4 rounded-[16px] transition-colors border border-transparent ${isRank4 ? 'bg-[#EAF5ED]' : isCurrentUser ? 'bg-green-50' : 'bg-[#FFFFFF] border-[#F0F0F0]'}`}
                                     >
                                         {/* Right Section: Rank, Avatar, Name */}
-                                        <div className="flex items-center gap-4 overflow-hidden">
-                                            {/* Rank Circle */}
-                                            <div className={`h-8 w-8 rounded-full ${getRankColor(displayRank)} flex items-center justify-center text-white font-almarai-bold text-sm flex-shrink-0 shadow-sm`}>
-                                                {displayRank}
-                                            </div>
+                                    <div className="flex items-center gap-4 overflow-hidden">
+                                        {/* Rank Circle */}
+                                        <div className={`h-8 w-8 rounded-full ${getRankColor(displayRank)} flex items-center justify-center text-white text-sm flex-shrink-0 shadow-sm ${isAr ? "font-almarai-bold" : "font-nunito font-bold"}`}>
+                                            {displayRank}
+                                        </div>
 
                                             {/* Avatar (Initials only as requested) */}
                                             <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full overflow-hidden bg-gray-100 flex-shrink-0 border-2 border-white aspect-square shadow-sm hidden xl:block">
-                                                <div className="w-full h-full flex items-center justify-center bg-[#FDE68A] text-[#B45309] font-almarai-bold">
+                                                <div className={`w-full h-full flex items-center justify-center bg-[#FDE68A] text-[#B45309] ${isAr ? "font-almarai-bold" : "font-nunito font-bold"}`}>
                                                     {entry.username?.charAt(0).toUpperCase()}
                                                 </div>
                                             </div>
 
                                             {/* Name and Level */}
-                                            <div className="flex flex-col text-right min-w-0 flex-1">
+                                            <div className={`flex flex-col min-w-0 flex-1 ${isAr ? "text-right" : "text-left"}`}>
                                                 <span
-                                                    className="font-almarai-extrabold text-[#4B4B4B] text-base truncate max-w-full"
+                                                    className={`text-[#4B4B4B] text-base truncate max-w-full ${isAr ? "font-almarai-extrabold" : "font-nunito font-extrabold"}`}
                                                     dir={/[\u0600-\u06FF]/.test(entry.username) ? "rtl" : "ltr"}
                                                 >
                                                     {entry.username}
                                                 </span>
-                                                <span className={`font-almarai-bold text-xs ${levelInfo.color}`}>
+                                                <span className={`text-xs ${levelInfo.color} ${isAr ? "font-almarai-bold" : "font-nunito font-bold"}`}>
                                                     {levelInfo.label}
                                                 </span>
                                             </div>
@@ -516,73 +555,93 @@ export default function LeaderboardPage() {
                                             id={displayRank === 4 ? "leaderboard-sample-metrics" : undefined}
                                             className="flex flex-col items-center justify-center gap-1 border-x border-gray-100 px-2 h-full"
                                         >
-                                            <span className="font-almarai-bold text-[#E67E22] text-sm sm:text-base whitespace-nowrap">
-                                                {Math.round(entry.metrics?.avgCompletionTime || 0)} ساعة
+                                            <span className={`text-[#E67E22] text-sm sm:text-base whitespace-nowrap ${isAr ? "font-almarai-bold" : "font-nunito font-bold"}`}>
+                                                {Math.round(entry.metrics?.avgCompletionTime || 0)} {t.hours}
                                             </span>
-                                            <span className="font-almarai-bold text-[#4B4B4B] text-xs sm:text-sm whitespace-nowrap">
-                                                {entry.metrics?.topicsCompleted || 0} موضوع
+                                            <span className={`text-[#4B4B4B] text-xs sm:text-sm whitespace-nowrap ${isAr ? "font-almarai-bold" : "font-nunito font-bold"}`}>
+                                                {entry.metrics?.topicsCompleted || 0} {t.topics}
                                             </span>
                                         </div>
                                     </div>
                                 )
                             })}
                             {!loading && !error && rest.length === 0 && entries.length <= 3 && (
-                                <div className="p-8 text-center text-sm text-gray-500 font-almarai-regular">
-                                    لا يوجد المزيد من الطلاب
+                                <div className={`p-8 text-center text-sm text-gray-500 ${isAr ? "font-almarai-regular" : "font-nunito font-normal"}`}>
+                                    {t.noMore}
                                 </div>
                             )}
                             {!loading && !error && rest.length > 0 && totalPages > 1 && (
                                 <div className="flex justify-center items-center gap-2 mt-6 flex-wrap">
-                                    {/* Next button (for RTL, this appears first) */}
-                                    <button
-                                        onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                                        disabled={currentPage === totalPages}
-                                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-all ${currentPage === totalPages
-                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                            : 'bg-white border-2 border-[#4B4B4B] text-[#4B4B4B] hover:bg-[#F5F5F5]'
-                                            }`}
-                                    >
-                                        <span>&#8249;</span>
-                                    </button>
-
-                                    {/* Page numbers */}
-                                    {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                                        let pageNum: number;
-                                        if (totalPages <= 5) {
-                                            pageNum = totalPages - i; // Reverse for RTL
-                                        } else if (currentPage <= 3) {
-                                            pageNum = 5 - i; // Show 5,4,3,2,1 for RTL
-                                        } else if (currentPage >= totalPages - 2) {
-                                            pageNum = totalPages - (4 - i); // Show last 5 in reverse
+                                    {(() => {
+                                        const maxPages = Math.min(totalPages, 5);
+                                        const pages: number[] = [];
+                                        if (isAr) {
+                                            if (totalPages <= 5) {
+                                                for (let i = 0; i < maxPages; i += 1) pages.push(totalPages - i);
+                                            } else if (currentPage <= 3) {
+                                                for (let i = 0; i < maxPages; i += 1) pages.push(5 - i);
+                                            } else if (currentPage >= totalPages - 2) {
+                                                for (let i = 0; i < maxPages; i += 1) pages.push(totalPages - (4 - i));
+                                            } else {
+                                                for (let i = 0; i < maxPages; i += 1) pages.push(currentPage + 2 - i);
+                                            }
                                         } else {
-                                            pageNum = currentPage + 2 - i; // Show current+2 to current-2 in reverse
+                                            if (totalPages <= 5) {
+                                                for (let i = 0; i < maxPages; i += 1) pages.push(i + 1);
+                                            } else if (currentPage <= 3) {
+                                                for (let i = 0; i < maxPages; i += 1) pages.push(i + 1);
+                                            } else if (currentPage >= totalPages - 2) {
+                                                for (let i = 0; i < maxPages; i += 1) pages.push(totalPages - 4 + i);
+                                            } else {
+                                                for (let i = 0; i < maxPages; i += 1) pages.push(currentPage - 2 + i);
+                                            }
                                         }
 
-                                        return (
+                                        const prevButton = (
                                             <button
-                                                key={pageNum}
-                                                onClick={() => handlePageChange(pageNum)}
-                                                className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-all ${currentPage === pageNum
-                                                    ? 'bg-[#35AB4E] border-2 border-[#35AB4E] text-white shadow-[0_2px_0_0_#20672F]'
+                                                onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                                                disabled={currentPage === 1}
+                                                className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-all ${currentPage === 1
+                                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                                     : 'bg-white border-2 border-[#4B4B4B] text-[#4B4B4B] hover:bg-[#F5F5F5]'
                                                     }`}
                                             >
-                                                {pageNum}
+                                                <span>&#8249;</span>
                                             </button>
                                         );
-                                    })}
 
-                                    {/* Previous button (for RTL, this appears last) */}
-                                    <button
-                                        onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                                        disabled={currentPage === 1}
-                                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-all ${currentPage === 1
-                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                            : 'bg-white border-2 border-[#4B4B4B] text-[#4B4B4B] hover:bg-[#F5F5F5]'
-                                            }`}
-                                    >
-                                        <span>&#8250;</span>
-                                    </button>
+                                        const nextButton = (
+                                            <button
+                                                onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                                                disabled={currentPage === totalPages}
+                                                className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-all ${currentPage === totalPages
+                                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                                    : 'bg-white border-2 border-[#4B4B4B] text-[#4B4B4B] hover:bg-[#F5F5F5]'
+                                                    }`}
+                                            >
+                                                <span>&#8250;</span>
+                                            </button>
+                                        );
+
+                                        return (
+                                            <>
+                                                {isAr ? nextButton : prevButton}
+                                                {pages.map((pageNum) => (
+                                                    <button
+                                                        key={pageNum}
+                                                        onClick={() => handlePageChange(pageNum)}
+                                                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-all ${currentPage === pageNum
+                                                            ? 'bg-[#35AB4E] border-2 border-[#35AB4E] text-white shadow-[0_2px_0_0_#20672F]'
+                                                            : 'bg-white border-2 border-[#4B4B4B] text-[#4B4B4B] hover:bg-[#F5F5F5]'
+                                                            }`}
+                                                    >
+                                                        {pageNum}
+                                                    </button>
+                                                ))}
+                                                {isAr ? prevButton : nextButton}
+                                            </>
+                                        );
+                                    })()}
                                 </div>
                             )}
                         </div>
