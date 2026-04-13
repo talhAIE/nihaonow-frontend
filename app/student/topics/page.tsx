@@ -69,12 +69,12 @@ export default function TopicsPage() {
   const t = isAr ? copy.ar : copy.en;
 
   return (
-    <div className={`relative min-h-screen w-[90%] mx-auto ${isAr ? "font-almarai" : "font-nunito"}`} dir={dir} lang={isAr ? "ar" : "en"}>
-      <div className={`absolute top-4 ${isAr ? "left-4" : "right-4"} z-20`}>
-        <AuthLanguageToggle />
-      </div>
+    <div className={`min-h-screen w-[90%] mx-auto ${isAr ? "font-almarai" : "font-nunito"}`} dir={dir} lang={isAr ? "ar" : "en"}>
       {/* Content Section */}
-      <div className="px-4 py-6 space-y-4 pt-12">
+      <div className="px-4 py-6 space-y-4">
+        <div className={`flex ${isAr ? "justify-start" : "justify-end"} mb-2`}>
+          <AuthLanguageToggle />
+        </div>
         {(loading || sessionLoading) && (
           <div className="flex flex-col items-center justify-center py-20">
             <Loader2 className="h-12 w-12 animate-spin text-brand mb-4" />

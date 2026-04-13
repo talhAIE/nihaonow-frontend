@@ -8,6 +8,8 @@ import { apiClient } from '@/lib/http'
 import { useNavigation } from '@/lib/navigation';
 import { Play, Pause, Volume2 } from "lucide-react";
 import { useAuthProtection } from "@/hooks/useAuthProtection";
+import { useAppContext } from "@/context/AppContext";
+import AuthLanguageToggle from "@/components/auth/AuthLanguageToggle";
 
 interface SessionFeedback {
   sessionId: string;
@@ -47,6 +49,8 @@ interface SessionFeedback {
 
 export default function FeedbackPage() {
   useAuthProtection();
+  const { dir } = useAppContext();
+  const isAr = dir === "rtl";
 
   // Normalize different shapes (session object vs. feedback object) into a stable SessionFeedback
   const normalizeSessionToFeedback = (sessionObj: any): SessionFeedback => {
@@ -100,6 +104,56 @@ export default function FeedbackPage() {
   const [currentPlayingUrl, setCurrentPlayingUrl] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const { goToStudentUnits, goToStudentDashboard } = useNavigation();
+
+  const t = isAr
+    ? {
+        loading: "جاري تحميل التغذية الراجعة...",
+        none: "لا توجد تغذية راجعة متاحة",
+        backHome: "العودة للبداية",
+        titlePrefix: "أحسنت يا ",
+        subtitle: "لقد أكملت الدرس بنجاح. إليك تقييمك الشامل.",
+        autoAssessment: "تقييم تلقائي",
+        completion: "الاكتمال",
+        accuracy: "الدقة",
+        pronunciation: "النطق",
+        fluency: "الطلاقة",
+        pronAccuracy: "دقة النطق",
+        pronRate: "نسبة النطق",
+        speakingFluency: "سلاسة الكلام",
+        overall: "التقييم العام",
+        audioFeedback: "تغذية راجعة صوتية",
+        showAttempts: (n: number) => `عرض المحاولات (${n})`,
+        hideAttempts: "إخفاء المحاولات",
+        attempts: "محاولات",
+        scenario: "المشهد",
+        metrics: (a: any) =>
+          `نطق: ${a.pronunciationScore ?? 0}% • دقة: ${a.accuracyScore ?? 0}% • طلاقة: ${a.fluencyScore ?? 0}% • اكتمال: ${a.completenessScore ?? 0}%`,
+        endSession: "انتهت الجلسة",
+      }
+    : {
+        loading: "Loading feedback...",
+        none: "No feedback available",
+        backHome: "Back to start",
+        titlePrefix: "Well done, ",
+        subtitle: "You completed the lesson successfully. Here is your full assessment.",
+        autoAssessment: "Automated Assessment",
+        completion: "Completion",
+        accuracy: "Accuracy",
+        pronunciation: "Pronunciation",
+        fluency: "Fluency",
+        pronAccuracy: "Pronunciation accuracy",
+        pronRate: "Pronunciation rate",
+        speakingFluency: "Speaking fluency",
+        overall: "Overall assessment",
+        audioFeedback: "Audio feedback",
+        showAttempts: (n: number) => `Show attempts (${n})`,
+        hideAttempts: "Hide attempts",
+        attempts: "Attempts",
+        scenario: "Scenario",
+        metrics: (a: any) =>
+          `Pronunciation: ${a.pronunciationScore ?? 0}% • Accuracy: ${a.accuracyScore ?? 0}% • Fluency: ${a.fluencyScore ?? 0}% • Completion: ${a.completenessScore ?? 0}%`,
+        endSession: "End session",
+      };
 
   useEffect(() => {
     let mounted = true
@@ -265,10 +319,10 @@ export default function FeedbackPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" dir="rtl">
+      <div className={`min-h-screen flex items-center justify-center ${isAr ? "font-almarai" : "font-nunito"}`} dir={dir} lang={isAr ? "ar" : "en"}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">جاري تحميل التغذية الراجعة...</p>
+          <p className="text-gray-600">{t.loading}</p>
         </div>
       </div>
     );
@@ -276,28 +330,31 @@ export default function FeedbackPage() {
 
   if (!feedback) {
     return (
-      <div className="min-h-screen flex items-center justify-center" dir="rtl">
+      <div className={`min-h-screen flex items-center justify-center ${isAr ? "font-almarai" : "font-nunito"}`} dir={dir} lang={isAr ? "ar" : "en"}>
         <div className="text-center">
-          <p className="text-gray-600 mb-4 text-sm sm:text-base">لا توجد تغذية راجعة متاحة</p>
+          <p className="text-gray-600 mb-4 text-sm sm:text-base">{t.none}</p>
           <Button onClick={goToStudentDashboard} className="bg-green-500 hover:bg-green-600 px-4 sm:px-6 py-2 sm:py-3 rounded-xl text-sm sm:text-base w-full sm:w-auto max-w-[200px] sm:max-w-none">
-            العودة للبداية
+            {t.backHome}
           </Button>
         </div>
       </div>
     );
   }
   return (
-    <div className="min-h-screen bg-white overflow-x-hidden" dir="rtl">
+    <div className={`relative min-h-screen bg-white overflow-x-hidden ${isAr ? "font-almarai" : "font-nunito"}`} dir={dir} lang={isAr ? "ar" : "en"}>
+      <div className={`absolute top-4 ${isAr ? "left-4" : "right-4"} z-20`}>
+        <AuthLanguageToggle />
+      </div>
 
       {/* Main Content */}
       <div className="px-3 sm:px-4 py-4 sm:py-6">
         {/* Page Title */}
         <div className="text-center mb-6 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold text-black">
-            <span>أحسنت يا </span><span style={{ color: 'red' }}>{feedback.username || 'user'}</span>
+            <span>{t.titlePrefix}</span><span style={{ color: 'red' }}>{feedback.username || 'user'}</span>
           </h1>
           <p className="text-gray-600 mt-2 text-base sm:text-lg">
-            لقد أكملت الدرس بنجاح. إليك تقييمك الشامل.
+            {t.subtitle}
           </p>
         </div>
 
@@ -318,45 +375,45 @@ export default function FeedbackPage() {
           <div className="w-full max-w-2xl order-2">
             <div className="bg-gray-200 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-lg">
               {/* Feedback Summary */}
-              <div className="text-right mb-4 sm:mb-6">
-                <h2 className="text-xl sm:text-2xl font-bold text-green-600">تقييم تلقائي</h2>
+              <div className={`${isAr ? "text-right" : "text-left"} mb-4 sm:mb-6`}>
+                <h2 className="text-xl sm:text-2xl font-bold text-green-600">{t.autoAssessment}</h2>
                 <p className="text-gray-700 mt-2 text-sm sm:text-base leading-relaxed">{feedback.comprehensiveFeedback}</p>
               </div>
 
               {/* Summary metrics */}
               <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
-                <div className="bg-white rounded-lg p-3 sm:p-4 shadow-sm text-right">
-                  <div className="text-xs sm:text-sm text-gray-500">الاكتمال</div>
+                <div className={`bg-white rounded-lg p-3 sm:p-4 shadow-sm ${isAr ? "text-right" : "text-left"}`}>
+                  <div className="text-xs sm:text-sm text-gray-500">{t.completion}</div>
                   <div className="text-lg sm:text-2xl font-bold text-gray-800">{Math.round(((feedback.completedCount ?? 0) / Math.max(1, feedback.totalScenarios ?? 1)) * 100)}%</div>
                   <div className="text-xs text-gray-400">{feedback.completedCount ?? 0} / {feedback.totalScenarios ?? 0}</div>
                 </div>
-                <div className="bg-white rounded-lg p-3 sm:p-4 shadow-sm text-right">
-                  <div className="text-xs sm:text-sm text-gray-500">الدقة</div>
+                <div className={`bg-white rounded-lg p-3 sm:p-4 shadow-sm ${isAr ? "text-right" : "text-left"}`}>
+                  <div className="text-xs sm:text-sm text-gray-500">{t.accuracy}</div>
                   <div className="text-lg sm:text-2xl font-bold text-gray-800">{Number(feedback.strengths.averageAccuracy ?? 0)}%</div>
-                  <div className="text-xs text-gray-400">دقة النطق</div>
+                  <div className="text-xs text-gray-400">{t.pronAccuracy}</div>
                 </div>
-                <div className="bg-white rounded-lg p-3 sm:p-4 shadow-sm text-right">
-                  <div className="text-xs sm:text-sm text-gray-500">النطق</div>
+                <div className={`bg-white rounded-lg p-3 sm:p-4 shadow-sm ${isAr ? "text-right" : "text-left"}`}>
+                  <div className="text-xs sm:text-sm text-gray-500">{t.pronunciation}</div>
                   <div className="text-lg sm:text-2xl font-bold text-gray-800">{Number(feedback.strengths.averagePronunciation ?? 0)}%</div>
-                  <div className="text-xs text-gray-400">نسبة النطق</div>
+                  <div className="text-xs text-gray-400">{t.pronRate}</div>
                 </div>
-                <div className="bg-white rounded-lg p-3 sm:p-4 shadow-sm text-right">
-                  <div className="text-xs sm:text-sm text-gray-500">الطلاقة</div>
+                <div className={`bg-white rounded-lg p-3 sm:p-4 shadow-sm ${isAr ? "text-right" : "text-left"}`}>
+                  <div className="text-xs sm:text-sm text-gray-500">{t.fluency}</div>
                   <div className="text-lg sm:text-2xl font-bold text-gray-800">{Number(feedback.strengths.averageFluency ?? 0)}%</div>
-                  <div className="text-xs text-gray-400">سلاسة الكلام</div>
+                  <div className="text-xs text-gray-400">{t.speakingFluency}</div>
                 </div>
               </div>
 
-              <div className="mb-3 sm:mb-4 text-right">
-                <div className="text-xs sm:text-sm text-gray-500">التقييم العام</div>
+              <div className={`mb-3 sm:mb-4 ${isAr ? "text-right" : "text-left"}`}>
+                <div className="text-xs sm:text-sm text-gray-500">{t.overall}</div>
                 <div className="text-sm sm:text-lg font-semibold text-gray-800 leading-relaxed" >{feedback.overallAssessment ?? feedback.comprehensiveFeedback}</div>
               </div>
 
               {feedback.feedbackAudioUrl && (
                 <div className="flex justify-center mb-4 sm:mb-6">
                   <div className="bg-green-100 border border-green-200 rounded-xl sm:rounded-2xl lg:rounded-3xl px-3 sm:px-4 lg:px-6 py-2 w-full max-w-[90%] sm:max-w-[70%] lg:max-w-[60%]">
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-800 font-medium text-xs sm:text-sm lg:text-lg truncate flex-1 mr-2">تغذية راجعة صوتية</span>
+                    <div className={`flex items-center justify-between ${isAr ? "" : "flex-row-reverse"}`}>
+                      <span className={`text-gray-800 font-medium text-xs sm:text-sm lg:text-lg truncate flex-1 ${isAr ? "mr-2" : "ml-2"}`}>{t.audioFeedback}</span>
                       <button
                         onClick={handleFeedbackAudioPlay}
                         className="bg-green-500 hover:bg-green-600 text-white rounded-full p-1.5 sm:p-2 transition-colors flex-shrink-0"
@@ -374,21 +431,21 @@ export default function FeedbackPage() {
               )}
 
               {error && (
-                <div className="text-right mb-4 text-sm text-red-600">{error}</div>
+                <div className={`${isAr ? "text-right" : "text-left"} mb-4 text-sm text-red-600`}>{error}</div>
               )}
 
-              <div className="text-right mt-4">
+              <div className={`${isAr ? "text-right" : "text-left"} mt-4`}>
                 <button className="text-sm text-sky-600" onClick={() => setShowAttempts((v) => !v)}>
-                  {showAttempts ? 'إخفاء المحاولات' : `عرض المحاولات (${feedback.attempts?.length ?? 0})`} →
+                  {showAttempts ? t.hideAttempts : t.showAttempts(feedback.attempts?.length ?? 0)} →
                 </button>
               </div>
 
               {/* Attempts list (collapsible) */}
               {showAttempts && feedback.attempts && feedback.attempts.length > 0 && (
                 <div className="space-y-2 sm:space-y-3 mt-4">
-                  <h3 className="text-right font-semibold text-gray-700 mb-2 text-sm sm:text-base">محاولات</h3>
+                  <h3 className={`${isAr ? "text-right" : "text-left"} font-semibold text-gray-700 mb-2 text-sm sm:text-base`}>{t.attempts}</h3>
                   {feedback.attempts.map((a) => (
-                    <div key={a.id ?? a.scenarioId} className="bg-white rounded-lg p-2 sm:p-3 shadow-sm flex items-center gap-2 sm:gap-3">
+                    <div key={a.id ?? a.scenarioId} className={`bg-white rounded-lg p-2 sm:p-3 shadow-sm flex items-center gap-2 sm:gap-3 ${isAr ? "" : "flex-row-reverse"}`}>
                       {/* Play button column - fixed width for alignment */}
                       <div className="flex-shrink-0 w-8 sm:w-10 flex justify-center">
                         {a.audioFeedbackUrl ? (
@@ -412,10 +469,10 @@ export default function FeedbackPage() {
                         <div className="text-xs sm:text-sm font-medium text-gray-600">{a.totalScore ?? '-'}</div>
                       </div>
                       {/* Content column - flexible width */}
-                      <div className="flex-1 text-right min-w-0">
-                        <div className="font-medium text-sm sm:text-base truncate">المشهد {a.scenarioNumber ?? a.scenarioId}</div>
+                      <div className={`flex-1 min-w-0 ${isAr ? "text-right" : "text-left"}`}>
+                        <div className="font-medium text-sm sm:text-base truncate">{t.scenario} {a.scenarioNumber ?? a.scenarioId}</div>
                         {a.textualFeedback && <div className="text-xs sm:text-sm text-gray-600 mt-1 line-clamp-2">{a.textualFeedback}</div>}
-                        <div className="text-xs text-gray-500 mt-1 truncate">نطق: {a.pronunciationScore ?? 0}% • دقة: {a.accuracyScore ?? 0}% • طلاقة: {a.fluencyScore ?? 0}% • اكتمال: {a.completenessScore ?? 0}%</div>
+                        <div className="text-xs text-gray-500 mt-1 truncate">{t.metrics(a)}</div>
                       </div>
                     </div>
                   ))}
@@ -428,7 +485,7 @@ export default function FeedbackPage() {
                   onClick={handleSessionEnd}
                   className="bg-red-600 hover:bg-red-700 text-white px-4 sm:px-6 lg:px-8 py-2 sm:py-3 rounded-xl font-medium text-xs sm:text-sm lg:text-base w-full sm:w-auto max-w-[200px] sm:max-w-none"
                 >
-                  انتهت الجلسة
+                  {t.endSession}
                 </Button>
               </div>
             </div>

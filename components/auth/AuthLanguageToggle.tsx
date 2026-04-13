@@ -20,10 +20,27 @@ export default function AuthLanguageToggle({ className }: AuthLanguageToggleProp
     <button
       type="button"
       onClick={() => setDir(isAr ? "ltr" : "rtl")}
-      className={`text-sm text-gray-700 hover:text-[#35AB4E] transition-colors px-2 py-1 ${className ?? ""}`}
+      className={`inline-flex items-center gap-1 rounded-xl border border-[#E5E5E5] bg-white p-1 shadow-sm transition-colors ${className ?? ""}`}
       aria-label={isAr ? "Switch to English" : "التبديل إلى العربية"}
     >
-      العربية | English
+      <span
+        className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-colors ${
+          isAr
+            ? "bg-[#35AB4E] text-white shadow-[0_2px_0_0_#20672F]"
+            : "bg-white text-[#4B4B4B]"
+        }`}
+      >
+        العربية
+      </span>
+      <span
+        className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-colors ${
+          !isAr
+            ? "bg-[#35AB4E] text-white shadow-[0_2px_0_0_#20672F]"
+            : "bg-white text-[#4B4B4B]"
+        }`}
+      >
+        English
+      </span>
     </button>
   );
 }

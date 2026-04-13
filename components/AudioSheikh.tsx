@@ -5,6 +5,7 @@ import { Play, Volume2, Pause } from "lucide-react";
 import Image from "next/image";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
+import { useAppContext } from "@/context/AppContext";
 
 interface LanguageLearningInterfaceProps {
   scenarioImageUrl?: string;
@@ -47,6 +48,9 @@ export default function LanguageLearningInterface({
   forceStopAudio = false,
   hasSubmittedSuccessfully = false,
 }: LanguageLearningInterfaceProps) {
+  const { dir } = useAppContext();
+  const isAr = dir === "rtl";
+  const contextLabel = isAr ? "جملة السياق" : "Context sentence";
   const [isContextPlaying, setIsContextPlaying] = useState(false);
   const [isPronunciationPlaying, setIsPronunciationPlaying] = useState(false);
   const [localArabicCompleted, setLocalArabicCompleted] = useState(false);
@@ -199,11 +203,11 @@ export default function LanguageLearningInterface({
       <button
         id="context-button"
         onClick={handleContextPlay}
-        className={`bg-[#FFCB08] hover:bg-[#FFCB08] border-b-[4px] border-b-[#E5B607] active:border-b-0 active:translate-y-[2px] transition-all duration-150 rounded-full pl-2 pr-8 py-2 flex items-center justify-between gap-4 shadow-sm w-fit min-w-[12rem] h-14 ${!arabicCompleted && !hasSubmittedSuccessfully ? "animate-guide-glow" : ""
+        className={`bg-[#FFCB08] hover:bg-[#FFCB08] border-b-[4px] border-b-[#E5B607] active:border-b-0 active:translate-y-[2px] transition-all duration-150 rounded-full py-2 flex items-center justify-between gap-4 shadow-sm w-fit min-w-[12rem] h-14 ${isAr ? "pl-2 pr-8" : "pl-8 pr-2"} ${!arabicCompleted && !hasSubmittedSuccessfully ? "animate-guide-glow" : ""
           }`}
         disabled={!arabicAudioUrl}
       >
-        <span className="text-[#1F1F1F] font-bold text-lg whitespace-nowrap flex-shrink-0">جملة السياق</span>
+        <span className={`text-[#1F1F1F] text-lg whitespace-nowrap flex-shrink-0 ${isAr ? "font-bold font-almarai" : "font-bold font-nunito"}`}>{contextLabel}</span>
         <div className="bg-white rounded-full p-1.5 w-9 h-9 flex items-center justify-center border-2 border-white">
           {isContextPlaying ? (
             <Pause className="h-4 w-4 text-[#F97316] fill-current" />

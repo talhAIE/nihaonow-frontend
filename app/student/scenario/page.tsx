@@ -6,6 +6,7 @@ import {
   Play,
   Mic,
   ChevronLeft,
+  ChevronRight,
   MessageSquare,
   BookOpen,
   Loader2,
@@ -31,10 +32,12 @@ import AnimatedWaveform from "@/components/scenario";
 import SessionGuidePopup from "@/components/session/SessionGuidePopup";
 import { useAppContext } from "@/context/AppContext";
 import { guidePersistence } from "@/lib/guidePersistence";
+import AuthLanguageToggle from "@/components/auth/AuthLanguageToggle";
 
 export default function ScenarioPage() {
   useAuthProtection();
-  const { state } = useAppContext();
+  const { state, dir } = useAppContext();
+  const isAr = dir === "rtl";
 
   const [currentScenario, setCurrentScenario] = useState<Scenario | null>(null);
   const [totalScenarios, setTotalScenarios] = useState(0);
@@ -99,6 +102,52 @@ export default function ScenarioPage() {
   const searchParams = useSearchParams();
   const { goToStudentScenario, goToStudentFeedback, goToStudentUnits } = useNavigation();
   const { toast } = useToast();
+  const ContinueChevron = isAr ? ChevronLeft : ChevronRight;
+
+  const copy = {
+    ar: {
+      back: "يعود",
+      loadingNext: "جاري تحميل السيناريو التالي...",
+      discard: "حذف التسجيل",
+      play: "تشغيل",
+      pause: "إيقاف",
+      listenFirst: "الرجاء الاستماع للصوت أولاً",
+      clickToStop: "انقر لإيقاف التسجيل",
+      clickToRecord: "انقر للتسجيل",
+      feedbackLabel: "تعليق",
+      userGuide: "دليل المستخدم",
+      feedback: "تغذية راجعة",
+      submitting: "جاري الإرسال...",
+      continue: "استمر",
+      submit: "إرسال",
+      speechErrorTitle: "خطأ في التعرف على النطق",
+      errorTitle: "خطأ",
+      submitError: "حدث خطأ أثناء إرسال التسجيل. يرجى المحاولة مرة أخرى.",
+      guideTitle: "دليل المستخدم",
+    },
+    en: {
+      back: "Back",
+      loadingNext: "Loading next scenario...",
+      discard: "Delete recording",
+      play: "Play",
+      pause: "Pause",
+      listenFirst: "Please listen to the audio first",
+      clickToStop: "Click to stop recording",
+      clickToRecord: "Click to record",
+      feedbackLabel: "Feedback",
+      userGuide: "User Guide",
+      feedback: "Feedback",
+      submitting: "Submitting...",
+      continue: "Continue",
+      submit: "Submit",
+      speechErrorTitle: "Speech recognition error",
+      errorTitle: "Error",
+      submitError: "An error occurred while submitting the recording. Please try again.",
+      guideTitle: "User Guide",
+    },
+  } as const;
+
+  const t = isAr ? copy.ar : copy.en;
 
   useEffect(() => {
     const scenarioId = searchParams.get("scenarioId");
@@ -387,14 +436,14 @@ export default function ScenarioPage() {
 
       if (error?.response?.status === 400 && error?.response?.data?.message) {
         toast({
-          title: "خطأ في التعرف على النطق",
+          title: t.speechErrorTitle,
           description: error.response.data.message,
           variant: "destructive",
         });
       } else {
         toast({
-          title: "خطأ",
-          description: "حدث خطأ أثناء إرسال التسجيل. يرجى المحاولة مرة أخرى.",
+          title: t.errorTitle,
+          description: t.submitError,
           variant: "destructive",
         });
       }
@@ -481,14 +530,16 @@ export default function ScenarioPage() {
   };
 
   return (
-    <div className="top-4 h-screen flex flex-col md:pb-0 pb-8 w-full md:px-8 px-3" dir="rtl">
+    <div className={`relative top-4 h-screen flex flex-col md:pb-0 pb-8 w-full md:px-8 px-3 ${isAr ? "font-almarai" : "font-nunito"}`} dir={dir} lang={isAr ? "ar" : "en"}>
       <audio ref={audioPlayerRef} className="hidden" />
-      <div className="mt-4">
+      <div className="mt-12">
         <ProgressBar
           unit={sessionUtils.getCurrentTopic()?.chapter?.name || ""}
           lesson={sessionUtils.getCurrentTopic()?.name || ""}
           progress={scenarioProgress}
-          title="يعود"
+          title={t.back}
+          dir={dir}
+          actionSlot={<AuthLanguageToggle />}
           onClick={() => {
             goToStudentUnits();
           }}
@@ -501,7 +552,7 @@ export default function ScenarioPage() {
               <Loader2 className="h-12 w-12 animate-spin text-green-500" />
               <div className="text-center">
                 <p className="text-lg font-medium text-gray-700">
-                  جاري تحميل السيناريو التالي...
+                  {t.loadingNext}
                 </p>
               </div>
             </div>
@@ -552,7 +603,7 @@ export default function ScenarioPage() {
                             <button
                               onClick={handleDiscardClick}
                               className="rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 flex-shrink-0"
-                              title="حذف التسجيل"
+                              title={t.discard}
                             >
                               <Image
                                 src="/images/cancel.svg"
@@ -563,8 +614,8 @@ export default function ScenarioPage() {
                               />
                             </button>
                           )}
-                          <div 
-                            className="flex flex-row-reverse items-center justify-center gap-3"
+                            <div 
+                            className={`flex items-center justify-center gap-3 ${isAr ? "flex-row-reverse" : "flex-row"}`}
                             style={{
                               width: isSmallScreen ? 'auto' : '100%',
                               maxWidth: isSmallScreen ? '100%' : 'auto'
@@ -580,7 +631,7 @@ export default function ScenarioPage() {
                             <button
                               onClick={handlePlayClick}
                               className="rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 active:border-b-0 active:translate-y-[2px] flex-shrink-0"
-                              title={isPlaying ? "إيقاف" : "تشغيل"}
+                              title={isPlaying ? t.pause : t.play}
                             >
                               {isPlaying ? (
                                 <Image
@@ -605,7 +656,7 @@ export default function ScenarioPage() {
                             <button
                               onClick={handleDiscardClick}
                               className="rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 flex-shrink-0"
-                              title="حذف التسجيل"
+                              title={t.discard}
                             >
                               <Image
                                 src="/images/cancel.svg"
@@ -637,14 +688,14 @@ export default function ScenarioPage() {
                                   }`}
                                 title={
                                   !arabicCompleted
-                                    ? "الرجاء الاستماع للصوت أولاً"
+                                    ? t.listenFirst
                                     : isRecording
-                                      ? "انقر لإيقاف التسجيل"
-                                      : "انقر للتسجيل"
+                                      ? t.clickToStop
+                                      : t.clickToRecord
                                 }
                               >
                                 {isRecording ? (
-                                  <div className="flex flex-row gap-2 md:gap-3 flex-row-reverse items-center justify-center w-full">
+                                  <div className={`flex flex-row gap-2 md:gap-3 items-center justify-center w-full ${isAr ? "flex-row-reverse" : "flex-row"}`}>
                                     <div className="flex-1 min-w-0 max-w-[150px] xs:max-w-[150px] sm:max-w-[200px] md:max-w-[310px] h-10 sm:h-10 md:h-12 flex items-center">
                                       <AnimatedWaveform />
                                     </div>
@@ -653,7 +704,7 @@ export default function ScenarioPage() {
                                     </div>
                                   </div>
                                 ) : (
-                                  <div className="flex flex-row gap-2 md:gap-3 flex-row-reverse items-center justify-center w-full">
+                                  <div className={`flex flex-row gap-2 md:gap-3 items-center justify-center w-full ${isAr ? "flex-row-reverse" : "flex-row"}`}>
                                     <Image
                                       src="/images/audioWave.png"
                                       alt="Record"
@@ -710,9 +761,9 @@ export default function ScenarioPage() {
                   <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br ${config.iconBg} flex items-center justify-center flex-shrink-0 shadow-md`}>
                     {config.icon}
                   </div>
-                  <div className="flex-1 text-right w-full">
-                    <p className={`text-xs sm:text-sm font-almarai-bold ${config.label} mb-1`}>تعليق</p>
-                    <p className="text-sm sm:text-base text-gray-800 leading-relaxed font-almarai break-words">{feedback}</p>
+                  <div className={`flex-1 w-full ${isAr ? "text-right" : "text-left"}`}>
+                    <p className={`text-xs sm:text-sm ${config.label} mb-1 ${isAr ? "font-almarai-bold" : "font-nunito font-bold"}`}>{t.feedbackLabel}</p>
+                    <p className={`text-sm sm:text-base text-gray-800 leading-relaxed break-words ${isAr ? "font-almarai" : "font-nunito"}`}>{feedback}</p>
                   </div>
                 </div>
               );
@@ -727,10 +778,10 @@ export default function ScenarioPage() {
             <Button
               id="user-guide-button"
               onClick={() => setIsVideoModalOpen(true)}
-              className="w-full bg-[#FFCB08] h-14 hover:bg-[#FFCB08] text-[#1F1F1F] py-4 rounded-2xl flex items-center justify-center gap-2 md:gap-3 text-xs sm:text-sm md:text-lg font-almarai-bold border-b-[4px] border-b-[#DEA407] shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all font-almarai"
+              className={`w-full bg-[#FFCB08] h-14 hover:bg-[#FFCB08] text-[#1F1F1F] py-4 rounded-2xl flex items-center justify-center gap-2 md:gap-3 text-xs sm:text-sm md:text-lg border-b-[4px] border-b-[#DEA407] shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all ${isAr ? "font-almarai-bold" : "font-nunito font-bold"}`}
             >
               <BookOpen className="h-3 w-3 md:h-5 md:w-5 stroke-[2.5px] flex-shrink-0" />
-              <span className="truncate">دليل المستخدم</span>
+              <span className="truncate">{t.userGuide}</span>
             </Button>
 
             {/* Grey Feedback Button */}
@@ -738,13 +789,13 @@ export default function ScenarioPage() {
               id="feedback-button"
               onClick={() => setIsFeedbackOpen(true)}
               disabled={!lastAttemptScores}
-              className="w-full bg-[#E5E5E5] h-14 hover:bg-[#E5E5E5] text-[#1F1F1F] py-4 rounded-2xl flex items-center justify-center gap-2 md:gap-3 text-xs sm:text-sm md:text-lg font-almarai-bold border-b-[4px] border-b-[#C4C4C4] disabled:opacity-50 disabled:border-none shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all font-almarai"
+              className={`w-full bg-[#E5E5E5] h-14 hover:bg-[#E5E5E5] text-[#1F1F1F] py-4 rounded-2xl flex items-center justify-center gap-2 md:gap-3 text-xs sm:text-sm md:text-lg border-b-[4px] border-b-[#C4C4C4] disabled:opacity-50 disabled:border-none shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all ${isAr ? "font-almarai-bold" : "font-nunito font-bold"}`}
             >
               <div className='relative flex-shrink-0'>
                 {lastAttemptScores && <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>}
                 <MessageSquare className="h-3 w-3 md:h-5 md:w-5 stroke-[2.5px]" />
               </div>
-              <span className="truncate">تغذية راجعة</span>
+              <span className="truncate">{t.feedback}</span>
             </Button>
 
 
@@ -757,17 +808,17 @@ export default function ScenarioPage() {
                 !arabicCompleted ||
                 (!currentScenario?.isIntroduction && !recordedAudio && !hasSubmittedSuccessfully)
               }
-              className="w-full col-span-2 md:col-span-1 bg-[#35AB4E] h-14 hover:bg-[#35AB4E] text-white py-4 flex items-center justify-center gap-3 text-sm sm:text-base md:text-lg font-almarai-bold rounded-2xl border-b-[4px] border-b-[#298E3E] disabled:opacity-50 disabled:cursor-not-allowed disabled:border-none shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all font-almarai"
+              className={`w-full col-span-2 md:col-span-1 bg-[#35AB4E] h-14 hover:bg-[#35AB4E] text-white py-4 flex items-center justify-center gap-3 text-sm sm:text-base md:text-lg rounded-2xl border-b-[4px] border-b-[#298E3E] disabled:opacity-50 disabled:cursor-not-allowed disabled:border-none shadow-sm hover:scale-[1.02] active:translate-y-[2px] active:border-b-0 transition-all ${isAr ? "font-almarai-bold" : "font-nunito font-bold"}`}
             >
               <span className="truncate">
                 {isSubmitting
-                  ? "جاري الإرسال..."
+                  ? t.submitting
                   : hasSubmittedSuccessfully
-                    ? "استمر"
-                    : "إرسال"}
+                    ? t.continue
+                    : t.submit}
               </span>
               {!isSubmitting && (
-                <ChevronLeft className="h-5 w-5" />
+                <ContinueChevron className="h-5 w-5" />
               )}
               {isSubmitting && <Loader2 className="h-5 w-5 animate-spin" />}
             </Button>
@@ -788,7 +839,7 @@ export default function ScenarioPage() {
         isOpen={isVideoModalOpen}
         onClose={() => setIsVideoModalOpen(false)}
         videoUrl="https://jfxedbnofpaezykdssmk.supabase.co/storage/v1/object/public/nihaonow-bucket/User-Guide/UserGuide-Video.mp4"
-        title="دليل المستخدم"
+        title={t.guideTitle}
       />
 
       <SessionGuidePopup

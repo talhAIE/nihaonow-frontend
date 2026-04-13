@@ -52,13 +52,13 @@ export default function UnitsPage() {
   };
 
   return (
-    <div className={`relative min-h-screen w-[90%] mx-auto ${isAr ? "font-almarai" : "font-nunito"}`} dir={dir} lang={isAr ? "ar" : "en"}>
-      <div className={`absolute top-4 ${isAr ? "left-4" : "right-4"} z-20`}>
-        <AuthLanguageToggle />
-      </div>
+    <div className={`min-h-screen w-[90%] mx-auto ${isAr ? "font-almarai" : "font-nunito"}`} dir={dir} lang={isAr ? "ar" : "en"}>
 
       {/* Content Section */}
-      <div className="px-4 py-6 space-y-4 pt-12">
+      <div className="px-4 py-6 space-y-4">
+        <div className={`flex ${isAr ? "justify-start" : "justify-end"} mb-2`}>
+          <AuthLanguageToggle />
+        </div>
         {loading && (
           <div className="flex items-center justify-center py-8">
             <Loader2 className="h-8 w-8 animate-spin text-brand" />
