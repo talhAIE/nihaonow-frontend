@@ -5,11 +5,15 @@ import { useAppContext } from "@/context/AppContext";
 
 type AuthLanguageToggleProps = {
   className?: string;
+  activeBgClass?: string;
+  activeShadowClass?: string;
 };
 
-export default function AuthLanguageToggle({ className }: AuthLanguageToggleProps) {
+export default function AuthLanguageToggle({ className, activeBgClass, activeShadowClass }: AuthLanguageToggleProps) {
   const { dir, setDir } = useAppContext();
   const isAr = dir === "rtl";
+  const activeBg = activeBgClass ?? "bg-[#35AB4E]";
+  const activeShadow = activeShadowClass ?? "shadow-[0_2px_0_0_#20672F]";
 
   useEffect(() => {
     if (typeof document === "undefined") return;
@@ -26,7 +30,7 @@ export default function AuthLanguageToggle({ className }: AuthLanguageToggleProp
       <span
         className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-colors ${
           isAr
-            ? "bg-[#35AB4E] text-white shadow-[0_2px_0_0_#20672F]"
+            ? `${activeBg} text-white ${activeShadow}`
             : "bg-white text-[#4B4B4B]"
         }`}
       >
@@ -35,7 +39,7 @@ export default function AuthLanguageToggle({ className }: AuthLanguageToggleProp
       <span
         className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-colors ${
           !isAr
-            ? "bg-[#35AB4E] text-white shadow-[0_2px_0_0_#20672F]"
+            ? `${activeBg} text-white ${activeShadow}`
             : "bg-white text-[#4B4B4B]"
         }`}
       >

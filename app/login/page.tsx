@@ -236,7 +236,7 @@ export default function LoginPage() {
       <div className={`absolute top-4 ${isAr ? "left-4" : "right-4"} z-20`}>
         <AuthLanguageToggle />
       </div>
-      <div className={`pointer-events-none absolute top-0 ${isAr ? "right-0" : "left-0"} z-0 w-[60%] max-w-[220px] h-auto max-h-[225px] md:top-0`}>
+      <div className={`pointer-events-none absolute top-0 ${isAr ? "right-0" : "left-0"} z-0 w-[60%] max-w-[220px] h-[200px] sm:h-[225px] md:top-0`}>
         <Image
           src="/images/LoginLogo2.png"
           alt=""
@@ -246,7 +246,7 @@ export default function LoginPage() {
           priority
         />
       </div>
-      <div className={`pointer-events-none absolute ${isAr ? "left-0 sm:left-4 lg:left-[5px]" : "right-0 sm:right-4 lg:right-[5px]"} bottom-0 z-0 w-[60%] max-w-[420px] h-auto max-h-[225px] sm:bottom-0 lg:bottom-0`}>
+      <div className={`pointer-events-none absolute ${isAr ? "left-0 sm:left-4 lg:left-[5px]" : "right-0 sm:right-4 lg:right-[5px]"} bottom-0 z-0 w-[60%] max-w-[420px] h-[200px] sm:h-[225px] sm:bottom-0 lg:bottom-0`}>
         <Image
           src="/images/loginLogo.png"
           alt=""

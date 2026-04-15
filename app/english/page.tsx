@@ -36,7 +36,7 @@ function PublicLanding() {
       }}
     >
       <div
-        className="min-h-screen font-geist-sans overflow-clip"
+        className="min-h-screen font-nunito overflow-clip"
         dir={direction}
         lang={language}
       >

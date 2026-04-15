@@ -36,7 +36,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ar" dir="rtl">
-      <body className={`${almarai.variable} ${nunito.variable} ${almarai.className} font-sans`} suppressHydrationWarning={true}>
+      <body className={`${almarai.variable} ${nunito.variable} ${nunito.className} font-sans`} suppressHydrationWarning={true}>
         <AppProvider>
           <LocalStorageGuard>
             {children}

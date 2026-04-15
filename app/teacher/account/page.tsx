@@ -17,11 +17,13 @@ import Image from "next/image";
 import { authApi } from "@/lib/services/auth";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
+import AuthLanguageToggle from "@/components/auth/AuthLanguageToggle";
 
 export default function TeacherAccountPage() {
-    const { state } = useAppContext();
+    const { state, dir } = useAppContext();
+    const isAr = dir === "rtl";
     const user = state.authUser;
-    const displayName = state.user || user?.username || "المعلم";
+    const displayName = state.user || user?.username || (isAr ? "المعلم" : "Teacher");
     const userEmail = user?.email || "teacher@example.com";
 
     const [oldPassword, setOldPassword] = useState("");
@@ -36,22 +38,76 @@ export default function TeacherAccountPage() {
 
     const { toast } = useToast();
 
+    const t = isAr
+        ? {
+            accountSettings: "إعدادات الحساب",
+            accountSubtitle: "تحديث ملفك الشخصي وإعدادات الأمان",
+            password: "كلمة المرور",
+            passwordHelp: "تغيير كلمة المرور الخاصة بك أو إعادة تعيينها.",
+            currentPassword: "كلمة المرور الحالية",
+            newPassword: "كلمة المرور الجديدة",
+            confirmPassword: "تأكيد كلمة المرور",
+            savePassword: "حفظ كلمة المرور",
+            resetPassword: "إعادة تعيين كلمة المرور",
+            resetHelp: "سنرسل لك رابطاً لإعادة تعيين كلمة المرور عبر البريد الإلكتروني.",
+            email: "البريد الإلكتروني",
+            sendReset: "إرسال رابط إعادة تعيين",
+            errorMismatch: "كلمات المرور غير متطابقة",
+            errorMinLength: "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
+            errorMissingOld: "يرجى إدخال كلمة المرور الحالية",
+            successUpdate: "تم تحديث كلمة المرور بنجاح",
+            errorUpdate: "فشل تحديث كلمة المرور. تأكد من كلمة المرور الحالية.",
+            verifyError: "خطأ في التحقق",
+            verifyEmail: "يرجى إدخل بريدك الإلكتروني",
+            resetSuccessTitle: "تم بنجاح",
+            resetSuccessDesc: "إذا كان هذا البريد الإلكتروني موجوداً، فقد تم إرسال رابط إعادة التعيين.",
+            resetErrorTitle: "خطأ",
+            resetErrorFallback: "فشل إرسال الرابط. حاول مرة أخرى.",
+            resetErrorEnglishFallback: "فشل إرسال بريد إلكتروني لإعادة تعيين كلمة المرور. يرجى المحاولة مرة أخرى لاحقاً.",
+        }
+        : {
+            accountSettings: "Account Settings",
+            accountSubtitle: "Update your profile and security settings",
+            password: "Password",
+            passwordHelp: "Change or reset your password.",
+            currentPassword: "Current password",
+            newPassword: "New password",
+            confirmPassword: "Confirm password",
+            savePassword: "Save password",
+            resetPassword: "Reset password",
+            resetHelp: "We will email you a reset link.",
+            email: "Email",
+            sendReset: "Send reset link",
+            errorMismatch: "Passwords do not match",
+            errorMinLength: "Password must be at least 6 characters",
+            errorMissingOld: "Please enter your current password",
+            successUpdate: "Password updated successfully",
+            errorUpdate: "Failed to update password. Check your current password.",
+            verifyError: "Verification error",
+            verifyEmail: "Please enter your email",
+            resetSuccessTitle: "Success",
+            resetSuccessDesc: "If that email exists, a reset link was sent.",
+            resetErrorTitle: "Error",
+            resetErrorFallback: "Failed to send link. Please try again.",
+            resetErrorEnglishFallback: "Failed to send password reset email. Please try again later.",
+        };
+
     const handlePasswordChange = async (e: React.FormEvent) => {
         e.preventDefault();
         setMessage(null);
 
         if (newPassword !== confirmPassword) {
-            setMessage({ type: 'error', text: 'كلمات المرور غير متطابقة' });
+            setMessage({ type: 'error', text: t.errorMismatch });
             return;
         }
 
         if (newPassword.length < 6) {
-            setMessage({ type: 'error', text: 'كلمة المرور يجب أن تكون 6 أحرف على الأقل' });
+            setMessage({ type: 'error', text: t.errorMinLength });
             return;
         }
 
         if (!oldPassword) {
-            setMessage({ type: 'error', text: 'يرجى إدخال كلمة المرور الحالية' });
+            setMessage({ type: 'error', text: t.errorMissingOld });
             return;
         }
 
@@ -60,14 +116,14 @@ export default function TeacherAccountPage() {
         try {
             await authApi.changePassword({ currentPassword: oldPassword, newPassword });
 
-            setMessage({ type: 'success', text: 'تم تحديث كلمة المرور بنجاح' });
+            setMessage({ type: 'success', text: t.successUpdate });
             setOldPassword("");
             setNewPassword("");
             setConfirmPassword("");
 
         } catch (error: any) {
             console.error('Password change error:', error);
-            const errorMsg = error.message || error?.response?.data?.message || 'فشل تحديث كلمة المرور. تأكد من كلمة المرور الحالية.';
+            const errorMsg = error.message || error?.response?.data?.message || t.errorUpdate;
             setMessage({ type: 'error', text: errorMsg });
         } finally {
             setIsLoading(false);
@@ -77,7 +133,7 @@ export default function TeacherAccountPage() {
     const handleSendResetLink = async () => {
         const trimmedEmail = resetEmail.trim();
         if (!trimmedEmail) {
-            toast({ title: 'خطأ في التحقق', description: 'يرجى إدخل بريدك الإلكتروني', variant: 'destructive', duration: 5000 });
+            toast({ title: t.verifyError, description: t.verifyEmail, variant: 'destructive', duration: 5000 });
             return;
         }
 
@@ -85,21 +141,21 @@ export default function TeacherAccountPage() {
         try {
             const res = await authApi.forgetPassword({ email: trimmedEmail });
             toast({
-                title: 'تم بنجاح',
-                description: res?.message || 'إذا كان هذا البريد الإلكتروني موجوداً، فقد تم إرسال رابط إعادة التعيين.',
+                title: t.resetSuccessTitle,
+                description: res?.message || t.resetSuccessDesc,
                 duration: 5000
             });
         } catch (error: any) {
             console.error('Reset link error:', error);
-            let description = error.message || error?.response?.data?.message || 'فشل إرسال الرابط. حاول مرة أخرى.';
+            let description = error.message || error?.response?.data?.message || t.resetErrorFallback;
 
             // Fallback translation for common English error message from backend
-            if (description === 'Failed to send password reset email. Please try again later.') {
-                description = 'فشل إرسال بريد إلكتروني لإعادة تعيين كلمة المرور. يرجى المحاولة مرة أخرى لاحقاً.';
+            if (description === t.resetErrorEnglishFallback) {
+                description = isAr ? t.resetErrorEnglishFallback : t.resetErrorFallback;
             }
 
             toast({
-                title: 'خطأ',
+                title: t.resetErrorTitle,
                 description: description,
                 variant: 'destructive',
                 duration: 5000
@@ -110,11 +166,13 @@ export default function TeacherAccountPage() {
     }
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8" dir="rtl">
-            {/* ... (keep header) ... */}
+        <div className={`relative max-w-4xl mx-auto space-y-8 ${isAr ? "font-almarai" : "font-nunito"}`} dir={dir} lang={isAr ? "ar" : "en"}>
+            <div className={`flex ${isAr ? "justify-start" : "justify-end"}`}>
+                <AuthLanguageToggle activeBgClass="bg-[#FFCB08]" activeShadowClass="shadow-[0_2px_0_0_#DEA407]" />
+            </div>
             <div>
-                <h2 className="text-2xl font-black text-slate-800 font-nunito">إعدادات الحساب</h2>
-                <p className="text-slate-500 font-bold text-sm">تحديث ملفك الشخصي وإعدادات الأمان</p>
+                <h2 className="text-2xl font-black text-slate-800">{t.accountSettings}</h2>
+                <p className="text-slate-500 font-bold text-sm">{t.accountSubtitle}</p>
             </div>
 
             <div className="bg-white rounded-[24px] border border-slate-100 shadow-sm overflow-hidden">
@@ -129,9 +187,9 @@ export default function TeacherAccountPage() {
                             )}
                         </div>
                     </div>
-                    <div className="text-center sm:text-right space-y-1">
+                    <div className={`text-center ${isAr ? "sm:text-right" : "sm:text-left"} space-y-1`}>
                         <h3 className="text-xl font-black text-slate-800">{displayName}</h3>
-                        <p className="text-slate-500 font-bold text-sm flex items-center justify-center sm:justify-start gap-1.5">
+                        <p className={`text-slate-500 font-bold text-sm flex items-center justify-center ${isAr ? "sm:justify-end flex-row-reverse" : "sm:justify-start"} gap-1.5`}>
                             <Mail className="w-4 h-4" />
                             {userEmail}
                         </p>
@@ -143,19 +201,19 @@ export default function TeacherAccountPage() {
                     {/* Password Section */}
                     <section className="space-y-6">
                         <div className="space-y-1">
-                            <h4 className="text-lg font-black text-slate-800">كلمة المرور</h4>
-                            <p className="text-slate-400 text-xs font-bold">تغيير كلمة المرور الخاصة بك أو إعادة تعيينها.</p>
+                            <h4 className="text-lg font-black text-slate-800">{t.password}</h4>
+                            <p className="text-slate-400 text-xs font-bold">{t.passwordHelp}</p>
                         </div>
 
                         <form onSubmit={handlePasswordChange} className="space-y-6 max-w-xl">
                             <div className="space-y-4">
                                 <div className="space-y-1.5">
-                                    <label className="text-xs font-black text-slate-600">كلمة المرور الحالية</label>
+                                    <label className="text-xs font-black text-slate-600">{t.currentPassword}</label>
                                     <div className="relative">
                                         <button
                                             type="button"
                                             onClick={() => setShowOldPassword(!showOldPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                                            className={`absolute ${isAr ? "right-3" : "left-3"} top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors`}
                                         >
                                             {showOldPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                         </button>
@@ -164,19 +222,19 @@ export default function TeacherAccountPage() {
                                             value={oldPassword}
                                             onChange={(e) => setOldPassword(e.target.value)}
                                             dir="ltr"
-                                            className="w-full pl-10 pr-12 py-3 bg-white rounded-xl border border-slate-200 text-slate-700 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#FFCB08] transition-all placeholder:text-slate-300"
+                                            className={`w-full ${isAr ? "pl-10 pr-12" : "pl-12 pr-10"} py-3 bg-white rounded-xl border border-slate-200 text-slate-700 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#FFCB08] transition-all placeholder:text-slate-300`}
                                             placeholder="••••••••"
                                         />
-                                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                        <Lock className={`absolute ${isAr ? "left-3" : "right-3"} top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400`} />
                                     </div>
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-xs font-black text-slate-600">كلمة المرور الجديدة</label>
+                                    <label className="text-xs font-black text-slate-600">{t.newPassword}</label>
                                     <div className="relative">
                                         <button
                                             type="button"
                                             onClick={() => setShowNewPassword(!showNewPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                                            className={`absolute ${isAr ? "right-3" : "left-3"} top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors`}
                                         >
                                             {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                         </button>
@@ -185,19 +243,19 @@ export default function TeacherAccountPage() {
                                             value={newPassword}
                                             onChange={(e) => setNewPassword(e.target.value)}
                                             dir="ltr"
-                                            className="w-full pl-10 pr-12 py-3 bg-white rounded-xl border border-slate-200 text-slate-700 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#FFCB08] transition-all placeholder:text-slate-300"
+                                            className={`w-full ${isAr ? "pl-10 pr-12" : "pl-12 pr-10"} py-3 bg-white rounded-xl border border-slate-200 text-slate-700 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#FFCB08] transition-all placeholder:text-slate-300`}
                                             placeholder="••••••••"
                                         />
-                                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                        <Lock className={`absolute ${isAr ? "left-3" : "right-3"} top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400`} />
                                     </div>
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-xs font-black text-slate-600">تأكيد كلمة المرور</label>
+                                    <label className="text-xs font-black text-slate-600">{t.confirmPassword}</label>
                                     <div className="relative">
                                         <button
                                             type="button"
                                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                                            className={`absolute ${isAr ? "right-3" : "left-3"} top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors`}
                                         >
                                             {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                         </button>
@@ -206,10 +264,10 @@ export default function TeacherAccountPage() {
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
                                             dir="ltr"
-                                            className="w-full pl-10 pr-12 py-3 bg-white rounded-xl border border-slate-200 text-slate-700 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#FFCB08] transition-all placeholder:text-slate-300"
+                                            className={`w-full ${isAr ? "pl-10 pr-12" : "pl-12 pr-10"} py-3 bg-white rounded-xl border border-slate-200 text-slate-700 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#FFCB08] transition-all placeholder:text-slate-300`}
                                             placeholder="••••••••"
                                         />
-                                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                        <Lock className={`absolute ${isAr ? "left-3" : "right-3"} top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400`} />
                                     </div>
                                 </div>
                             </div>
@@ -228,7 +286,7 @@ export default function TeacherAccountPage() {
                                     className="flex items-center justify-center gap-2 bg-[#FFCB08] text-[#8D1716] px-6 py-2.5 rounded-xl text-sm font-black hover:bg-[#F0BF07] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                                 >
                                     {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                                    <span>حفظ كلمة المرور</span>
+                                    <span>{t.savePassword}</span>
                                 </button>
                             </div>
                         </form>
@@ -239,22 +297,21 @@ export default function TeacherAccountPage() {
                     {/* Separate Forget Password Section to match main screen flow */}
                     <section className="space-y-6">
                         <div className="space-y-1">
-                            <h4 className="text-lg font-black text-slate-800">إعادة تعيين كلمة المرور</h4>
-                            <p className="text-slate-400 text-xs font-bold">سنرسل لك رابطاً لإعادة تعيين كلمة المرور عبر البريد الإلكتروني.</p>
+                            <h4 className="text-lg font-black text-slate-800">{t.resetPassword}</h4>
+                            <p className="text-slate-400 text-xs font-bold">{t.resetHelp}</p>
                         </div>
 
                         <div className="space-y-4 max-w-xl">
                             <div className="space-y-1.5">
-                                <label className="text-xs font-black text-slate-600">البريد الإلكتروني</label>
+                                <label className="text-xs font-black text-slate-600">{t.email}</label>
                                 <div className="relative">
-                                    <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                    <Mail className={`absolute ${isAr ? "right-3" : "left-3"} top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400`} />
                                     <Input
                                         dir="ltr"
                                         type="email"
                                         value={resetEmail}
-                                        onChange={(e) => setResetEmail(e.target.value)}
-                                        disabled={isLoading}
-                                        className="w-full pl-4 pr-10 py-3 bg-white rounded-xl border border-slate-200 text-slate-700 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#FFCB08] transition-all placeholder:text-slate-300"
+                                        readOnly
+                                        className={`w-auto ${isAr ? "pl-4 pr-10" : "pl-10 pr-4"} py-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-500 font-bold text-sm focus:outline-none cursor-not-allowed select-none`}
                                         placeholder="your-email@example.com"
                                     />
                                 </div>
@@ -267,7 +324,7 @@ export default function TeacherAccountPage() {
                                 className="flex items-center justify-center gap-2 bg-white border border-slate-200 text-slate-600 px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-50 transition-all disabled:opacity-50"
                             >
                                 {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                                <span>إرسال رابط إعادة تعيين</span>
+                                <span>{t.sendReset}</span>
                             </button>
                         </div>
                     </section>
