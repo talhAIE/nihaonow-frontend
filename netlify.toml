@@ -6,7 +6,7 @@
 
 [[redirects]]
   from = "/api/*"
-  to = "https://nihaonow-dev-hfhga5fpgxhcedcv.uaenorth-01.azurewebsites.net/api/:splat"
+  to = "https://facetious-lillian-steepled.ngrok-free.dev/api/:splat"
   status = 200
   force = true
   headers = {X-From = "Netlify"}

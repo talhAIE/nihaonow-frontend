@@ -253,42 +253,6 @@ export default function Page() {
     };
   }, [dir]);
 
-  if (loading && initialLoad) {
-    return (
-      <div
-        className={`min-h-screen bg-white flex items-center justify-center ${isAr ? "font-almarai" : "font-nunito"}`}
-        dir={dir}
-        lang={isAr ? "ar" : "en"}
-      >
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#35AB4E] mx-auto mb-4"></div>
-          <p className="text-slate-600">{t.loading}</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div
-        className={`min-h-screen bg-white flex items-center justify-center ${isAr ? "font-almarai" : "font-nunito"}`}
-        dir={dir}
-        lang={isAr ? "ar" : "en"}
-      >
-        <div className="text-center">
-          <p className="text-red-600 mb-4">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-[#35AB4E] text-white rounded-lg"
-          >
-            {t.retry}
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // Use real data or fallback to cached/defaults
   const isLanguageEn = dir === 'ltr';
   const currentLang = isLanguageEn ? 'en' : 'ar';
 
@@ -333,6 +297,42 @@ export default function Page() {
   } else if (userLevel?.level.level === levelDefinitions.length) {
     namedProgress = 100; // Max level
   }
+
+  if (loading && initialLoad) {
+    return (
+      <div
+        className={`min-h-screen bg-white flex items-center justify-center ${isAr ? "font-almarai" : "font-nunito"}`}
+        dir={dir}
+        lang={isAr ? "ar" : "en"}
+      >
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#35AB4E] mx-auto mb-4"></div>
+          <p className="text-slate-600">{t.loading}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div
+        className={`min-h-screen bg-white flex items-center justify-center ${isAr ? "font-almarai" : "font-nunito"}`}
+        dir={dir}
+        lang={isAr ? "ar" : "en"}
+      >
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-[#35AB4E] text-white rounded-lg"
+          >
+            {t.retry}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
 
   return (
     <div className={`relative min-h-screen bg-white ${isAr ? "font-almarai" : "font-nunito"}`} dir={dir} lang={isAr ? "ar" : "en"}>
