@@ -26,7 +26,7 @@ import GuidePopup from "@/components/dashboard/GuidePopup";
 import { guidePersistence } from "@/lib/guidePersistence";
 import AuthLanguageToggle from "@/components/auth/AuthLanguageToggle";
 import { useMemo } from "react";
-import { localizeDashboardOverview, localizeTopicProgress } from "@/lib/db-localization";
+import { localizeDashboardOverview, localizeTopicProgress, localizeChapterProgress } from "@/lib/db-localization";
 
 export default function Page() {
   const { goToStudentScenario } = useNavigation();

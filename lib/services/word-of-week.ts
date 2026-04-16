@@ -36,7 +36,7 @@ export const wordOfWeekApi = {
   getWordTopics: async (config: any = {}): Promise<WordTopic[]> => {
     const url = apiEndpoints.wordOfWeek.topics;
     const topics = await apiClient.get<WordTopic[]>(url, undefined, config);
-    return topics.map(localizeWordTopic);
+    return topics.map(t => localizeWordTopic(t));
   },
 
   /**

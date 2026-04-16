@@ -30,8 +30,8 @@ export default function TeacherSidebar() {
     }
   };
 
-  const displayName = state?.authUser?.username || (isRtl ? 'المعلم' : 'Teacher');
   const isRtl = dir === 'rtl';
+  const displayName = state?.authUser?.username || (isRtl ? 'المعلم' : 'Teacher');
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
