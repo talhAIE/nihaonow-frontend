@@ -9,6 +9,7 @@ interface CertificateScrollProps {
   id: number;
   name: string;
   description: string;
+  dir?: 'rtl' | 'ltr';
   status: "earned" | "locked";
   awardedAt?: string;
   onDownload: () => void;
@@ -25,8 +26,10 @@ export default function CertificateScroll({
   onDownload,
   isDownloading,
   customId,
+  dir = 'rtl',
 }: CertificateScrollProps) {
-  const isLocked = status === "locked";
+  const isLocked = status === 'locked';
+  const isRtl = dir === 'rtl';
 
   return (
     <div
@@ -56,7 +59,7 @@ export default function CertificateScroll({
         {!isLocked && (
           <div className="absolute inset-0 flex flex-col items-center justify-center p-8 pt-12 text-center">
             <h5 className="text-[8px] sm:text-[10px] font-black text-amber-800/60 uppercase tracking-widest mb-1">
-              الشهادة الرسمية
+              {isRtl ? 'الشهادة الرسمية' : 'Official Certificate'}
             </h5>
             <h4 className="text-sm sm:text-lg lg:text-xl font-black text-gray-900 mb-1 sm:mb-2 font-almarai-extrabold">
               {name}
@@ -67,7 +70,7 @@ export default function CertificateScroll({
             </p>
             {awardedAt && (
               <p className="mt-2 sm:mt-4 text-[8px] sm:text-[10px] font-bold text-gray-400">
-                صدرت في: {new Date(awardedAt).toLocaleDateString("ar-EG")}
+                {isRtl ? 'صدرت في:' : 'Issued on:'} {new Date(awardedAt).toLocaleDateString(isRtl ? 'ar-EG' : 'en-US')}
               </p>
             )}
 
@@ -76,7 +79,7 @@ export default function CertificateScroll({
         )}
       </div>
 
-      <div className="mt-8 px-4" dir="rtl">
+      <div className="mt-8 px-4" dir={isRtl ? 'rtl' : 'ltr'}>
         <div
           onClick={!isLocked && !isDownloading ? onDownload : undefined}
           className={`bg-white border border-[#E5E5E5] rounded-[20px] px-5 py-3.5 flex items-center justify-between shadow-sm w-full min-h-[64px] transition-all ${
@@ -87,8 +90,8 @@ export default function CertificateScroll({
               : "hover:border-slate-300 cursor-pointer active:scale-[0.99]"
           }`}
         >
-          {/* Right: Icon + Name */}
-          <div className="flex items-center gap-2.5">
+          {/* Title side */}
+          <div className={`flex items-center gap-2.5 ${isRtl ? 'flex-row' : 'flex-row-reverse'}`}>
             {/* Category Icons based on name/status */}
             {!isLocked ? (
               <svg

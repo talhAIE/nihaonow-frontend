@@ -5,6 +5,7 @@ import type {
   WordScenario,
   WordOfWeekStatusResponse,
 } from '@/lib/types';
+import { localizeWord, localizeWordScenario, localizeWordTopic } from '@/lib/db-localization';
 
 export const wordOfWeekApi = {
   /**
@@ -13,7 +14,8 @@ export const wordOfWeekApi = {
   getActiveWord: async (config: any = {}): Promise<WordOfTheWeek | null> => {
     try {
       const url = apiEndpoints.wordOfWeek.active;
-      return await apiClient.get<WordOfTheWeek>(url, undefined, config);
+      const word = await apiClient.get<WordOfTheWeek>(url, undefined, config);
+      return word ? localizeWord(word) : null;
     } catch (error) {
       console.error('Failed to fetch active word:', error);
       return null;
@@ -33,7 +35,8 @@ export const wordOfWeekApi = {
    */
   getWordTopics: async (config: any = {}): Promise<WordTopic[]> => {
     const url = apiEndpoints.wordOfWeek.topics;
-    return apiClient.get<WordTopic[]>(url, undefined, config);
+    const topics = await apiClient.get<WordTopic[]>(url, undefined, config);
+    return topics.map(localizeWordTopic);
   },
 
   /**
@@ -41,7 +44,8 @@ export const wordOfWeekApi = {
    */
   getWordTopicById: async (topicId: number, config: any = {}): Promise<WordTopic> => {
     const url = apiEndpoints.wordOfWeek.topicById(topicId);
-    return apiClient.get<WordTopic>(url, undefined, config);
+    const topic = await apiClient.get<WordTopic>(url, undefined, config);
+    return localizeWordTopic(topic);
   },
 
   /**
@@ -49,7 +53,8 @@ export const wordOfWeekApi = {
    */
   getWordScenarioById: async (scenarioId: number, config: any = {}): Promise<WordScenario> => {
     const url = apiEndpoints.wordOfWeek.scenarioById(scenarioId);
-    return apiClient.get<WordScenario>(url, undefined, config);
+    const scenario = await apiClient.get<WordScenario>(url, undefined, config);
+    return localizeWordScenario(scenario);
   },
 
   /**

@@ -22,6 +22,8 @@ import { sessionsApi, Scenario } from "@/lib/api";
 import { sessionUtils } from "@/lib/sessionUtils";
 import { useSearchParams } from "next/navigation";
 import { useNavigation } from "@/lib/navigation";
+import { useMemo } from "react";
+import { localizeChapter, localizeTopic } from "@/lib/db-localization";
 import FeedbackPopup from "@/components/FeedbackPopup";
 import VideoModal from "@/components/VideoModal";
 import { useToast } from "@/hooks/use-toast";
@@ -148,6 +150,22 @@ export default function ScenarioPage() {
   } as const;
 
   const t = isAr ? copy.ar : copy.en;
+
+  const isLanguageEn = dir === 'ltr';
+  const currentLang = isLanguageEn ? 'en' : 'ar';
+
+  const { currentTopic, currentChapter, currentChapterTitle, currentLessonTitle } = useMemo(() => {
+    const topicRaw = sessionUtils.getCurrentTopic();
+    const topic = topicRaw ? localizeTopic(topicRaw as any, currentLang) : null;
+    const chapter = topic?.chapter ? localizeChapter(topic.chapter as any, currentLang) : null;
+    
+    return {
+      currentTopic: topic,
+      currentChapter: chapter,
+      currentChapterTitle: chapter?.name || "",
+      currentLessonTitle: topic?.name || "",
+    };
+  }, [dir, currentLang]);
 
   useEffect(() => {
     const scenarioId = searchParams.get("scenarioId");
@@ -534,8 +552,9 @@ export default function ScenarioPage() {
       <audio ref={audioPlayerRef} className="hidden" />
       <div className="mt-12">
         <ProgressBar
-          unit={sessionUtils.getCurrentTopic()?.chapter?.name || ""}
-          lesson={sessionUtils.getCurrentTopic()?.name || ""}
+          key={dir}
+          unit={currentChapterTitle}
+          lesson={currentLessonTitle}
           progress={scenarioProgress}
           title={t.back}
           dir={dir}

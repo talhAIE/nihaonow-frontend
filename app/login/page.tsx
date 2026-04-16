@@ -279,7 +279,7 @@ export default function LoginPage() {
             <div className="space-y-2">
               <div className="relative">
                 <Input
-                  dir={isAr ? "rtl" : "ltr"}
+                  dir="ltr"
                   aria-label={t.usernameLabel}
                   id="username"
                   name="username"
@@ -294,7 +294,7 @@ export default function LoginPage() {
                   aria-describedby={
                     errors.username ? "username-error" : undefined
                   }
-                  className={`bg-[#ECECEC] border-2 border-transparent focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none w-full h-11 sm:h-[44px] px-4 rounded-[12px] transition-all duration-200 ${isAr ? "text-right" : "text-left"}`}
+                  className={`bg-[#ECECEC] border-2 border-transparent focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none w-full h-11 sm:h-[44px] px-4 rounded-[12px] transition-all duration-200 text-left`}
                 />
               </div>
               {errors.username && (

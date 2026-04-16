@@ -3,19 +3,19 @@ import { Chapter, Topic } from '@/lib/types';
 
 export const chaptersApi = {
   getAll: async (): Promise<Chapter[]> => {
-    return apiClient.get<Chapter[]>(apiEndpoints.chapters);
+    return await apiClient.get<Chapter[]>(apiEndpoints.chapters);
   },
   getById: async (id: number): Promise<Chapter> => {
-    return apiClient.get<Chapter>(apiEndpoints.chapterById(id));
+    return await apiClient.get<Chapter>(apiEndpoints.chapterById(id));
   },
   getTopics: async (id: number): Promise<any[]> => {
-    return apiClient.get<any[]>(apiEndpoints.chapterTopics(id));
+    return await apiClient.get<any[]>(apiEndpoints.chapterTopics(id));
   },
   getNextStep: async (): Promise<any> => {
-    return apiClient.get(apiEndpoints.content.nextStep);
+    return await apiClient.get(apiEndpoints.content.nextStep);
   },
   getIntroduction: async (): Promise<any> => {
-    return apiClient.get(apiEndpoints.content.introduction);
+    return await apiClient.get(apiEndpoints.content.introduction);
   },
 };
 
@@ -34,15 +34,15 @@ export const topicsApi = {
     }
   },
   getById: async (id: number): Promise<Topic> => {
-    return apiClient.get<Topic>(apiEndpoints.topicById(id));
+    return await apiClient.get<Topic>(apiEndpoints.topicById(id));
   },
   getScenarios: async (topicId: number): Promise<any[]> => {
-    return apiClient.get<any[]>(apiEndpoints.topicScenarios(topicId));
+    return await apiClient.get<any[]>(apiEndpoints.topicScenarios(topicId));
   },
 };
 
 export const scenariosApi = {
   getById: async (id: number): Promise<any> => {
-    return apiClient.get<any>(apiEndpoints.content.scenarioById(id));
+    return await apiClient.get<any>(apiEndpoints.content.scenarioById(id));
   },
 };

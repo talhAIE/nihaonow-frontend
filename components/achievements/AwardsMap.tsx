@@ -9,6 +9,8 @@ interface AchievementNode {
   id: string | number;
   name: string;
   description: string;
+  nameText?: { ar: string; en: string };
+  descriptionText?: { ar: string; en: string };
   status: "earned" | "locked";
   pointValue: number;
   category: string;
@@ -20,6 +22,7 @@ interface AwardsMapProps {
   achievements: AchievementNode[];
   onClaim?: (key: string, name: string) => void;
   claimedAchievements?: Set<string>; // Add prop for claimed achievements
+  dir?: 'rtl' | 'ltr';
 }
 
 interface MapNode {
@@ -86,10 +89,11 @@ const TRI_PATH_NODES: MapNode[] = [
   { x: 85, mdX: 80, lgX: 80, y: 84, pathId: "right", variant: "green", size: "medium" },
 ];
 
-export default function AwardsMap({ achievements, onClaim, claimedAchievements = new Set() }: AwardsMapProps) {
+export default function AwardsMap({ achievements, onClaim, claimedAchievements = new Set(), dir = 'rtl' }: AwardsMapProps) {
   // Local state for claimed achievements to show immediate UI feedback
   const [localClaimed, setLocalClaimed] = useState<Set<string>>(claimedAchievements);
   const [activePopup, setActivePopup] = useState<AchievementNode | null>(null);
+  const isRtl = dir === 'rtl';
 
   useEffect(() => {
     setLocalClaimed(new Set(claimedAchievements));
@@ -215,34 +219,34 @@ export default function AwardsMap({ achievements, onClaim, claimedAchievements =
           {/* Close Button Top Right */}
           <button
             type="button"
-            className="absolute top-5 right-5 text-gray-400 hover:text-gray-600 text-xl leading-none w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors z-20"
+            className={`absolute top-5 ${isRtl ? 'right-5' : 'left-5'} text-gray-400 hover:text-gray-600 text-xl leading-none w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors z-20`}
             onClick={() => setActivePopup(null)}
-            aria-label="إغلاق"
+            aria-label={isRtl ? 'إغلاق' : 'Close'}
           >
             ✕
           </button>
 
           {/* Content Group: Star + Text */}
-          <div className="flex items-center justify-center gap-3 mb-5 mt-2 relative z-10">
+          <div className={`flex items-center justify-center gap-3 mb-5 mt-2 relative z-10 ${isRtl ? 'flex-row' : 'flex-row-reverse'}`}>
             <Star
               className={`w-8 h-8 sm:w-10 sm:h-10 shrink-0 rotate-12 ${activePopup.status === "earned"
                 ? "text-yellow-400 fill-yellow-400"
                 : "text-gray-400 fill-gray-400"
                 }`}
             />
-            <div className="flex flex-col items-start text-right">
+            <div className={`flex flex-col ${isRtl ? 'items-start text-right' : 'items-end text-left'}`}>
               <h3 className="text-base sm:text-lg font-almarai-extrabold leading-tight text-gray-900">
-                {activePopup.name}
+                {(isRtl ? activePopup.nameText?.ar : activePopup.nameText?.en) || activePopup.name}
               </h3>
               <p className="text-xs sm:text-sm text-gray-600 font-medium leading-relaxed break-words max-w-[200px]">
-                {activePopup.description ||
-                  "أكمل المهام المطلوبة للحصول على هذه المكافأة الرائعة!"}
+                {(isRtl ? activePopup.descriptionText?.ar : activePopup.descriptionText?.en) || activePopup.description ||
+                  (isRtl ? 'أكمل المهام المطلوبة للحصول على هذه المكافأة الرائعة!' : 'Complete the required tasks to unlock this reward.')}
               </p>
             </div>
           </div>
 
           {/* Footer with points and status */}
-          <div className="flex items-center justify-between gap-3 relative z-10">
+          <div className={`flex items-center justify-between gap-3 relative z-10 ${isRtl ? 'flex-row' : 'flex-row-reverse'}`}>
             {/* Status button - moved to left */}
             <button
               className={`text-xs sm:text-sm font-almarai-bold px-4 py-2 rounded-xl transition-colors ${activePopup.status === "earned"
@@ -250,7 +254,7 @@ export default function AwardsMap({ achievements, onClaim, claimedAchievements =
                 : "bg-rose-100 text-rose-700 hover:bg-rose-200"
                 }`}
             >
-              {activePopup.status === "earned" ? "تم الإنجاز" : "مغلق"}
+              {activePopup.status === 'earned' ? (isRtl ? 'تم الإنجاز' : 'Earned') : (isRtl ? 'مغلق' : 'Locked')}
             </button>
 
             {/* Points display - moved to right */}
@@ -455,7 +459,7 @@ export default function AwardsMap({ achievements, onClaim, claimedAchievements =
                     </div>
                     <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                       <div className="bg-slate-900/95 text-white text-[10px] sm:text-[11px] font-almarai-bold px-3 py-1.5 rounded-full shadow-lg border border-white/10 whitespace-nowrap">
-                        تمت المطالبة به
+                        {isRtl ? 'تمت المطالبة به' : 'Claimed'}
                       </div>
                     </div>
                   </div>

@@ -9,6 +9,8 @@ import { useNavigation } from '@/lib/navigation';
 import { useAuthProtection } from "@/hooks/useAuthProtection";
 import { useAppContext } from "@/context/AppContext";
 import AuthLanguageToggle from "@/components/auth/AuthLanguageToggle";
+import { useMemo } from "react";
+import { localizeTopic } from "@/lib/db-localization";
 
 export default function TopicsPage() {
   useAuthProtection();
@@ -26,6 +28,34 @@ export default function TopicsPage() {
     loading: sessionLoading,
     error: sessionError,
   } = useSession();
+
+  const copy = {
+    ar: {
+      loadingTopics: "جاري تحميل الدروس...",
+      loadingSession: "جاري بدء الجلسة...",
+      retry: "إعادة المحاولة",
+      empty: "لا توجد دروس متاحة لهذه الوحدة",
+    },
+    en: {
+      loadingTopics: "Loading lessons...",
+      loadingSession: "Starting session...",
+      retry: "Try again",
+      empty: "No lessons available for this unit",
+    },
+  } as const;
+
+  const t = isAr ? copy.ar : copy.en;
+
+  const localizedTopics = useMemo(() => {
+    return topics.map(topic => {
+      const loc = localizeTopic(topic, isAr ? 'ar' : 'en');
+      return {
+        ...loc,
+        title: loc.name, // Topics page expects 'title'
+        subtitle: loc.subtitle, // and 'subtitle'
+      };
+    });
+  }, [topics, isAr]);
 
   const handleTopicClick = async (topic: any) => {
     if (topic.status === "active") {
@@ -51,22 +81,6 @@ export default function TopicsPage() {
     return luminance > 0.7;
   };
 
-  const copy = {
-    ar: {
-      loadingTopics: "جاري تحميل الدروس...",
-      loadingSession: "جاري بدء الجلسة...",
-      retry: "إعادة المحاولة",
-      empty: "لا توجد دروس متاحة لهذه الوحدة",
-    },
-    en: {
-      loadingTopics: "Loading lessons...",
-      loadingSession: "Starting session...",
-      retry: "Try again",
-      empty: "No lessons available for this unit",
-    },
-  } as const;
-
-  const t = isAr ? copy.ar : copy.en;
 
   return (
     <div className={`min-h-screen w-[90%] mx-auto ${isAr ? "font-almarai" : "font-nunito"}`} dir={dir} lang={isAr ? "ar" : "en"}>
@@ -106,8 +120,8 @@ export default function TopicsPage() {
         )}
 
         {/* Dynamic Topics as Cards */}
-        {!loading && !error && !sessionLoading && topics.length > 0 && (
-          topics.map((topic, idx) => {
+        {!loading && !error && !sessionLoading && localizedTopics.length > 0 && (
+          localizedTopics.map((topic, idx) => {
             const color = colors[idx % colors.length];
             const light = isLight(color);
             return (

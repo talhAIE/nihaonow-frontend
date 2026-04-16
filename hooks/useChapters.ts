@@ -26,14 +26,16 @@ export const useChapters = (): UseChaptersReturn => {
       const chaptersData = await chaptersApi.getAll();
       
       // Transform the data to match our UI expectations
-      const transformedChapters = chaptersData.map((chapter, index) => ({
-        ...chapter,
-        title: chapter.name,
-        subtitle: chapter.difficulty,
-        color: getChapterColor(index),
-        status: index === 0 ? "active" as const : "locked" as const,
-        progress: index === 0 ? 80 : undefined,
-      }));
+      const transformedChapters = chaptersData.map((chapter, index) => {
+        return {
+          ...chapter,
+          title: chapter.name,
+          subtitle: chapter.difficulty,
+          color: getChapterColor(index),
+          status: index === 0 ? "active" as const : "locked" as const,
+          progress: index === 0 ? 80 : undefined,
+        };
+      });
       
       setChapters(transformedChapters);
     } catch (err) {

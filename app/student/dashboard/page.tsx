@@ -25,6 +25,8 @@ import type {
 import GuidePopup from "@/components/dashboard/GuidePopup";
 import { guidePersistence } from "@/lib/guidePersistence";
 import AuthLanguageToggle from "@/components/auth/AuthLanguageToggle";
+import { useMemo } from "react";
+import { localizeDashboardOverview, localizeTopicProgress } from "@/lib/db-localization";
 
 export default function Page() {
   const { goToStudentScenario } = useNavigation();
@@ -117,6 +119,26 @@ export default function Page() {
   } as const;
 
   const t = isAr ? copy.ar : copy.en;
+
+  const levelTitles = {
+    ar: {
+      little_panda: "الباندا الصغيرة",
+      bamboo_explorer: "مستكشف الخيزران",
+      young_mandarin: "متحدث الماندرين الصغير",
+      confident_conversationalist: "متحاور واثق",
+      story_builder: "صانع القصص",
+      junior_native: "طلاقة المتحدث الأصلي الصغير",
+    },
+    en: {
+      little_panda: "Little Panda",
+      bamboo_explorer: "Bamboo Explorer",
+      young_mandarin: "Young Mandarin",
+      confident_conversationalist: "Confident Conversationalist",
+      story_builder: "Story Builder",
+      junior_native: "Junior Native",
+    },
+  } as const;
+
   const LevelChevron = isAr ? ChevronLeft : ChevronRight;
 
   useEffect(() => {
@@ -127,7 +149,7 @@ export default function Page() {
     checkWidth();
     window.addEventListener("resize", checkWidth);
     return () => window.removeEventListener("resize", checkWidth);
-  }, []);
+  }, [dir]);
 
   useEffect(() => {
     if (state.authUser?.id && state.authUser?.isFirstLogin && state.isInitialized) {
@@ -229,7 +251,7 @@ export default function Page() {
       window.removeEventListener("focus", onFocus);
       window.removeEventListener("storage", onStorageChange);
     };
-  }, []);
+  }, [dir]);
 
   if (loading && initialLoad) {
     return (
@@ -267,8 +289,22 @@ export default function Page() {
   }
 
   // Use real data or fallback to cached/defaults
-  const overview = dashboardData?.overview;
-  const topicProgress = dashboardData?.progress?.topics || [];
+  const isLanguageEn = dir === 'ltr';
+  const currentLang = isLanguageEn ? 'en' : 'ar';
+
+  const localizedData = useMemo(() => {
+    if (!dashboardData) return null;
+    return {
+      overview: localizeDashboardOverview(dashboardData.overview, currentLang),
+      progress: {
+        topics: (dashboardData.progress?.topics || []).map(t => localizeTopicProgress(t, currentLang)),
+        chapters: (dashboardData.progress?.chapters || []).map(c => localizeChapterProgress(c, currentLang)),
+      }
+    };
+  }, [dashboardData, currentLang]);
+
+  const overview = localizedData?.overview;
+  const topicProgress = localizedData?.progress?.topics || [];
   const metrics = dashboardData?.metrics;
   const userName =
     overview?.userName ||
@@ -344,7 +380,7 @@ export default function Page() {
             <div className={`flex-1 flex ${isAr ? "flex-row-reverse" : "flex-row"} items-center justify-between p-6 gap-6`}>
               <div className={`${isAr ? "text-right" : "text-left"} flex-1`}>
                 <h3 className={`text-[#332902] ${isAr ? "font-almarai-extrabold" : "font-nunito"} text-xl lg:text-2xl mb-1 leading-tight`}>
-                  {userLevel ? `${userLevel.level.name}` : t.smallPanda}
+                  {userLevel ? levelTitles[isAr ? "ar" : "en"][(userLevel.level.key as keyof typeof levelTitles.en)] || t.smallPanda : t.smallPanda}
                 </h3>
                 <p className="text-[#35AB4E] font-bold text-sm mb-4">
                   {t.beginner}
@@ -616,11 +652,7 @@ export default function Page() {
                   <div className="flex flex-row items-center justify-between">
                     <div className={`${isAr ? "text-right" : "text-left"}`}>
                       <p className="text-lg font-bold text-[#4B4B4B]">
-                        {topic.name === "الدرس 1 – التحيات"
-                          ? t.lessonUnit1
-                          : topic.name === "الدرس 10 – الشكر"
-                            ? t.lessonUnit10
-                            : topic.name}
+                        {topic.name}
                       </p>
                       <p className="text-sm text-slate-500 flex items-center gap-1">
                         <span>

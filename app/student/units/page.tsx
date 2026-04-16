@@ -8,6 +8,8 @@ import { ChapterUI } from "@/lib/api";
 import { useAuthProtection } from "@/hooks/useAuthProtection";
 import { useAppContext } from "@/context/AppContext";
 import AuthLanguageToggle from "@/components/auth/AuthLanguageToggle";
+import { useMemo } from "react";
+import { localizeChapter } from "@/lib/db-localization";
 
 export default function UnitsPage() {
   useAuthProtection();
@@ -31,6 +33,17 @@ export default function UnitsPage() {
   } as const;
 
   const t = isAr ? copy.ar : copy.en;
+
+  const localizedChapters = useMemo(() => {
+    return chapters.map(chapter => {
+      const loc = localizeChapter(chapter, isAr ? 'ar' : 'en');
+      return {
+        ...loc,
+        title: loc.name, // Units page expects 'title'
+        subtitle: loc.difficulty, // and 'subtitle' (difficulty in this case)
+      };
+    });
+  }, [chapters, isAr]);
 
   const handleUnitClick = (chapter: ChapterUI) => {
     if (chapter.status === "active") {
@@ -90,7 +103,7 @@ export default function UnitsPage() {
         {/* Dynamic Units from API */}
         {!loading &&
           !error &&
-          chapters.map((chapter, idx) => {
+          localizedChapters.map((chapter, idx) => {
             const color = colors[idx % colors.length];
             const light = isLight(color);
             return (

@@ -22,9 +22,7 @@ export const metadata: Metadata = {
   description: "Ni Hao Now",
   icons: {
     icon: [
-      { url: "/four.ico" },
-      { url: "/six.ico" },
-      { url: "/two.ico" },
+      { url: "/favicon.ico" },
     ],
   },
 };
