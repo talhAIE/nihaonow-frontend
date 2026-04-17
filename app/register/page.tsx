@@ -178,7 +178,7 @@ export default function RegisterPage() {
         let userRole = String(userData.role || "student").toLowerCase();
 
         import('@/lib/authUtils').then(({ setUserRole }) => {
-            setUserRole(userRole);
+          setUserRole(userRole);
         });
 
         login({
@@ -190,7 +190,7 @@ export default function RegisterPage() {
         });
 
         toast({ title: t.successTitle, description: t.successDesc, duration: 5000 });
-        
+
         setTimeout(() => {
           goToStudentDashboard();
         }, 100);
@@ -242,7 +242,7 @@ export default function RegisterPage() {
             <div className="space-y-2">
               <div className="relative">
                 <Input
-                  dir={isAr ? 'rtl' : 'ltr'}
+                  dir='ltr'
                   aria-label={t.usernameLabel}
                   id="username"
                   name="username"
@@ -255,7 +255,7 @@ export default function RegisterPage() {
                   aria-required="true"
                   aria-invalid={errors.username ? 'true' : 'false'}
                   aria-describedby={errors.username ? 'username-error' : undefined}
-                  className={`bg-[#ECECEC] border-0 hover:bg-[#ECECEC] focus:bg-[#ECECEC] focus-visible:bg-[#ECECEC] focus:border-0 focus-visible:border-0 focus:ring-0 focus-visible:ring-0 outline-none w-full h-11 sm:h-[44px] px-4 rounded-[12px] ${isAr ? 'text-right' : 'text-left'}`}
+                  className={`bg-[#ECECEC] border-0 hover:bg-[#ECECEC] focus:bg-[#ECECEC] focus-visible:bg-[#ECECEC] focus:border-0 focus-visible:border-0 focus:ring-0 focus-visible:ring-0 outline-none w-full h-11 sm:h-[44px] px-4 rounded-[12px] text-left`}
                 />
               </div>
               {errors.username && (
