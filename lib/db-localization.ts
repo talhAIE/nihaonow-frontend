@@ -25,7 +25,7 @@ type ApiLocalizedValue =
     };
 
 function getLanguage(): Language {
-  if (typeof window === 'undefined') return 'ar';
+  if (typeof window === 'undefined') return 'en';
   const dir = window.localStorage.getItem('dir');
   const lang = dir === 'ltr' ? 'en' : 'ar';
   console.log(`[Localization] Detected language: ${lang} (dir: ${dir})`);

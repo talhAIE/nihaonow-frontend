@@ -56,13 +56,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const [dir, setDirState] = useState<"ltr" | "rtl">(() => {
     try {
-      if (typeof window === 'undefined') return 'rtl';
+      if (typeof window === 'undefined') return 'ltr';
       const stored = localStorage.getItem('dir') as "ltr" | "rtl" | null;
       if (stored === 'ltr' || stored === 'rtl') return stored;
       const docDir = document.documentElement?.dir as "ltr" | "rtl" | undefined;
-      return docDir === 'ltr' || docDir === 'rtl' ? docDir : 'rtl';
+      return docDir === 'ltr' || docDir === 'rtl' ? docDir : 'ltr';
     } catch (err) {
-      return 'rtl';
+      return 'ltr';
     }
   });
 
