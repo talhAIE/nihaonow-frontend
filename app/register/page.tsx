@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAppContext } from '@/context/AppContext';
 import { authApi } from '@/lib/api';
-import { setAuthToken } from '@/lib/authUtils';
+import { setAuthToken, setUserRole } from '@/lib/authUtils';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
 import Image from 'next/image';
@@ -177,9 +177,7 @@ export default function RegisterPage() {
 
         let userRole = String(userData.role || "student").toLowerCase();
 
-        import('@/lib/authUtils').then(({ setUserRole }) => {
-          setUserRole(userRole);
-        });
+        setUserRole(userRole);
 
         login({
           id: String(userData.id ?? ""),

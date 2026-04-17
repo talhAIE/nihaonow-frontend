@@ -27,7 +27,8 @@ type ApiLocalizedValue =
 function getLanguage(): Language {
   if (typeof window === 'undefined') return 'en';
   const dir = window.localStorage.getItem('dir');
-  const lang = dir === 'ltr' ? 'en' : 'ar';
+  // If dir is explicitly 'rtl', use 'ar'. Otherwise (including 'ltr' or null), use 'en'.
+  const lang = dir === 'rtl' ? 'ar' : 'en';
   console.log(`[Localization] Detected language: ${lang} (dir: ${dir})`);
   return lang as Language;
 }
@@ -69,6 +70,71 @@ function pickLocalized(language: Language, value?: ApiLocalizedValue, fallback?:
 
   // Arabic mode: prioritize Arabic fields
   return value.ar || value.variation || value.raw || value.en || fallback || null;
+}
+
+/**
+ * Centrally parses error messages from the backend.
+ * If the message is a localized object (or JSON string of one), it picks the right language.
+ */
+export function localizeErrorMessage(message: any, lang?: Language): string {
+  const language = lang || getLanguage();
+  console.log(`[Localization] localizeErrorMessage input (lang: ${language}):`, message);
+  
+  // If no message at all, return a generic but descriptive fallback
+  if (!message) {
+    console.warn('[Localization] No message provided to localizeErrorMessage');
+    return 'An unexpected error occurred';
+  }
+
+  let parsed = message;
+
+  // 1. Try parsing if it's a JSON string
+  if (typeof message === 'string' && message.trim().startsWith('{')) {
+    try {
+      parsed = JSON.parse(message);
+      console.log('[Localization] Parsed string into object:', parsed);
+    } catch (e) {
+      console.error('[Localization] Failed to parse JSON string error message:', e);
+      return message;
+    }
+  }
+
+  // 2. Resolve localization if we have an object
+  if (parsed && typeof parsed === 'object') {
+    // Check for direct localized fields FIRST (my new pattern)
+    // This is important because NestJS might inject a 'message' or 'error' sibling
+    if (parsed.en || parsed.ar) {
+      const result = (language === 'en' ? parsed.en || parsed.ar : parsed.ar || parsed.en);
+      console.log('[Localization] Found direct localized fields, result:', result);
+      return result;
+    }
+
+    // Check for nested message property (standard NestJS/Axios pattern)
+    if (parsed.message) {
+      // If it's an array (validation errors), pick the first one or join them
+      if (Array.isArray(parsed.message)) {
+        console.log('[Localization] message is an array (validation errors)');
+        return parsed.message.join(', ');
+      }
+      console.log('[Localization] Recursing into parsed.message');
+      return localizeErrorMessage(parsed.message, language);
+    }
+
+    // If it has an 'error' property (Express fallback), use that
+    if (parsed.error && typeof parsed.error === 'string') {
+      console.log('[Localization] Using parsed.error fallback:', parsed.error);
+      return parsed.error;
+    }
+
+    // If it's a generic object but not our expected format, stringify for visibility
+    const stringified = JSON.stringify(parsed);
+    console.log('[Localization] No known patterns found, stringified:', stringified);
+    return stringified;
+  }
+
+  // 3. Plain string fallback
+  console.log('[Localization] Plain string fallback:', message);
+  return String(message);
 }
 
 

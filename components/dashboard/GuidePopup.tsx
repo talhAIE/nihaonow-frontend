@@ -1,5 +1,6 @@
 "use client";
 import { useState, useLayoutEffect, useCallback, useRef } from "react";
+import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import {
@@ -30,86 +31,91 @@ interface TargetRect {
   height: number;
 }
 
+const COPY = {
+  ar: {
+    welcome: {
+      title: "مرحباً بك في Zayd AI Chinese",
+      desc: "تعلم اللغة الصينية خطوة بخطوة وبطريقة ممتعة",
+      button: "هيا نبدأ",
+    },
+    steps: {
+      "levels-card": { title: "المستوى التعليمي", desc: "تتبع تقدمك للوصول إلى المستوى القادم من الباندا." },
+      "word-of-week-card": { title: "كلمة الأسبوع", desc: "تعلم كلمة جديدة كل أسبوع مع النطق والمعنى." },
+      "metrics-card": { title: "مؤشرات الأداء", desc: "تابع مهارات النطق والطلاقة والدقة بالتفصيل." },
+      "longest-streak-card": { title: "أطول خط للمتابعة", desc: "هذا هو الرقم القياسي لأطول سلسلة تعلم متواصلة لديك." },
+      "current-streak-card": { title: "الخط الحالية", desc: "حافظ على استمرارية التعلم يومياً لزيادة هذا الرقم!" },
+      "topic-progress-container": { title: "التقدم في المحاضرات", desc: "شاهد مدى تقدمك في كل درس ووحدة تدريبية." },
+      "sidebar-dashboard": { title: "لوحة التحكم", desc: "استعرض ملخص تقدمك وإحصائياتك اليومية." },
+      "sidebar-units": { title: "الوحدات التدريبية", desc: "ابدأ دروسك الصينية المنظمة حسب المستويات." },
+      "sidebar-leaderboard": { title: "قائمة المتفوقين", desc: "نافس زملاءك وشاهد ترتيبك العالمي." },
+      "sidebar-achievements": { title: "الشارات التعليمية", desc: "استعرض الإنجازات والأوسمة التي حصلت عليها." },
+      "sidebar-account": { title: "حساب المستخدم", desc: "إدارة ملفك الشخصي وإعدادات حسابك." },
+      "sidebar-logout": { title: "تسجيل الخروج", desc: "قم بتسجيل الخروج بأمان من حسابك." },
+    },
+    final: {
+      title: "استمتع بالتعلم!",
+      desc: "تعلم قليلاً كل يوم وستصبح أفضل",
+      button: "ابدأ التعلم",
+    },
+    common: {
+      finish: "إنهاء الجولة",
+      gotIt: "فهمت",
+    }
+  },
+  en: {
+    welcome: {
+      title: "Welcome to Zayd AI Chinese",
+      desc: "Learn Chinese step-by-step in a fun way",
+      button: "Let's Start",
+    },
+    steps: {
+      "levels-card": { title: "Learning Level", desc: "Track your progress to reach the next Panda level." },
+      "word-of-week-card": { title: "Word of the Week", desc: "Learn a new word every week with pronunciation and meaning." },
+      "metrics-card": { title: "Performance Metrics", desc: "Track your pronunciation, fluency, and accuracy skills in detail." },
+      "longest-streak-card": { title: "Longest Streak", desc: "This is your record for the longest continuous learning streak." },
+      "current-streak-card": { title: "Current Streak", desc: "Keep learning daily to increase this number!" },
+      "topic-progress-container": { title: "Lesson Progress", desc: "See how much you've progressed in each lesson and unit." },
+      "sidebar-dashboard": { title: "Dashboard", desc: "View a summary of your daily progress and statistics." },
+      "sidebar-units": { title: "Learning Units", desc: "Start your Chinese lessons organized by levels." },
+      "sidebar-leaderboard": { title: "Leaderboard", desc: "Compete with your peers and see your ranking." },
+      "sidebar-achievements": { title: "Badges & Awards", desc: "View the achievements and medals you've earned." },
+      "sidebar-account": { title: "User Account", desc: "Manage your profile and account settings." },
+      "sidebar-logout": { title: "Logout", desc: "Safely log out of your account." },
+    },
+    final: {
+      title: "Enjoy Learning!",
+      desc: "Learn a little each day and you will get better",
+      button: "Start Learning",
+    },
+    common: {
+      finish: "Finish Tour",
+      gotIt: "Got it",
+    }
+  }
+};
+
 const STEPS = [
   { id: null, type: "welcome" },
-  // Dashboard Cards (Fixed Sequence per implementation)
-  {
-    id: "levels-card",
-    icon: <Sparkles className="text-[#FFCB08]" size={24} />,
-    title: "المستوى التعليمي",
-    desc: "تتبع تقدمك للوصول إلى المستوى القادم من الباندا.",
-  },
-  {
-    id: "word-of-week-card",
-    icon: <Sparkles className="text-[#FFCB08]" size={24} />,
-    title: "كلمة الأسبوع",
-    desc: "تعلم كلمة جديدة كل أسبوع مع النطق والمعنى.",
-  },
-  {
-    id: "metrics-card",
-    icon: <Sparkles className="text-[#FFCB08]" size={24} />,
-    title: "مؤشرات الأداء",
-    desc: "تابع مهارات النطق والطلاقة والدقة بالتفصيل.",
-  },
-  {
-    id: "longest-streak-card",
-    icon: <Sparkles className="text-[#FFCB08]" size={24} />,
-    title: "أطول خط للمتابعة",
-    desc: "هذا هو الرقم القياسي لأطول سلسلة تعلم متواصلة لديك.",
-  },
-  {
-    id: "current-streak-card",
-    icon: <Sparkles className="text-[#FFCB08]" size={24} />,
-    title: "الخطالية",
-    desc: "حافظ على استمرارية التعلم يومياً لزيادة هذا الرقم!",
-  },
-  {
-    id: "topic-progress-container",
-    icon: <Sparkles className="text-[#FFCB08]" size={24} />,
-    title: "التقدم في المحاضرات",
-    desc: "شاهد مدى تقدمك في كل درس ووحدة تدريبية.",
-  },
-  // Sidebar Items
-  {
-    id: "sidebar-dashboard",
-    icon: <Sparkles className="text-[#FFCB08]" size={24} />,
-    title: "لوحة التحكم",
-    desc: "استعرض ملخص تقدمك وإحصائياتك اليومية.",
-  },
-  {
-    id: "sidebar-units",
-    icon: <Sparkles className="text-[#FFCB08]" size={24} />,
-    title: "الوحدات التدريبية",
-    desc: "ابدأ دروسك الصينية المنظمة حسب المستويات.",
-  },
-  {
-    id: "sidebar-leaderboard",
-    icon: <Sparkles className="text-[#FFCB08]" size={24} />,
-    title: "قائمة المتفوقين",
-    desc: "نافس زملاءك وشاهد ترتيبك العالمي.",
-  },
-  {
-    id: "sidebar-achievements",
-    icon: <Sparkles className="text-[#FFCB08]" size={24} />,
-    title: "الشارات التعليمية",
-    desc: "استعرض الإنجازات والأوسمة التي حصلت عليها.",
-  },
-  {
-    id: "sidebar-account",
-    icon: <Sparkles className="text-[#FFCB08]" size={24} />,
-    title: "حساب المستخدم",
-    desc: "إدارة ملفك الشخصي وإعدادات حسابك.",
-  },
-  {
-    id: "sidebar-logout",
-    icon: <Sparkles className="text-[#FFCB08]" size={24} />,
-    title: "تسجيل الخروج",
-    desc: "قم بتسجيل الخروج بأمان من حسابك.",
-  },
+  { id: "levels-card" },
+  { id: "word-of-week-card" },
+  { id: "metrics-card" },
+  { id: "longest-streak-card" },
+  { id: "current-streak-card" },
+  { id: "topic-progress-container" },
+  { id: "sidebar-dashboard" },
+  { id: "sidebar-units" },
+  { id: "sidebar-leaderboard" },
+  { id: "sidebar-achievements" },
+  { id: "sidebar-account" },
+  { id: "sidebar-logout" },
   { id: null, type: "final_completion" },
 ];
 
 export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
+  const { dir } = useAppContext();
+  const isAr = dir === "rtl";
+  const t = isAr ? COPY.ar : COPY.en;
+
   const [stepIndex, setStepIndex] = useState(0);
   const [targetRect, setTargetRect] = useState<TargetRect | null>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -178,7 +184,7 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
           return () => clearTimeout(timer);
         }
       }
-      
+
       const timer = setTimeout(updateTargetRect, 100);
       window.addEventListener("resize", updateTargetRect);
       return () => {
@@ -300,7 +306,7 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
       // However, if the element is at the top (typical for scrolled-to-start), prefer the bottom.
       const spaceBelow = screenHeight - (targetRect.top + targetRect.height);
       const spaceAbove = targetRect.top;
-      
+
       // If the top is very close to screen top (e.g. scrolled to start), forcedly prefer bottom 
       // even if spaceBelow is negative (overlap least important part).
       const preferBottom = (targetRect.top < 60) || (spaceBelow >= spaceAbove);
@@ -482,12 +488,12 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
 
                 {/* Text Content */}
                 <div className="flex flex-col items-center gap-0 w-full px-4 sm:px-8">
-                  <h2 className="w-full text-center font-almarai font-extrabold text-[22px] sm:text-[28px] leading-[30px] sm:leading-[36px] text-[#282828] mb-2 order-1 flex items-center justify-center gap-2">
-                    مرحباً بك في Zayd AI Chinese{" "}
+                  <h2 className={`w-full text-center font-extrabold text-[22px] sm:text-[28px] leading-[30px] sm:leading-[36px] text-[#282828] mb-2 order-1 flex items-center justify-center gap-2 ${isAr ? 'font-almarai' : 'font-nunito'}`}>
+                    {t.welcome.title}{" "}
                     <Hand className="text-[#FFCB08] animate-bounce" size={28} />
                   </h2>
-                  <p className="w-full text-center font-nunito font-semibold text-[16px] sm:text-[18px] leading-[22px] sm:leading-[28px] text-[#454545] tracking-[-0.005em] order-2 font-sans flex items-center justify-center gap-2">
-                    تعلم اللغة الصينية خطوة بخطوة وبطريقة ممتعة{" "}
+                  <p className={`w-full text-center font-semibold text-[16px] sm:text-[18px] leading-[22px] sm:leading-[28px] text-[#454545] tracking-[-0.005em] order-2 flex items-center justify-center gap-2 ${isAr ? 'font-almarai' : 'font-nunito'}`}>
+                    {t.welcome.desc}{" "}
                     <PartyPopper className="text-[#35AB4E]" size={20} />
                   </p>
                 </div>
@@ -497,10 +503,11 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
                   onClick={handleNext}
                   className="flex flex-row justify-center items-center p-[16px_0px] gap-[10px] w-full max-w-[388px] h-[56px] bg-[#35AB4E] border-b-[3px] border-[#20672F] rounded-[12px] hover:bg-[#2f9c46] active:border-b-0 active:translate-y-[2px] transition-all order-3"
                 >
-                  <ChevronLeft className="w-6 h-6 text-white" />
-                  <span className="font-nunito font-bold text-[16px] leading-[22px] text-white">
-                    هيا نبدأ
+                  {isAr ? <ChevronLeft className="w-6 h-6 text-white" /> : null}
+                  <span className={`font-bold text-[16px] leading-[22px] text-white ${isAr ? 'font-almarai' : 'font-nunito'}`}>
+                    {t.welcome.button}
                   </span>
+                  {!isAr ? <ChevronLeft className="w-6 h-6 text-white rotate-180" /> : null}
                 </button>
 
                 {/* Pagination Dots (Capped for space) */}
@@ -517,15 +524,15 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
               <div className="relative w-[calc(100vw-32px)] max-w-[420px] h-auto min-h-[280px] bg-white rounded-[24px] flex flex-col items-center justify-center p-8 gap-6 shadow-[0px_10px_30px_rgba(0,0,0,0.15)] border-[1.6px] border-[#ECECEC] border-b-[4px]">
                 <div className="relative z-10 flex flex-col items-center gap-6 w-full">
                   <div className="flex flex-col items-center gap-3">
-                    <h2 className="font-almarai font-extrabold text-[26px] sm:text-[30px] leading-tight text-[#282828] flex items-center gap-2 text-center">
-                      استمتع بالتعلم!{" "}
+                    <h2 className={`font-extrabold text-[26px] sm:text-[30px] leading-tight text-[#282828] flex items-center gap-2 text-center ${isAr ? 'font-almarai' : 'font-nunito'}`}>
+                      {t.final.title}{" "}
                       <Sparkles
                         className="text-[#FFCB08] animate-pulse"
                         size={28}
                       />
                     </h2>
-                    <p className="font-nunito font-semibold text-[16px] sm:text-[17px] text-[#666666] text-center max-w-[280px]">
-                      تعلم قليلاً كل يوم وستصبح أفضل
+                    <p className={`font-semibold text-[16px] sm:text-[17px] text-[#666666] text-center max-w-[280px] ${isAr ? 'font-almarai' : 'font-nunito'}`}>
+                      {t.final.desc}
                     </p>
                   </div>
 
@@ -533,10 +540,10 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
                     onClick={handleFinish}
                     className="flex flex-row justify-center items-center p-[12px_24px] gap-2 w-full max-w-[280px] h-[52px] bg-[#35AB4E] border-b-[4px] border-[#20672F] rounded-[14px] hover:bg-[#3dbb57] active:border-b-0 active:translate-y-[2px] transition-all group"
                   >
-                    <span className="font-nunito font-extrabold text-[18px] text-white">
-                      ابدأ التعلم
+                    <span className={`font-extrabold text-[18px] text-white ${isAr ? 'font-almarai' : 'font-nunito'}`}>
+                      {t.final.button}
                     </span>
-                    <Rocket className="w-5 h-5 text-white group-hover:translate-x-[-4px] group-hover:translate-y-[-4px] transition-transform" />
+                    <Rocket className={`w-5 h-5 text-white transition-transform ${isAr ? 'group-hover:translate-x-[-4px] group-hover:translate-y-[-4px]' : 'group-hover:translate-x-[4px] group-hover:translate-y-[-4px]'}`} />
                   </button>
                 </div>
               </div>
@@ -553,9 +560,9 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
                     {/* Header */}
                     <div className="flex flex-row items-center justify-between w-full h-[36px]">
                       <div className="flex flex-row items-center justify-center gap-2 flex-1">
-                        <span className="">{currentStep.icon}</span>
-                        <h3 className="font-almarai font-bold text-[20px] sm:text-[22px] leading-[26px] sm:leading-[28px] text-[#282828] text-center">
-                          {currentStep.title}
+                        <Sparkles className="text-[#FFCB08]" size={24} />
+                        <h3 className={`font-bold text-[20px] sm:text-[22px] leading-[26px] sm:leading-[28px] text-[#282828] text-center ${isAr ? 'font-almarai' : 'font-nunito'}`}>
+                          {(t.steps as any)[currentStep.id!]?.title}
                         </h3>
                       </div>
                       <button
@@ -567,9 +574,9 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
                     </div>
 
                     {/* Description */}
-                    <div className="w-full text-right" dir="rtl">
-                      <p className="font-nunito font-semibold text-[16px] leading-[22px] text-[#454545] tracking-[-0.0025em]">
-                        {currentStep.desc}
+                    <div className={`w-full ${isAr ? 'text-right' : 'text-left'}`} dir={dir}>
+                      <p className={`font-semibold text-[16px] leading-[22px] text-[#454545] tracking-[-0.0025em] ${isAr ? 'font-almarai' : 'font-nunito'}`}>
+                        {(t.steps as any)[currentStep.id!]?.desc}
                       </p>
                     </div>
 
@@ -579,17 +586,18 @@ export default function GuidePopup({ isOpen, onClose }: GuidePopupProps) {
                         onClick={handleNext}
                         className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-2 w-full h-[56px] bg-[#35AB4E] border-b-[3px] border-[#20672F] rounded-[12px] hover:bg-[#2f9c46] transition-all"
                       >
-                        <span className="font-nunito font-bold text-[16px] leading-[22px] text-white">
-                          {stepIndex === STEPS.length - 1
-                            ? "إنهاء الجولة"
-                            : "فهمت"}
+                        {isAr ? <ChevronLeft className="w-6 h-6 text-white" /> : null}
+                        <span className={`font-bold text-[16px] leading-[22px] text-white ${isAr ? 'font-almarai' : 'font-nunito'}`}>
+                          {stepIndex === STEPS.length - 2
+                            ? t.common.finish
+                            : t.common.gotIt}
                         </span>
-                        <ChevronLeft className="w-6 h-6 text-white" />
+                        {!isAr ? <ChevronLeft className="w-6 h-6 text-white rotate-180" /> : null}
                       </button>
 
                       {/* Pagination Indicator */}
                       <div className="flex flex-row items-center gap-1 w-full justify-center overflow-hidden">
-                        {STEPS.slice(1).map((_, i) => (
+                        {STEPS.slice(1, -1).map((_, i) => (
                           <div
                             key={i}
                             className={`h-1.5 rounded-full transition-all ${i + 1 === stepIndex ? "w-4 bg-[#35AB4E]" : "w-1 bg-[#B1B1B1]"}`}

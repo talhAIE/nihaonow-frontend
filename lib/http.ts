@@ -2,6 +2,7 @@ import axios, { AxiosInstance, AxiosError } from 'axios';
 import { getAuthToken } from '@/lib/authUtils';
 import type { InternalAxiosRequestConfig } from 'axios';
 import { getCookie, getCookies, setCookie, deleteCookie, hasCookie } from 'cookies-next';
+import { localizeErrorMessage } from './db-localization';
 
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '/api';
 
@@ -51,9 +52,12 @@ axiosInstance.interceptors.response.use(
                 }
             }
 
+            const rawData = error.response.data;
+            console.log('[HTTP Interceptor] Raw error data:', rawData);
+            const localizedMessage = localizeErrorMessage(rawData);
+
             const err: NormalizedAxiosError = new Error(
-                (error.response.data as { message?: string })?.message ||
-                `HTTP error! status: ${error.response.status}`
+                localizedMessage || `HTTP error! status: ${error.response.status}`
             );
             err.status = error.response.status;
             err.data = error.response.data;

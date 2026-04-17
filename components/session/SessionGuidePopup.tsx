@@ -1,5 +1,6 @@
 "use client";
 import { useState, useLayoutEffect, useCallback, useRef } from "react";
+import { useAppContext } from "@/context/AppContext";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { ChevronLeft, X, Sparkles, Volume2, Languages, Mic, MessageSquare, BookOpen } from "lucide-react";
 import { Nunito } from "next/font/google";
@@ -24,12 +25,49 @@ interface TargetRect {
   height: number;
 }
 
+const COPY = {
+  ar: {
+    steps: {
+      1: { title: "زر الاستماع", desc: "اسمع الكلمة قبل أن تنطقها لتتعرف على اللحن الصحيح!" },
+      2: { title: "تحتاج مساعدة؟", desc: "الشيخ سيقوم بنطق الجملة لك بالصينية. استمع جيداً قبل المحاولة!" },
+      3: { title: "النطق والصوت", desc: "هنا تجد اللفظ الصحيح بالصينية (بينيين)." },
+      4: { title: "حان دورك!", desc: "اضغط على الزر وسجل نطقك. سنقوم بتحليله وإعطائك النتيجة فوراً!" },
+      5: { title: "إرسال إجابتك", desc: "بعد التسجيل، اضغط هنا لإرسال إجابتك وتلقي التقييم." },
+      6: { title: "تحليل النطق", desc: "بعد التسجيل، انقر هنا لتعرف نقاط القوة والضعف في نطقك." },
+      7: { title: "الدليل الشامل", desc: "هل نسيت شيئاً؟ يمكنك دائماً مراجعة هذا الدليل بالفيديو من هنا!" },
+    },
+    common: {
+      next: "التالي",
+      finish: "حسناً، فلنبدأ!",
+    }
+  },
+  en: {
+    steps: {
+      1: { title: "Listen Button", desc: "Listen to the word before you speak it to learn the correct tone!" },
+      2: { title: "Need Help?", desc: "The Sheikh will pronounce the sentence for you in Chinese. Listen carefully before trying!" },
+      3: { title: "Pinyin & Audio", desc: "Here you'll find the correct Chinese pronunciation (Pinyin)." },
+      4: { title: "Your Turn!", desc: "Press the button and record your pronunciation. We'll analyze it and give you the result immediately!" },
+      5: { title: "Send Answer", desc: "After recording, click here to send your answer and receive feedback." },
+      6: { title: "Speech Analysis", desc: "After recording, click here to learn the strengths and weaknesses of your pronunciation." },
+      7: { title: "Full Guide", desc: "Forgot something? You can always review this video guide from here!" },
+    },
+    common: {
+      next: "Next",
+      finish: "Okay, let's start!",
+    }
+  }
+};
+
 export default function SessionGuidePopup({
   isOpen,
   onClose,
   isIntroduction = false,
   isSecondStage = false,
 }: SessionGuidePopupProps) {
+  const { dir } = useAppContext();
+  const isAr = dir === "rtl";
+  const t = isAr ? COPY.ar : COPY.en;
+
   const [step, setStep] = useState(1);
   const [targetRect, setTargetRect] = useState<TargetRect | null>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -314,14 +352,8 @@ export default function SessionGuidePopup({
                   <div className="w-8 h-8 flex items-center justify-center">
                     <Sparkles className="w-6 h-6 text-[#FFCB08]" />
                   </div>
-                  <h3 className="font-almarai font-extrabold text-[20px] text-[#282828] text-right">
-                      {step === 1 && "زر الاستماع"}
-                      {step === 2 && "تحتاج مساعدة؟"}
-                      {step === 3 && "النطق والصوت"}
-                      {step === 4 && "حان دورك!"}
-                      {step === 5 && "إرسال إجابتك"}
-                      {step === 6 && "تحليل النطق"}
-                      {step === 7 && "الدليل الشامل"}
+                  <h3 className={`font-extrabold text-[20px] text-[#282828] ${isAr ? 'font-almarai text-right' : 'font-nunito text-left'}`}>
+                      {(t.steps as any)[step]?.title}
                   </h3>
                 </div>
                 <button onClick={handleFinish} className="p-2 hover:bg-slate-100 rounded-lg transition-colors shrink-0">
@@ -329,23 +361,18 @@ export default function SessionGuidePopup({
                 </button>
               </div>
               
-              <p className="text-right text-[#454545] text-lg font-semibold leading-relaxed font-almarai">
-                  {step === 1 && "اسمع الكلمة قبل أن تنطقها لتتعرف على اللحن الصحيح!"}
-                  {step === 2 && "الشيخ سيقوم بنطق الجملة لك بالصينية. استمع جيداً قبل المحاولة!"}
-                  {step === 3 && "هنا تجد اللفظ الصحيح بالصينية (بينيين)."}
-                  {step === 4 && "اضغط على الزر وسجل نطقك. سنقوم بتحليله وإعطائك النتيجة فوراً!"}
-                  {step === 5 && "بعد التسجيل، اضغط هنا لإرسال إجابتك وتلقي التقييم."}
-                  {step === 6 && "بعد التسجيل، انقر هنا لتعرف نقاط القوة والضعف في نطقك."}
-                  {step === 7 && "هل نسيت شيئاً؟ يمكنك دائماً مراجعة هذا الدليل بالفيديو من هنا!"}
+              <p className={`text-[#454545] text-lg font-semibold leading-relaxed ${isAr ? 'font-almarai text-right' : 'font-nunito text-left'}`}>
+                  {(t.steps as any)[step]?.desc}
               </p>
 
               <div className="flex flex-col gap-3">
                 <button
                   onClick={step === 7 ? handleFinish : handleNext}
-                  className="w-full bg-[#35AB4E] border-b-[4px] border-[#20672F] text-white font-bold text-lg py-4 rounded-xl flex items-center justify-center gap-3 hover:bg-[#2f9c46] active:translate-y-1 active:border-b-0 transition-all font-nunito"
+                  className="w-full bg-[#35AB4E] border-b-[4px] border-[#20672F] text-white font-bold text-lg py-4 rounded-xl flex items-center justify-center gap-3 hover:bg-[#2f9c46] active:translate-y-1 active:border-b-0 transition-all"
                 >
-                  <span>{step === 7 ? "حسناً، فلنبدأ!" : "التالي"}</span>
-                  {step === 7 ? <Sparkles className="w-6 h-6" /> : <ChevronLeft className="w-6 h-6" />}
+                  {isAr && step !== 7 ? <ChevronLeft className="w-6 h-6" /> : null}
+                  <span className={isAr ? 'font-almarai' : 'font-nunito'}>{step === 7 ? t.common.finish : t.common.next}</span>
+                  {step === 7 ? <Sparkles className="w-6 h-6" /> : (!isAr ? <ChevronLeft className="w-6 h-6 rotate-180" /> : null)}
                 </button>
                 
                 {/* Pagination dots — derived from the actual visible step sequence for this mode */}

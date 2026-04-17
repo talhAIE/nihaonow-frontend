@@ -1,5 +1,6 @@
 "use client";
 import { useState, useLayoutEffect, useCallback, useEffect, useRef } from "react";
+import { useAppContext } from "@/context/AppContext";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { 
   ChevronLeft, 
@@ -28,38 +29,47 @@ interface TargetRect {
   height: number;
 }
 
+const COPY = {
+  ar: {
+    steps: {
+      'awards-map-container': { title: 'رحلة التعلم', desc: 'كل خطوة تقربك من إنجاز جديد' },
+      'reward-claim': { title: 'اضغط للاستلام', desc: 'لا تنس استلام مكافآتك' },
+      'certificates-intro': { title: 'شهاداتك', desc: 'تحصل على شهادات عند إكمال الدروس، الحفاظ على السلسلة، والتقدم في المستويات' },
+      'certificate-details': { title: 'استلم شهادتك', desc: 'يمكنك تحميلها أو مشاركتها مع الآخرين' },
+    },
+    common: {
+      next: 'التالي',
+      done: 'تم',
+      finish: 'رائع',
+    }
+  },
+  en: {
+    steps: {
+      'awards-map-container': { title: 'Learning Journey', desc: 'Every step brings you closer to a new achievement.' },
+      'reward-claim': { title: 'Click to Claim', desc: "Don't forget to claim your rewards." },
+      'certificates-intro': { title: 'Your Certificates', desc: 'You earn certificates for completing lessons, maintaining streaks, and leveling up.' },
+      'certificate-details': { title: 'Claim Your Certificate', desc: 'You can download it or share it with others.' },
+    },
+    common: {
+      next: 'Next',
+      done: 'Done',
+      finish: 'Amazing',
+    }
+  }
+};
+
 const STEPS = [
-  { 
-    id: 'awards-map-container', 
-    targetId: 'awards-map-container',
-    tab: 'awards',
-    title: 'رحلة التعلم', 
-    desc: 'كل خطوة تقربك من إنجاز جديد' 
-  },
-  { 
-    id: 'reward-claim', 
-    targetId: 'reward-node-highlight',
-    tab: 'awards',
-    title: 'اضغط للاستلام', 
-    desc: 'لا تنس استلام مكافآتك' 
-  },
-  { 
-    id: 'certificates-intro', 
-    targetId: 'certificates-grid',
-    tab: 'certificates',
-    title: 'شهاداتك', 
-    desc: 'تحصل على شهادات عند إكمال الدروس، الحفاظ على السلسلة، والتقدم في المستويات' 
-  },
-  { 
-    id: 'certificate-details', 
-    targetId: 'certificate-scroll-highlight',
-    tab: 'certificates',
-    title: 'استلم شهادتك', 
-    desc: 'يمكنك تحميلها أو مشاركتها مع الآخرين' 
-  },
+  { id: 'awards-map-container', targetId: 'awards-map-container', tab: 'awards' },
+  { id: 'reward-claim', targetId: 'reward-node-highlight', tab: 'awards' },
+  { id: 'certificates-intro', targetId: 'certificates-grid', tab: 'certificates' },
+  { id: 'certificate-details', targetId: 'certificate-scroll-highlight', tab: 'certificates' },
 ];
 
 export function AchievementsGuide({ isOpen, onClose, activeTab, onTabChange }: AchievementsGuideProps) {
+  const { dir } = useAppContext();
+  const isAr = dir === "rtl";
+  const t = isAr ? COPY.ar : COPY.en;
+
   const [stepIndex, setStepIndex] = useState(0);
   const [targetRect, setTargetRect] = useState<TargetRect | null>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -286,8 +296,8 @@ export function AchievementsGuide({ isOpen, onClose, activeTab, onTabChange }: A
                 <div className="flex flex-row items-center justify-between w-full h-[36px]">
                   <div className="flex flex-row items-center justify-center gap-2 flex-1">
                     <Sparkles className="text-[#FFCB08]" size={24} />
-                    <h3 className="font-almarai font-bold text-[20px] sm:text-[22px] leading-[26px] sm:leading-[28px] text-[#282828] text-center">
-                      {currentStep.title}
+                    <h3 className={`font-bold text-[20px] sm:text-[22px] leading-[26px] sm:leading-[28px] text-[#282828] text-center ${isAr ? 'font-almarai' : 'font-nunito'}`}>
+                      {(t.steps as any)[currentStep.id!]?.title}
                     </h3>
                   </div>
                   <button
@@ -299,9 +309,9 @@ export function AchievementsGuide({ isOpen, onClose, activeTab, onTabChange }: A
                 </div>
 
                 {/* Description */}
-                <div className="w-full text-right" dir="rtl" style={{ marginTop: '-10px' }}>
-                  <p className="font-nunito font-semibold text-[16px] leading-[22px] text-[#454545] tracking-[-0.0025em]">
-                    {currentStep.desc}
+                <div className={`w-full ${isAr ? 'text-right' : 'text-left'}`} dir={dir} style={{ marginTop: '-10px' }}>
+                  <p className={`font-semibold text-[16px] leading-[22px] text-[#454545] tracking-[-0.0025em] ${isAr ? 'font-almarai' : 'font-nunito'}`}>
+                    {(t.steps as any)[currentStep.id!]?.desc}
                   </p>
                 </div>
 
@@ -311,10 +321,11 @@ export function AchievementsGuide({ isOpen, onClose, activeTab, onTabChange }: A
                     onClick={handleNext}
                     className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-2 w-full h-[56px] bg-[#35AB4E] border-b-[3px] border-[#20672F] rounded-[12px] hover:bg-[#2f9c46] transition-all"
                   >
-                    <span className="font-nunito font-bold text-[16px] leading-[22px] text-white">
-                      {stepIndex === 1 ? 'تم' : stepIndex === STEPS.length - 1 ? 'رائع' : 'التالي'}
+                    {isAr ? <ChevronLeft className="w-6 h-6 text-white" /> : null}
+                    <span className={`font-bold text-[16px] leading-[22px] text-white ${isAr ? 'font-almarai' : 'font-nunito'}`}>
+                      {stepIndex === 1 ? t.common.done : stepIndex === STEPS.length - 1 ? t.common.finish : t.common.next}
                     </span>
-                    <ChevronLeft className="w-6 h-6 text-white" />
+                    {!isAr ? <ChevronLeft className="w-6 h-6 text-white rotate-180" /> : null}
                   </button>
 
                   {/* Pagination Indicator */}
