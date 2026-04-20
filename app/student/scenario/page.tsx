@@ -23,7 +23,7 @@ import { sessionUtils } from "@/lib/sessionUtils";
 import { useSearchParams } from "next/navigation";
 import { useNavigation } from "@/lib/navigation";
 import { useMemo } from "react";
-import { localizeChapter, localizeTopic } from "@/lib/db-localization";
+import { localizeChapter, localizeScenario, localizeTopic } from "@/lib/db-localization";
 import FeedbackPopup from "@/components/FeedbackPopup";
 import VideoModal from "@/components/VideoModal";
 import { useToast } from "@/hooks/use-toast";
@@ -185,7 +185,7 @@ export default function ScenarioPage() {
       }
 
       if (scenarioToLoad) {
-        setCurrentScenario(scenarioToLoad);
+        setCurrentScenario(localizeScenario(scenarioToLoad as any, currentLang));
         setFeedbackScore(null);
         setHasSubmittedSuccessfully(false);
         setRecordedAudio(null);
@@ -214,7 +214,7 @@ export default function ScenarioPage() {
         setFeedback("");
       }
     }
-  }, [searchParams]);
+  }, [searchParams, currentLang]);
 
   useEffect(() => {
     const audio = audioPlayerRef.current;
