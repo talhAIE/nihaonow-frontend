@@ -9,9 +9,9 @@ import { useAppContext } from "@/context/AppContext";
 import { authApi } from "@/lib/api";
 import { setAuthToken, setUserRole } from "@/lib/authUtils";
 import { useToast } from "@/hooks/use-toast";
-import { useDirection } from "@/hooks/useDirection";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
+import AuthLanguageToggle from "@/components/auth/AuthLanguageToggle";
 
 type FormData = {
   username: string;
@@ -25,9 +25,8 @@ type ValidationErrors = {
 
 export default function LoginPage() {
   const { goToTeacherDashboard, goToStudentDashboard } = useNavigation();
-  const { login, setState } = useAppContext();
+  const { login, setState, dir } = useAppContext();
   const { toast } = useToast();
-  const dir = useDirection("rtl");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState<FormData>({
@@ -35,6 +34,58 @@ export default function LoginPage() {
     password: "",
   });
   const [errors, setErrors] = useState<ValidationErrors>({});
+  const isAr = dir === "rtl";
+
+  const copy = {
+    ar: {
+      title: "تسجيل الدخول",
+      usernameLabel: "اسم المستخدم",
+      usernamePlaceholder: "أدخل اسم المستخدم",
+      passwordLabel: "كلمة المرور",
+      passwordPlaceholder: "••••••••",
+      validationTitle: "خطأ في التحقق",
+      validationDesc: "الرجاء تصحيح الحقول المظللة",
+      usernameRequired: "اسم المستخدم مطلوب",
+      passwordRequired: "كلمة المرور مطلوبة",
+      passwordShort: "يجب أن تكون كلمة المرور 4 أحرف على الأقل",
+      successTitle: "تم بنجاح",
+      successDesc: "مرحبًا بعودتك",
+      loginFailed: "فشل تسجيل الدخول",
+      loginError: "حدث خطأ أثناء تسجيل الدخول",
+      loggingIn: "جاري تسجيل الدخول...",
+      loginButton: "تسجيل الدخول",
+      forgotPassword: "نسيت كلمة المرور",
+      noAccount: "ليس لديك حساب؟",
+      createAccount: "إنشاء حساب جديد",
+      showPassword: "إظهار كلمة المرور",
+      hidePassword: "إخفاء كلمة المرور",
+    },
+    en: {
+      title: "Log In",
+      usernameLabel: "Username",
+      usernamePlaceholder: "Enter your username",
+      passwordLabel: "Password",
+      passwordPlaceholder: "••••••••",
+      validationTitle: "Validation Error",
+      validationDesc: "Please fix the highlighted fields",
+      usernameRequired: "Username is required",
+      passwordRequired: "Password is required",
+      passwordShort: "Password must be at least 4 characters",
+      successTitle: "Success",
+      successDesc: "Welcome back",
+      loginFailed: "Login failed",
+      loginError: "An error occurred during login",
+      loggingIn: "Signing in...",
+      loginButton: "Log In",
+      forgotPassword: "Forgot password?",
+      noAccount: "Don't have an account?",
+      createAccount: "Create a new account",
+      showPassword: "Show password",
+      hidePassword: "Hide password",
+    },
+  } as const;
+
+  const t = isAr ? copy.ar : copy.en;
 
   // Reset isLoggingOut when login page mounts
   useEffect(() => {
@@ -53,13 +104,13 @@ export default function LoginPage() {
   const validate = (data: FormData) => {
     const newErrors: ValidationErrors = {};
     if (!data.username) {
-      newErrors.username = "اسم المستخدم مطلوب";
+      newErrors.username = t.usernameRequired;
     }
 
     if (!data.password) {
-      newErrors.password = "كلمة المرور مطلوبة";
+      newErrors.password = t.passwordRequired;
     } else if (data.password.length < 4) {
-      newErrors.password = "يجب أن تكون كلمة المرور 4 أحرف على الأقل";
+      newErrors.password = t.passwordShort;
     }
 
     return newErrors;
@@ -72,8 +123,8 @@ export default function LoginPage() {
       if (Object.keys(validation).length > 0) {
         setErrors(validation);
         toast({
-          title: "خطأ في التحقق",
-          description: "الرجاء تصحيح الحقول المظللة",
+          title: t.validationTitle,
+          description: t.validationDesc,
           variant: "destructive",
           duration: 5000,
         });
@@ -137,8 +188,8 @@ export default function LoginPage() {
           console.log("Login function called successfully");
 
           toast({
-            title: "تم بنجاح",
-            description: "مرحبًا بعودتك",
+            title: t.successTitle,
+            description: t.successDesc,
             duration: 5000,
           });
 
@@ -154,8 +205,8 @@ export default function LoginPage() {
         } else {
           console.error("Invalid login response - missing token or user data");
           toast({
-            title: "خطأ",
-            description: response?.message ?? "فشل تسجيل الدخول",
+            title: t.validationTitle,
+            description: response?.message ?? t.loginFailed,
             variant: "destructive",
             duration: 5000,
           });
@@ -164,8 +215,8 @@ export default function LoginPage() {
       } catch (err: any) {
         console.error("Login error:", err);
         toast({
-          title: "خطأ",
-          description: err?.message ?? "حدث خطأ أثناء تسجيل الدخول",
+          title: t.validationTitle,
+          description: err?.message ?? t.loginError,
           variant: "destructive",
           duration: 5000,
         });
@@ -173,15 +224,19 @@ export default function LoginPage() {
         setIsLoading(false);
       }
     },
-    [formData, login, goToTeacherDashboard, goToStudentDashboard, toast],
+    [formData, login, goToTeacherDashboard, goToStudentDashboard, toast, t],
   );
 
   return (
     <div
-      className="relative min-h-[calc(100vh-4rem)] bg-white flex flex-col items-center justify-center px-4 py-8 overflow-hidden"
-      dir={"rtl"}
+      className={`relative min-h-[calc(100vh-4rem)] bg-white flex flex-col items-center justify-center px-4 py-8 overflow-hidden ${isAr ? "font-almarai" : "font-nunito"}`}
+      dir={dir}
+      lang={isAr ? "ar" : "en"}
     >
-      <div className="pointer-events-none absolute top-0 right-0 z-0 w-[60%] max-w-[220px] h-auto max-h-[225px] md:top-0">
+      <div className={`absolute top-4 ${isAr ? "left-4" : "right-4"} z-20`}>
+        <AuthLanguageToggle />
+      </div>
+      <div className={`pointer-events-none absolute top-0 ${isAr ? "right-0" : "left-0"} z-0 w-[60%] max-w-[220px] h-[200px] sm:h-[225px] md:top-0`}>
         <Image
           src="/images/LoginLogo2.png"
           alt=""
@@ -191,7 +246,7 @@ export default function LoginPage() {
           priority
         />
       </div>
-      <div className="pointer-events-none absolute left-0 bottom-0 z-0 w-[60%] max-w-[420px] h-auto max-h-[225px] sm:left-4 sm:bottom-0 lg:left-[5px] lg:bottom-0">
+      <div className={`pointer-events-none absolute ${isAr ? "left-0 sm:left-4 lg:left-[5px]" : "right-0 sm:right-4 lg:right-[5px]"} bottom-0 z-0 w-[60%] max-w-[420px] h-[200px] sm:h-[225px] sm:bottom-0 lg:bottom-0`}>
         <Image
           src="/images/loginLogo.png"
           alt=""
@@ -208,7 +263,7 @@ export default function LoginPage() {
             <h2
               className="text-center"
               style={{
-                fontFamily: "Nunito",
+                fontFamily: isAr ? "Almarai" : "Nunito",
                 fontWeight: 700,
                 fontSize: "24px",
                 lineHeight: "100%",
@@ -217,7 +272,7 @@ export default function LoginPage() {
                 color: "#282828",
               }}
             >
-              تسجيل الدخول
+              {t.title}
             </h2>
           </div>
           <form onSubmit={handleSubmit} className="space-y-6" noValidate>
@@ -225,11 +280,11 @@ export default function LoginPage() {
               <div className="relative">
                 <Input
                   dir="ltr"
-                  aria-label="اسم المستخدم"
+                  aria-label={t.usernameLabel}
                   id="username"
                   name="username"
                   type="text"
-                  placeholder="أدخل اسم المستخدم"
+                  placeholder={t.usernamePlaceholder}
                   value={formData.username}
                   onChange={handleInputChange}
                   disabled={isLoading}
@@ -239,7 +294,7 @@ export default function LoginPage() {
                   aria-describedby={
                     errors.username ? "username-error" : undefined
                   }
-                  className="text-left bg-[#ECECEC] border-2 border-transparent focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none w-full h-11 sm:h-[44px] px-4 rounded-[12px] transition-all duration-200"
+                  className={`bg-[#ECECEC] border-2 border-transparent focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none w-full h-11 sm:h-[44px] px-4 rounded-[12px] transition-all duration-200 text-left`}
                 />
               </div>
               {errors.username && (
@@ -253,11 +308,11 @@ export default function LoginPage() {
               <div className="relative">
                 <Input
                   dir="ltr"
-                  aria-label="كلمة المرور"
+                  aria-label={t.passwordLabel}
                   id="password"
                   name="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
+                  placeholder={t.passwordPlaceholder}
                   value={formData.password}
                   onChange={handleInputChange}
                   disabled={isLoading}
@@ -274,7 +329,7 @@ export default function LoginPage() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
                   aria-label={
-                    showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"
+                    showPassword ? t.hidePassword : t.showPassword
                   }
                 >
                   {showPassword ? (
@@ -299,10 +354,10 @@ export default function LoginPage() {
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 ml-2 animate-spin" />
-                  جاري تسجيل الدخول...
+                  {t.loggingIn}
                 </>
               ) : (
-                "تسجيل الدخول"
+                t.loginButton
               )}
             </Button>
 
@@ -312,7 +367,7 @@ export default function LoginPage() {
                 className=" font-bold text-[14px] leading-[100%] text-[#35AB4E] hover:bg-transparent bg-transparent underline decoration-[#35AB4E] decoration-1"
                 style={{ textAlign: "center" }}
               >
-                نسيت كلمة المرور
+                {t.forgotPassword}
               </Link>
             </div>
 
@@ -321,9 +376,9 @@ export default function LoginPage() {
                 type="button"
                 className=" font-bold w-full h-11 sm:h-[45px] px-3 sm:px-4 rounded-[12px] hover:bg-[#DEDEDE] bg-[#E5E5E5] border-b-[3px] border-b-[rgba(0,0,0,0.08)] text-[#282828] text-[13px] sm:text-[16px] transition duration-200"
               >
-                <span className="whitespace-nowrap">ليس لديك حساب؟</span>{" "}
+                <span className="whitespace-nowrap">{t.noAccount}</span>{" "}
                 <span className="font-semibold text-brand hover:text-brand-600 transition-colors mr-1">
-                  إنشاء حساب جديد
+                  {t.createAccount}
                 </span>
               </Button>
             </Link>

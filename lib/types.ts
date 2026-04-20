@@ -9,6 +9,8 @@ export interface ApiResponse<T> {
 export interface Chapter {
   id: number;
   name: string;
+  nameAr?: string | null;
+  nameEn?: string | null;
   difficulty: string;
   orderIndex: number;
 }
@@ -24,7 +26,11 @@ export interface ChapterUI extends Chapter {
 export interface Topic {
   id: number;
   name: string;
+  nameAr?: string | null;
+  nameEn?: string | null;
   subtitle: string;
+  subtitleAr?: string | null;
+  subtitleEn?: string | null;
   difficulty: string;
   orderIndex: number;
 }
@@ -54,6 +60,8 @@ export interface Scenario {
   arabicAudioUrl: string;
   targetPhraseChinese: string;
   targetPhrasePinyin: string;
+  targetPhrasePinyinAr?: string | null;
+  targetPhrasePinyinEn?: string | null;
   chineseAudioUrl: string;
   scenarioImageUrl: string;
   orderIndex: number;
@@ -63,7 +71,11 @@ export interface SessionTopic {
   id: number;
   chapterId: number;
   name: string;
+  nameAr?: string | null;
+  nameEn?: string | null;
   subtitle: string;
+  subtitleAr?: string | null;
+  subtitleEn?: string | null;
   difficulty: string;
   orderIndex: number;
   isActive: boolean;
@@ -182,8 +194,12 @@ export interface WordOfTheWeek {
   chinese: string;
   pinyin?: string | null;
   english?: string | null;
+  englishAr?: string | null;
+  englishEn?: string | null;
   audioUrl?: string | null;
   exampleSentence?: string | null;
+  exampleSentenceAr?: string | null;
+  exampleSentenceEn?: string | null;
   weekStartDate?: string;
   isActive?: boolean;
 }
@@ -192,7 +208,11 @@ export interface WordTopic {
   id: number;
   wordId: number;
   name: string;
+  nameAr?: string | null;
+  nameEn?: string | null;
   subtitle?: string;
+  subtitleAr?: string | null;
+  subtitleEn?: string | null;
   difficulty?: string; // Added for unification
   mode?: string; // Added for unification
   orderIndex: number;
@@ -210,6 +230,8 @@ export interface WordScenario {
   isIntroduction?: boolean; // Added for unification
   targetPhraseChinese: string;
   targetPhrasePinyin?: string | null;
+  targetPhrasePinyinAr?: string | null;
+  targetPhrasePinyinEn?: string | null;
   chineseAudioUrl?: string | null;
   arabicAudioUrl?: string | null; // Renamed from scenarioAudioUrl
   scenarioImageUrl?: string | null;
@@ -285,11 +307,17 @@ export interface DashboardOverview {
 export interface TopicProgress {
   id: number;
   name: string;
+  nameAr?: string | null;
+  nameEn?: string | null;
   subtitle: string;
+  subtitleAr?: string | null;
+  subtitleEn?: string | null;
   mode: string;
   difficulty: string;
   chapterId: number;
   chapterName: string;
+  chapterNameAr?: string | null;
+  chapterNameEn?: string | null;
   totalScenarios: number;
   completedScenarios: number;
   percentage: number;
@@ -305,6 +333,8 @@ export interface TopicProgressResponse {
 export interface ChapterProgress {
   id: number;
   name: string;
+  nameAr?: string | null;
+  nameEn?: string | null;
   difficulty: string;
   totalTopics: number;
   completedTopics: number;
@@ -442,6 +472,8 @@ export interface ConsolidatedDashboardResponse {
 
 // Achievements Types
 export interface Badge {
+  nameText?: { ar: string; en: string };
+  descriptionText?: { ar: string; en: string };
   id: number;
   key: string;
   name: string;
@@ -465,6 +497,8 @@ export interface AchievementsResponse {
 }
 
 export interface Certificate {
+  nameText?: { ar: string; en: string };
+  descriptionText?: { ar: string; en: string };
   id: number;
   key: string;
   name: string;

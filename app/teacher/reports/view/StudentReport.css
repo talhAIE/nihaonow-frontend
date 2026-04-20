@@ -7,6 +7,19 @@
   overflow-x: hidden;
 }
 
+.report-container.ltr {
+  direction: ltr;
+}
+
+.report-container.ltr .report-actions {
+  left: 12px;
+  right: auto;
+}
+
+.report-container.ltr .report-download-btn {
+  color: #ffffff;
+}
+
 .report-header {
   border-radius: 1.5rem;
   padding: 2rem;
@@ -45,6 +58,16 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.report-download-btn .report-download-text {
+  display: inline-flex;
+  align-items: center;
+}
+
+.report-container.ltr .report-download-btn {
+  flex-direction: row-reverse;
+  color: #ffffff;
 }
 
 .report-download-btn:hover {

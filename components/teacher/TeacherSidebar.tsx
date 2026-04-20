@@ -9,9 +9,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 const navItems = [
-  { href: '/teacher', label: 'لوحة القيادة', Icon: LayoutDashboard },
-  { href: '/teacher/students', label: 'طلابي', Icon: GraduationCap },
-  { href: '/teacher/account', label: 'حساب المستخدم', Icon: User },
+  { href: '/teacher', label: { ar: 'لوحة القيادة', en: 'Dashboard' }, Icon: LayoutDashboard },
+  { href: '/teacher/students', label: { ar: 'طلابي', en: 'Students' }, Icon: GraduationCap },
+  { href: '/teacher/account', label: { ar: 'حساب المستخدم', en: 'Account' }, Icon: User },
 ];
 
 export default function TeacherSidebar() {
@@ -30,8 +30,8 @@ export default function TeacherSidebar() {
     }
   };
 
-  const displayName = state?.authUser?.username || 'المعلم';
   const isRtl = dir === 'rtl';
+  const displayName = state?.authUser?.username || (isRtl ? 'المعلم' : 'Teacher');
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -119,12 +119,25 @@ export default function TeacherSidebar() {
                         }
                     }}
                   >
-                    <span className={`${isRtl ? 'text-right' : 'text-left'} text-lg font-medium truncate flex-1`}>
-                      {item.label}
-                    </span>
-                    <span className="w-8 h-8 flex items-center justify-center shrink-0">
-                      <item.Icon size={24} className={isActive ? 'text-[#1F1F1F]' : 'text-current'} />
-                    </span>
+                    {isRtl ? (
+                      <>
+                        <span className="w-8 h-8 flex items-center justify-center shrink-0">
+                          <item.Icon size={24} className={isActive ? 'text-[#1F1F1F]' : 'text-current'} />
+                        </span>
+                        <span className="text-right text-lg font-medium truncate flex-1">
+                          {item.label.ar}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="w-8 h-8 flex items-center justify-center shrink-0">
+                          <item.Icon size={24} className={isActive ? 'text-[#1F1F1F]' : 'text-current'} />
+                        </span>
+                        <span className="text-left text-lg font-medium truncate flex-1">
+                          {item.label.en}
+                        </span>
+                      </>
+                    )}
                   </Link>
                 </li>
               );
@@ -136,11 +149,13 @@ export default function TeacherSidebar() {
         <div className="p-3 mt-auto">
           <button
             onClick={handleLogout}
-            className={`w-[90%] mx-auto min-h-[56px] flex items-center ${isRtl ? 'flex-row' : 'flex-row-reverse'} px-4 py-2 rounded-[12px] bg-[#FBD4D3] text-[#8D1716] transition-colors border-b-4 border-[#F9C3C2] active:border-b-0 active:translate-y-1`}
+            className={`w-[90%] mx-auto min-h-[56px] flex items-center ${isRtl ? 'flex-row' : 'flex-row'} px-4 py-2 rounded-[12px] bg-[#FBD4D3] text-[#8D1716] transition-colors border-b-4 border-[#F9C3C2] active:border-b-0 active:translate-y-1`}
           >
-            <span className="text-[18px] font-semibold leading-normal tracking-[0%] flex-1 text-ellipsis overflow-hidden">تسجيل الخروج</span>
             <span className="w-[28px] flex items-center justify-center shrink-0 whitespace-nowrap">
               <LogOut size={20} className="text-[#8D1716]" />
+            </span>
+            <span className={`text-[18px] font-semibold leading-normal tracking-[0%] flex-1 text-ellipsis overflow-hidden ${isRtl ? "text-right" : "text-left"}`}>
+              {isRtl ? 'تسجيل الخروج' : 'Log out'}
             </span>
           </button>
         </div>

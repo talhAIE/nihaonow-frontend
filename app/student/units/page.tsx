@@ -6,12 +6,44 @@ import { useNavigation } from '@/lib/navigation';
 import { useChapters } from "@/hooks/useChapters";
 import { ChapterUI } from "@/lib/api";
 import { useAuthProtection } from "@/hooks/useAuthProtection";
+import { useAppContext } from "@/context/AppContext";
+import AuthLanguageToggle from "@/components/auth/AuthLanguageToggle";
+import { useMemo } from "react";
+import { localizeChapter } from "@/lib/db-localization";
 
 export default function UnitsPage() {
   useAuthProtection();
 
   const { goToStudentTopics } = useNavigation();
   const { chapters, loading, error, refetch } = useChapters();
+  const { dir } = useAppContext();
+  const isAr = dir === "rtl";
+
+  const copy = {
+    ar: {
+      loading: "جاري تحميل الوحدات...",
+      retry: "إعادة المحاولة",
+      empty: "لا توجد وحدات متاحة حالياً",
+    },
+    en: {
+      loading: "Loading units...",
+      retry: "Try again",
+      empty: "No units available right now",
+    },
+  } as const;
+
+  const t = isAr ? copy.ar : copy.en;
+
+  const localizedChapters = useMemo(() => {
+    return chapters.map(chapter => {
+      const loc = localizeChapter(chapter, isAr ? 'ar' : 'en');
+      return {
+        ...loc,
+        title: loc.name, // Units page expects 'title'
+        subtitle: loc.difficulty, // and 'subtitle' (difficulty in this case)
+      };
+    });
+  }, [chapters, isAr]);
 
   const handleUnitClick = (chapter: ChapterUI) => {
     if (chapter.status === "active") {
@@ -33,14 +65,17 @@ export default function UnitsPage() {
   };
 
   return (
-    <div className="min-h-screen w-[90%] mx-auto" dir="rtl">
+    <div className={`min-h-screen w-[90%] mx-auto ${isAr ? "font-almarai" : "font-nunito"}`} dir={dir} lang={isAr ? "ar" : "en"}>
 
       {/* Content Section */}
       <div className="px-4 py-6 space-y-4">
+        <div className={`flex ${isAr ? "justify-start" : "justify-end"} mb-2`}>
+          <AuthLanguageToggle />
+        </div>
         {loading && (
           <div className="flex items-center justify-center py-8">
             <Loader2 className="h-8 w-8 animate-spin text-brand" />
-            <span className="mr-2 text-gray-600">جاري تحميل الوحدات...</span>
+            <span className={`${isAr ? "mr-2" : "ml-2"} text-gray-600`}>{t.loading}</span>
           </div>
         )}
 
@@ -53,7 +88,7 @@ export default function UnitsPage() {
                 onClick={refetch}
                 className="px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand/90 transition-colors"
               >
-                إعادة المحاولة
+                {t.retry}
               </button>
             </div>
           </div>
@@ -61,14 +96,14 @@ export default function UnitsPage() {
 
         {!loading && !error && chapters.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-gray-600">لا توجد وحدات متاحة حالياً</p>
+            <p className="text-gray-600">{t.empty}</p>
           </div>
         )}
 
         {/* Dynamic Units from API */}
         {!loading &&
           !error &&
-          chapters.map((chapter, idx) => {
+          localizedChapters.map((chapter, idx) => {
             const color = colors[idx % colors.length];
             const light = isLight(color);
             return (
@@ -84,7 +119,7 @@ export default function UnitsPage() {
                 <CardContent className="p-0">
                   <div className="h-auto md:h-auto md:py-4 px-3 flex items-center justify-between">
                     {/* Content */}
-                    <div className="flex-1 text-right">
+                    <div className={`flex-1 ${isAr ? "text-right" : "text-left"}`}>
                       <h3 className={`text-xl font-bold mb-1 ${light ? 'text-gray-900' : 'text-white'}`}>
                         {chapter.title}
                       </h3>
@@ -93,7 +128,7 @@ export default function UnitsPage() {
                       </p>
                     </div>
                     {/* Status Icon */}
-                    <div className="mr-4">
+                    <div className={isAr ? "mr-4" : "ml-4"}>
                       {chapter.status === "active" ? (
                         <CheckCircle className={`h-6 w-6 ${light ? 'text-gray-700' : 'text-white'}`} />
                       ) : (

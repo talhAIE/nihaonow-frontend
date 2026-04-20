@@ -15,7 +15,8 @@ export default function StudentLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { state } = useAppContext();
+  const { state, dir } = useAppContext();
+  const isRtl = dir === "rtl";
   
   // Protect Student Routes
   const { isAuthenticated, isLoading, isAuthorized } = useAuthProtection({
@@ -38,15 +39,15 @@ export default function StudentLayout({
 
   // We can render Sidebar directly here since we know it's the student area
   return (
-    <div className="flex min-h-screen bg-white">
+    <div className="flex min-h-screen bg-white" dir={dir} lang={isRtl ? "ar" : "en"}>
       {/* Desktop Sidebar - Hidden on tablets to prevent cramped layout */}
-      <div className="hidden lg:block w-[280px] flex-shrink-0 m-4">
-         <Sidebar />
+      <div className="hidden lg:block">
+        <Sidebar />
       </div>
 
       {/* Mobile Header logic is inside ConditionalHeader or we can place it here */}
       
-      <main className="flex-1 w-full transition-all duration-200 pt-0 px-4 md:px-8 py-8 overflow-x-hidden lg:w-[calc(100%-280px)]" >
+      <main className={`flex-1 w-full transition-all duration-200 pt-0 px-4 md:px-8 py-8 overflow-x-hidden ${isRtl ? "lg:pr-[320px]" : "lg:pl-[320px]"}`}>
           {/* Mobile/Tablet Header */}
           <div className="lg:hidden mb-6">
              <ConditionalHeader />

@@ -32,10 +32,49 @@ import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import { AchievementsGuide } from "@/components/achievements/AchievementsGuide";
 import { guidePersistence } from "@/lib/guidePersistence";
+import AuthLanguageToggle from "@/components/auth/AuthLanguageToggle";
 
 export default function AchievementsPage() {
-  const { state } = useAppContext();
+  const { state, dir } = useAppContext();
   const userId = state.authUser?.id;
+  const isRtl = dir === 'rtl';
+  const t = isRtl ? {
+    loading: 'جاري تحميل إنجازاتك...',
+    loadError: 'فشل في تحميل البيانات. يرجى المحاولة مرة أخرى.',
+    sorry: 'عذراً، حدث خطأ',
+    retry: 'إعادة المحاولة',
+    awards: 'المكافآت',
+    certificates: 'الشهادات',
+    noCertificates: 'لا توجد شهادات حتى الآن',
+    noCertificatesSub: 'استمر في التقدم لفتح شهادات التميز!',
+    downloadSuccess: 'تم التحميل بنجاح',
+    downloadSuccessDesc: (name: string) => `تم تحميل شهادة ${name}`,
+    downloadError: 'خطأ في التحميل',
+    downloadErrorDesc: 'تعذر إنشاء الشهادة حالياً',
+    userIdMissing: 'معرف المستخدم غير متوفر.',
+    error: 'خطأ',
+    claimSuccess: 'تم استلام المكافأة!',
+    claimSuccessDesc: (name: string) => `لقد حصلت على مكافأة ${name} بنجاح.`,
+    claimFail: 'فشل استلام المكافأة',
+  } : {
+    loading: 'Loading your achievements...',
+    loadError: 'Failed to load data. Please try again.',
+    sorry: 'Something went wrong',
+    retry: 'Try again',
+    awards: 'Awards',
+    certificates: 'Certificates',
+    noCertificates: 'No certificates yet',
+    noCertificatesSub: 'Keep progressing to unlock certificates.',
+    downloadSuccess: 'Download complete',
+    downloadSuccessDesc: (name: string) => `Downloaded certificate ${name}`,
+    downloadError: 'Download failed',
+    downloadErrorDesc: 'Could not generate the certificate right now.',
+    userIdMissing: 'User ID is unavailable.',
+    error: 'Error',
+    claimSuccess: 'Reward claimed',
+    claimSuccessDesc: (name: string) => `You claimed the reward for ${name}.`,
+    claimFail: 'Claim failed',
+  };
 
   const [achievements, setAchievements] = useState<any[]>([]);
   const [certificates, setCertificates] = useState<{ earned: Certificate[]; locked: Certificate[] }>({ earned: [], locked: [] });
@@ -101,12 +140,12 @@ export default function AchievementsPage() {
       setLevelDefs(defs);
     } catch (err: any) {
       console.error("Error fetching achievements:", err);
-      setError("فشل في تحميل البيانات. يرجى المحاولة مرة أخرى.");
+      setError(t.loadError);
     } finally {
       setLoading(false);
       setInitialLoad(false);
     }
-  }, [state.authUser?.id]);
+  }, [state.authUser?.id, t.loadError]);
 
   useEffect(() => {
     if (state.authUser?.id) {
@@ -123,8 +162,8 @@ export default function AchievementsPage() {
 
       if (!authUserId) {
         toast({
-          title: "خطأ",
-          description: "معرف المستخدم غير متوفر.",
+          title: t.error,
+          description: t.userIdMissing,
           variant: "destructive",
         });
         return;
@@ -177,14 +216,14 @@ export default function AchievementsPage() {
       pdf.save(`${certName}.pdf`);
 
       toast({
-        title: "تم التحميل بنجاح",
-        description: `تم تحميل شهادة ${certName}`,
+        title: t.downloadSuccess,
+        description: t.downloadSuccessDesc(certName),
       });
     } catch (err) {
       console.error("Error generating certificate PDF:", err);
       toast({
-        title: "خطأ في التحميل",
-        description: "تعذر إنشاء الشهادة حالياً",
+        title: t.downloadError,
+        description: t.downloadErrorDesc,
         variant: "destructive",
       });
     } finally {
@@ -217,8 +256,8 @@ export default function AchievementsPage() {
 
       await achievementsApi.claimBadge(Number(authUserId), badgeKey);
       toast({
-        title: "تم استلام المكافأة!",
-        description: `لقد حصلت على مكافأة ${badgeName} بنجاح.`,
+        title: t.claimSuccess,
+        description: t.claimSuccessDesc(badgeName),
       });
       // Note: Removed fetchData() call to prevent full page reload
     } catch (err: any) {
@@ -230,8 +269,8 @@ export default function AchievementsPage() {
         return newSet;
       });
       toast({
-        title: "فشل استلام المكافأة",
-        description: err.response?.data?.message || "حدث خطأ أثناء استلام المكافأة.",
+        title: t.claimFail,
+        description: err.response?.data?.message || (isRtl ? 'حدث خطأ أثناء استلام المكافأة.' : 'An error occurred while claiming the reward.'),
         variant: "destructive",
       });
     }
@@ -239,10 +278,10 @@ export default function AchievementsPage() {
 
   if (loading && initialLoad) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center font-almarai" dir="rtl">
+      <div className="min-h-screen bg-white flex items-center justify-center font-almarai" dir={dir}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#35AB4E] mx-auto mb-4"></div>
-          <p className="text-slate-600 font-bold">جاري تحميل إنجازاتك...</p>
+          <p className="text-slate-600 font-bold">{t.loading}</p>
         </div>
       </div>
     );
@@ -253,21 +292,63 @@ export default function AchievementsPage() {
       <div className="flex-1 flex items-center justify-center p-8 h-[80vh]">
         <div className="text-center space-y-4 bg-red-50 p-8 rounded-2xl border border-red-100 max-w-md">
           <AlertCircle className="h-12 w-12 text-red-500 mx-auto" />
-          <h2 className="text-xl font-bold text-red-900">عذراً، حدث خطأ</h2>
+          <h2 className="text-xl font-bold text-red-900">{t.sorry}</h2>
           <p className="text-red-700">{error}</p>
           <Button onClick={fetchData} className="bg-red-600 hover:bg-red-700 text-white">
-            إعادة المحاولة
+            {t.retry}
           </Button>
         </div>
       </div>
     );
   }
 
+  const localizeText = <T extends { nameText?: any; descriptionText?: any; name: string; description: string }>(entry: T): T => {
+    const language = isRtl ? 'ar' : 'en';
+    
+    // Attempt to parse name/description as JSON if they are strings
+    const pickValue = (val: string | any, textVal: any) => {
+      // Priority 1: Enriched text object from backend
+      if (textVal && typeof textVal === 'object') {
+         return language === 'en' ? textVal.en || textVal.variation || textVal.raw : textVal.ar || textVal.variation || textVal.raw;
+      }
+      
+      // Priority 2: JSON string in the raw field
+      if (typeof val === 'string' && val.trim().startsWith('{')) {
+        try {
+          const parsed = JSON.parse(val);
+          if (parsed && typeof parsed === 'object') {
+            return language === 'en' ? parsed.en || parsed.ar : parsed.ar || parsed.en;
+          }
+        } catch (e) {}
+      }
+      
+      return val;
+    };
+
+    return {
+      ...entry,
+      name: pickValue(entry.name, entry.nameText),
+      description: pickValue(entry.description, entry.descriptionText),
+    };
+  };
+
+  const localizedAchievements = achievements.map((group: any) => ({
+    ...group,
+    earned: (group.earned || []).map(localizeText),
+    available: (group.available || []).map(localizeText),
+  }));
+
+
+  const localizedCertificates = {
+    earned: certificates.earned.map(localizeText),
+    locked: certificates.locked.map(localizeText),
+  };
+
   // Pre-process achievements for the map view - Filter out certificates to show only rewards
   // We strictly show 4 nodes per category as requested: Usage (Center), Streak (Left), Topics (Right)
-  const usageGroup = achievements.find(g => g.category === 'time') || { earned: [], available: [] };
-  const streakGroup = achievements.find(g => g.category === 'streak') || { earned: [], available: [] };
-  const topicsGroup = achievements.find(g => g.category === 'topics') || { earned: [], available: [] };
+  const usageGroup = localizedAchievements.find(g => g.category === 'time') || { earned: [], available: [] };
+  const streakGroup = localizedAchievements.find(g => g.category === 'streak') || { earned: [], available: [] };
+  const topicsGroup = localizedAchievements.find(g => g.category === 'topics') || { earned: [], available: [] };
 
   const getCategorizedData = (group: any, category: string) => [
     ...group.earned.map((b: any) => ({ ...b, status: 'earned', category })),
@@ -281,7 +362,7 @@ export default function AchievementsPage() {
     ...getCategorizedData(topicsGroup, 'topics')
   ];
 
-  const allAchievements = achievements
+  const allAchievements = localizedAchievements
     .filter(group => group.category !== 'certificates')
     .flatMap(group => [
       ...group.earned.map((b: any) => ({ ...b, status: 'earned', category: group.category })),
@@ -294,7 +375,7 @@ export default function AchievementsPage() {
   const progressPercentage = totalAchievementsCount > 0 ? (earnedAchievementsCount / totalAchievementsCount) * 100 : 0;
 
   return (
-    <div className="flex-1 space-y-6 px-0 pt-4 bg-white" dir="rtl">
+    <div className="flex-1 space-y-6 px-0 pt-4 bg-white" dir={dir}>
       <AchievementsGuide 
         isOpen={showGuide} 
         onClose={handleCloseGuide} 
@@ -302,8 +383,9 @@ export default function AchievementsPage() {
         onTabChange={setActiveTab} 
       />
       {/* Refined Header & Tab Switcher */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
-        <div className="flex-1 w-full sm:w-auto flex justify-center sm:justify-start">
+      <div className={`flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 ${isRtl ? "sm:flex-row-reverse" : "sm:flex-row"}`}>
+        <div className={`w-full sm:w-auto flex ${isRtl ? "justify-center sm:justify-start" : "justify-center sm:justify-end"}`}><AuthLanguageToggle /></div>
+        <div className={`flex-1 w-full sm:w-auto flex ${isRtl ? "justify-center sm:justify-start" : "justify-center sm:justify-end"}`}>
           <div className="bg-slate-50/50 p-1 rounded-2xl flex items-center gap-1.5 shadow-inner border border-slate-100 w-full sm:w-auto overflow-hidden">
             <button
               id="awards-tab-btn"
@@ -313,7 +395,7 @@ export default function AchievementsPage() {
                 : "bg-transparent text-[#4B4B4B] hover:bg-slate-50 border border-slate-200/60"
                 }`}
             >
-              المكافآت
+              {t.awards}
             </button>
             <button
               id="certs-tab-btn"
@@ -323,7 +405,7 @@ export default function AchievementsPage() {
                 : "bg-transparent text-[#4B4B4B] hover:bg-slate-50 border border-slate-200/60"
                 }`}
             >
-              الشهادات
+              {t.certificates}
             </button>
           </div>
         </div>
@@ -332,13 +414,13 @@ export default function AchievementsPage() {
       {activeTab === 'awards' ? (
         <div id="awards-map-container" className="animate-in fade-in slide-in-from-bottom-3 duration-500 text-right">
           {/* Awards Map Section */}
-            <AwardsMap achievements={mapData} onClaim={handleClaimBadge} claimedAchievements={claimedAchievements} />
+            <AwardsMap achievements={mapData} onClaim={handleClaimBadge} claimedAchievements={claimedAchievements} dir={dir} />
         </div>
       ) : (
         <div id="certificates-grid" className="animate-in fade-in slide-in-from-bottom-5 duration-700">
           {/* Certificates Section */}
           <div className="grid gap-x-10 gap-y-16 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-            {certificates.earned.map((cert, index) => (
+            {localizedCertificates.earned.map((cert, index) => (
               <CertificateScroll
                 key={`earned-${cert.id}`}
                 id={cert.id}
@@ -349,10 +431,11 @@ export default function AchievementsPage() {
                 onDownload={() => handleDownloadCertificate(cert.id, cert.name, cert.description, cert.awardedAt || undefined)}
                 isDownloading={downloading === cert.id}
                 customId={index === 0 ? "certificate-scroll-highlight" : undefined}
+                dir={dir}
               />
             ))}
 
-            {certificates.locked.map((cert, index) => (
+            {localizedCertificates.locked.map((cert, index) => (
               <CertificateScroll
                 key={cert.id}
                 id={cert.id}
@@ -361,17 +444,18 @@ export default function AchievementsPage() {
                 status="locked"
                 onDownload={() => { }}
                 isDownloading={false}
-                customId={certificates.earned.length === 0 && index === 0 ? "certificate-scroll-highlight" : undefined}
+                customId={localizedCertificates.earned.length === 0 && index === 0 ? "certificate-scroll-highlight" : undefined}
+                dir={dir}
               />
             ))}
 
-            {certificates.earned.length === 0 && certificates.locked.length === 0 && (
+            {localizedCertificates.earned.length === 0 && localizedCertificates.locked.length === 0 && (
               <div id="certificate-scroll-highlight" className="col-span-full py-20 text-center">
                 <div className="bg-gray-100 w-24 h-24 rounded-[32px] flex items-center justify-center mx-auto mb-6">
                   <Scroll className="w-12 h-12 text-gray-300" />
                 </div>
-                <h4 className="text-2xl font-black text-gray-400 mb-2">لا توجد شهادات حتى الآن</h4>
-                <p className="text-gray-300 font-bold">استمر في التقدم لفتح شهادات التميز!</p>
+                <h4 className="text-2xl font-black text-gray-400 mb-2">{t.noCertificates}</h4>
+                <p className="text-gray-300 font-bold">{t.noCertificatesSub}</p>
               </div>
             )}
           </div>

@@ -22,7 +22,7 @@ export const dashboardApi = {
         _t: Date.now(), // Add timestamp to prevent caching
       },
     };
-    return apiClient.get<ConsolidatedDashboardResponse>(url, undefined, cacheBustingConfig);
+    return await apiClient.get<ConsolidatedDashboardResponse>(url, undefined, cacheBustingConfig);
   },
 
   // Legacy individual endpoints (kept for backward compatibility)
@@ -48,17 +48,17 @@ export const dashboardApi = {
 
   getOverview: async (config: any = {}): Promise<DashboardOverview> => {
     const url = apiEndpoints.dashboard.overview;
-    return apiClient.get<DashboardOverview>(url, undefined, config);
+    return await apiClient.get<DashboardOverview>(url, undefined, config);
   },
 
   getTopicProgress: async (config: any = {}): Promise<TopicProgressResponse> => {
     const url = apiEndpoints.dashboard.topicProgress;
-    return apiClient.get<TopicProgressResponse>(url, undefined, config);
+    return await apiClient.get<TopicProgressResponse>(url, undefined, config);
   },
 
   getChapterProgress: async (config: any = {}): Promise<ChapterProgressResponse> => {
     const url = apiEndpoints.dashboard.chapterProgress;
-    return apiClient.get<ChapterProgressResponse>(url, undefined, config);
+    return await apiClient.get<ChapterProgressResponse>(url, undefined, config);
   },
 };
 

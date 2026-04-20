@@ -1,5 +1,6 @@
 "use client";
 import { useState, useLayoutEffect, useCallback, useRef } from "react";
+import { useAppContext } from "@/context/AppContext";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { 
   ChevronLeft, 
@@ -26,28 +27,42 @@ interface TargetRect {
   height: number;
 }
 
+const COPY = {
+  ar: {
+    steps: {
+      "leaderboard-top-cards": { title: "أفضل 3 طلاب", desc: "هؤلاء هم الطلاب الأكثر نشاطاً هذا الشهر" },
+      "leaderboard-all-students": { title: "جميع الطلاب", desc: "شاهد ترتيبك بين باقي الطلاب" },
+      "leaderboard-sample-metrics": { title: "نشاطك", desc: "كلما تعلمت أكثر، ارتفع ترتيبك" },
+    },
+    common: {
+      next: "التالي",
+      finish: "رائع",
+    }
+  },
+  en: {
+    steps: {
+      "leaderboard-top-cards": { title: "Top 3 Students", desc: "These are the most active students this month." },
+      "leaderboard-all-students": { title: "All Students", desc: "See your rank among other students." },
+      "leaderboard-sample-metrics": { title: "Your Activity", desc: "The more you learn, the higher your rank becomes." },
+    },
+    common: {
+      next: "Next",
+      finish: "Amazing",
+    }
+  }
+};
+
 const STEPS = [
-  { 
-    id: 'leaderboard-top-cards', 
-    icon: <Sparkles className="text-[#FFCB08]" size={24} />, 
-    title: 'أفضل 3 طلاب', 
-    desc: 'هؤلاء هم الطلاب الأكثر نشاطاً هذا الشهر' 
-  },
-  { 
-    id: 'leaderboard-all-students', 
-    icon: <Sparkles className="text-[#FFCB08]" size={24} />, 
-    title: 'جميع الطلاب', 
-    desc: 'شاهد ترتيبك بين باقي الطلاب' 
-  },
-  { 
-    id: 'leaderboard-sample-metrics', 
-    icon: <Sparkles className="text-[#FFCB08]" size={24} />, 
-    title: 'نشاطك', 
-    desc: 'كلما تعلمت أكثر، ارتفع ترتيبك' 
-  },
+  { id: 'leaderboard-top-cards' },
+  { id: 'leaderboard-all-students' },
+  { id: 'leaderboard-sample-metrics' },
 ];
 
 export function LeaderboardGuide({ isOpen, onClose }: LeaderboardGuideProps) {
+  const { dir } = useAppContext();
+  const isAr = dir === "rtl";
+  const t = isAr ? COPY.ar : COPY.en;
+
   const [stepIndex, setStepIndex] = useState(0);
   const [targetRect, setTargetRect] = useState<TargetRect | null>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -283,9 +298,9 @@ export function LeaderboardGuide({ isOpen, onClose }: LeaderboardGuideProps) {
                 {/* Header */}
                 <div className="flex flex-row items-center justify-between w-full h-[36px]">
                   <div className="flex flex-row items-center justify-center gap-2 flex-1">
-                    <span className="">{currentStep.icon}</span>
-                    <h3 className="font-almarai font-bold text-[20px] sm:text-[22px] leading-[26px] sm:leading-[28px] text-[#282828] text-center">
-                      {currentStep.title}
+                    <span className=""><Sparkles className="text-[#FFCB08]" size={24} /></span>
+                    <h3 className={`font-bold text-[20px] sm:text-[22px] leading-[26px] sm:leading-[28px] text-[#282828] text-center ${isAr ? 'font-almarai' : 'font-nunito'}`}>
+                      {(t.steps as any)[currentStep.id!]?.title}
                     </h3>
                   </div>
                   <button
@@ -297,9 +312,9 @@ export function LeaderboardGuide({ isOpen, onClose }: LeaderboardGuideProps) {
                 </div>
 
                 {/* Description */}
-                <div className="w-full text-right" dir="rtl">
-                  <p className="font-nunito font-semibold text-[16px] leading-[22px] text-[#454545] tracking-[-0.0025em]">
-                    {currentStep.desc}
+                <div className={`w-full ${isAr ? 'text-right' : 'text-left'}`} dir={dir}>
+                  <p className={`font-semibold text-[16px] leading-[22px] text-[#454545] tracking-[-0.0025em] ${isAr ? 'font-almarai' : 'font-nunito'}`}>
+                    {(t.steps as any)[currentStep.id!]?.desc}
                   </p>
                 </div>
 
@@ -309,10 +324,11 @@ export function LeaderboardGuide({ isOpen, onClose }: LeaderboardGuideProps) {
                     onClick={handleNext}
                     className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-2 w-full h-[56px] bg-[#35AB4E] border-b-[3px] border-[#20672F] rounded-[12px] hover:bg-[#2f9c46] transition-all"
                   >
-                    <span className="font-nunito font-bold text-[16px] leading-[22px] text-white">
-                      {stepIndex === STEPS.length - 1 ? 'رائع' : 'التالي'}
+                    {isAr ? <ChevronLeft className="w-6 h-6 text-white" /> : null}
+                    <span className={`font-bold text-[16px] leading-[22px] text-white ${isAr ? 'font-almarai' : 'font-nunito'}`}>
+                      {stepIndex === STEPS.length - 1 ? t.common.finish : t.common.next}
                     </span>
-                    <ChevronLeft className="w-6 h-6 text-white" />
+                    {!isAr ? <ChevronLeft className="w-6 h-6 text-white rotate-180" /> : null}
                   </button>
 
                   {/* Pagination Indicator */}

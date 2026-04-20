@@ -24,6 +24,9 @@ import type {
 } from "@/lib/types";
 import GuidePopup from "@/components/dashboard/GuidePopup";
 import { guidePersistence } from "@/lib/guidePersistence";
+import AuthLanguageToggle from "@/components/auth/AuthLanguageToggle";
+import { useMemo } from "react";
+import { localizeDashboardOverview, localizeTopicProgress, localizeChapterProgress } from "@/lib/db-localization";
 
 export default function Page() {
   const { goToStudentScenario } = useNavigation();
@@ -44,7 +47,99 @@ export default function Page() {
   );
   const [is1024Width, setIs1024Width] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
-  const { state, setState } = useAppContext();
+  const { state, setState, dir } = useAppContext();
+  const isAr = dir === "rtl";
+  const fireOffsetPx = isAr ? -48 : 0;
+
+  const copy = {
+    ar: {
+      loading: "جاري التحميل...",
+      retry: "إعادة المحاولة",
+      errorLoad: "تعذر تحميل لوحة التحكم",
+      studentFallback: "الطالب",
+      welcomeBack: "مرحبًا بعودتك يا",
+      smallPanda: "الباندا الصغيرة",
+      beginner: "مبتدئ",
+      myLevel: "مستواي",
+      wordOfWeek: "مفردة الأسبوع",
+      startLearning: "بدء التعلم",
+      metricsTitle: "المؤشرات الرئيسة للأداء",
+      tabDaily: "يومي",
+      tabWeekly: "إحصائيات أسبوعية",
+      tabMonthly: "إحصائيات شهرية",
+      pronunciation: "مهارة النطق",
+      fluency: "مستوى الطلاقة",
+      accuracy: "معدل الدقة",
+      longestStreak: "أطول خط",
+      currentStreak: "الخط الحالي",
+      days: "أيام",
+      progressTitle: "مدى التقدم في المحاضرات",
+      noTopics: "لا توجد مواضيع متاحة حاليًا",
+      lessonUnit1: "الوحدة 1: مهارات الترحيب",
+      lessonUnit10: "الوحدة 10: مهارات التعبير عن الشكر",
+      lessons: "درس",
+      of: "من",
+      loadingMore: "جاري التحميل...",
+      continueProgress: "متابعة التقدم",
+      wordFallback: "مرحباً",
+      wordEnglishFallback: "Hello",
+    },
+    en: {
+      loading: "Loading...",
+      retry: "Try again",
+      errorLoad: "Failed to load dashboard",
+      studentFallback: "Student",
+      welcomeBack: "Welcome back,",
+      smallPanda: "Little Panda",
+      beginner: "Beginner",
+      myLevel: "My Level",
+      wordOfWeek: "Word of the Week",
+      startLearning: "Start Learning",
+      metricsTitle: "Key Performance Metrics",
+      tabDaily: "Daily",
+      tabWeekly: "Weekly Stats",
+      tabMonthly: "Monthly Stats",
+      pronunciation: "Pronunciation",
+      fluency: "Fluency",
+      accuracy: "Accuracy",
+      longestStreak: "Longest Streak",
+      currentStreak: "Current Streak",
+      days: "Days",
+      progressTitle: "Lesson Progress",
+      noTopics: "No topics available right now",
+      lessonUnit1: "Unit 1: Greeting Skills",
+      lessonUnit10: "Unit 10: Appreciation Skills",
+      lessons: "lessons",
+      of: "of",
+      loadingMore: "Loading...",
+      continueProgress: "Continue Progress",
+      wordFallback: "Hello",
+      wordEnglishFallback: "Hello",
+    },
+  } as const;
+
+  const t = isAr ? copy.ar : copy.en;
+
+  const levelTitles = {
+    ar: {
+      little_panda: "الباندا الصغيرة",
+      bamboo_explorer: "مستكشف الخيزران",
+      young_mandarin: "متحدث الماندرين الصغير",
+      confident_conversationalist: "متحاور واثق",
+      story_builder: "صانع القصص",
+      junior_native: "طلاقة المتحدث الأصلي الصغير",
+    },
+    en: {
+      little_panda: "Little Panda",
+      bamboo_explorer: "Bamboo Explorer",
+      young_mandarin: "Young Mandarin",
+      confident_conversationalist: "Confident Conversationalist",
+      story_builder: "Story Builder",
+      junior_native: "Junior Native",
+    },
+  } as const;
+
+  const LevelChevron = isAr ? ChevronLeft : ChevronRight;
 
   useEffect(() => {
     const checkWidth = () => {
@@ -54,7 +149,7 @@ export default function Page() {
     checkWidth();
     window.addEventListener("resize", checkWidth);
     return () => window.removeEventListener("resize", checkWidth);
-  }, []);
+  }, [dir]);
 
   useEffect(() => {
     if (state.authUser?.id && state.authUser?.isFirstLogin && state.isInitialized) {
@@ -104,9 +199,9 @@ export default function Page() {
   };
 
   const tabs = [
-    { key: "daily", label: "يومي" },
-    { key: "weekly", label: "إحصائيات أسبوعية" },
-    { key: "monthly", label: "إحصائيات شهرية" },
+    { key: "daily", label: t.tabDaily },
+    { key: "weekly", label: t.tabWeekly },
+    { key: "monthly", label: t.tabMonthly },
   ];
 
   const fetchData = async () => {
@@ -127,7 +222,7 @@ export default function Page() {
       setLevelDefinitions(defs);
     } catch (err) {
       console.error("Failed to fetch dashboard data:", err);
-      setError("Failed to load dashboard data");
+      setError(t.errorLoad);
     } finally {
       setLoading(false);
       setInitialLoad(false);
@@ -156,49 +251,29 @@ export default function Page() {
       window.removeEventListener("focus", onFocus);
       window.removeEventListener("storage", onStorageChange);
     };
-  }, []);
+  }, [dir]);
 
-  if (loading && initialLoad) {
-    return (
-      <div
-        className="min-h-screen bg-white flex items-center justify-center"
-        dir="rtl"
-      >
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#35AB4E] mx-auto mb-4"></div>
-          <p className="text-slate-600">جاري التحميل...</p>
-        </div>
-      </div>
-    );
-  }
+  const isLanguageEn = dir === 'ltr';
+  const currentLang = isLanguageEn ? 'en' : 'ar';
 
-  if (error) {
-    return (
-      <div
-        className="min-h-screen bg-white flex items-center justify-center"
-        dir="rtl"
-      >
-        <div className="text-center">
-          <p className="text-red-600 mb-4">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-[#35AB4E] text-white rounded-lg"
-          >
-            إعادة المحاولة
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const localizedData = useMemo(() => {
+    if (!dashboardData) return null;
+    return {
+      overview: localizeDashboardOverview(dashboardData.overview, currentLang),
+      progress: {
+        topics: (dashboardData.progress?.topics || []).map(t => localizeTopicProgress(t, currentLang)),
+        chapters: (dashboardData.progress?.chapters || []).map(c => localizeChapterProgress(c, currentLang)),
+      }
+    };
+  }, [dashboardData, currentLang]);
 
-  // Use real data or fallback to cached/defaults
-  const overview = dashboardData?.overview;
-  const topicProgress = dashboardData?.progress?.topics || [];
+  const overview = localizedData?.overview;
+  const topicProgress = localizedData?.progress?.topics || [];
   const metrics = dashboardData?.metrics;
   const userName =
     overview?.userName ||
     (typeof window !== "undefined" ? localStorage.getItem("userName") : null) ||
-    "الطالب";
+    t.studentFallback;
   const currentStreak = overview?.currentStreak || 0;
   const longestStreak = overview?.longestStreak || 0;
   const level = overview?.level || 1;
@@ -223,22 +298,61 @@ export default function Page() {
     namedProgress = 100; // Max level
   }
 
+  if (loading && initialLoad) {
+    return (
+      <div
+        className={`min-h-screen bg-white flex items-center justify-center ${isAr ? "font-almarai" : "font-nunito"}`}
+        dir={dir}
+        lang={isAr ? "ar" : "en"}
+      >
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#35AB4E] mx-auto mb-4"></div>
+          <p className="text-slate-600">{t.loading}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div
+        className={`min-h-screen bg-white flex items-center justify-center ${isAr ? "font-almarai" : "font-nunito"}`}
+        dir={dir}
+        lang={isAr ? "ar" : "en"}
+      >
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-[#35AB4E] text-white rounded-lg"
+          >
+            {t.retry}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+
   return (
-    <div className="min-h-screen bg-white" dir="rtl">
+    <div className={`relative min-h-screen bg-white ${isAr ? "font-almarai" : "font-nunito"}`} dir={dir} lang={isAr ? "ar" : "en"}>
       <div className="max-w-full mx-auto px-2 sm:px-6">
+        <div className={`absolute top-4 ${isAr ? "left-4" : "right-4"} z-20`}>
+          <AuthLanguageToggle />
+        </div>
         <GuidePopup isOpen={showGuide} onClose={handleCloseGuide} />
         <div className="mt-4">&nbsp;</div>
         <h1
-          className="text-right font-almarai mb-8 hidden sm:block"
+          className={`${isAr ? "text-right" : "text-left"} ${isAr ? "font-almarai" : "font-nunito"} mb-8 hidden sm:block`}
           style={{ fontSize: "22px" }}
         >
-          مرحبًا بعودتك يا{" "}
+          {t.welcomeBack}{" "}
           <span className="text-red-600 font-bold">{userName}</span>
         </h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 mb-8">
           {/* Level Progress */}
-          <div id="levels-card" className="bg-white rounded-[24px] lg:rounded-[32px] border border-slate-100 p-0 shadow-sm flex flex-col sm:flex-row-reverse items-stretch overflow-hidden h-full">
+          <div id="levels-card" className={`bg-white rounded-[24px] lg:rounded-[32px] border border-slate-100 p-0 shadow-sm flex flex-col ${isAr ? "sm:flex-row-reverse" : "sm:flex-row"} items-stretch overflow-hidden h-full`}>
             {/* Image decoration on the left - Hidden on mobile and tablet */}
             <div className="relative hidden lg:flex items-center justify-center">
               {/* Clouds from design */}
@@ -263,18 +377,18 @@ export default function Page() {
             </div>
 
             {/* Level Info on the right */}
-            <div className="flex-1 flex flex-row-reverse items-center justify-between p-6 gap-6">
-              <div className="text-right flex-1">
-                <h3 className="text-[#332902] font-almarai-extrabold text-xl lg:text-2xl mb-1 leading-tight">
-                  {userLevel ? `${userLevel.level.name}` : `الباندا الصغيرة`}
+            <div className={`flex-1 flex ${isAr ? "flex-row-reverse" : "flex-row"} items-center justify-between p-6 gap-6`}>
+              <div className={`${isAr ? "text-right" : "text-left"} flex-1`}>
+                <h3 className={`text-[#332902] ${isAr ? "font-almarai-extrabold" : "font-nunito"} text-xl lg:text-2xl mb-1 leading-tight`}>
+                  {userLevel ? levelTitles[isAr ? "ar" : "en"][(userLevel.level.key as keyof typeof levelTitles.en)] || t.smallPanda : t.smallPanda}
                 </h3>
                 <p className="text-[#35AB4E] font-bold text-sm mb-4">
-                  {`مبتدئ`}
+                  {t.beginner}
                 </p>
 
-                <div className="h-10 px-4 bg-[#35AB4E] text-white text-sm font-bold rounded-lg border-b-2 border-[#20672F] flex items-center gap-2 w-fit">
-                  <ChevronRight className="w-4 h-4" strokeWidth={3} />
-                  <span>مستواي</span>
+                <div className={`h-10 px-4 bg-[#35AB4E] text-white text-sm font-bold rounded-lg border-b-2 border-[#20672F] flex items-center gap-2 w-fit ${isAr ? "flex-row" : "flex-row-reverse"}`}>
+                  <LevelChevron className="w-4 h-4" strokeWidth={3} />
+                  <span>{t.myLevel}</span>
                 </div>
               </div>
 
@@ -299,13 +413,13 @@ export default function Page() {
           {/* Word of the Week */}
           <div id="word-of-week-card" className="bg-white rounded-[24px] lg:rounded-[32px] border border-slate-100 p-6 flex flex-col shadow-sm relative overflow-hidden h-full">
             {/* Decorative Star */}
-            <div className="absolute top-4 left-4">
+            <div className={`absolute top-4 ${isAr ? "left-4" : "right-4"}`}>
               <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
             </div>
 
-            <div className="w-full text-right mb-2">
-              <h4 className="font-almarai-extrabold text-[#4B4B4B] text-sm lg:text-base">
-                مفردة الأسبوع
+            <div className={`w-full ${isAr ? "text-right" : "text-left"} mb-2`}>
+              <h4 className={`${isAr ? "font-almarai-extrabold" : "font-nunito"} text-[#4B4B4B] text-sm lg:text-base`}>
+                {t.wordOfWeek}
               </h4>
             </div>
 
@@ -313,13 +427,13 @@ export default function Page() {
               <div className="flex flex-row items-center justify-center gap-6 mb-6">
                 <div className="flex flex-col items-center">
                   <p className="text-5xl font-black text-[#35AB4E] mb-2 ">
-                    {wordOfTheWeek?.chinese || "مرحباً"}
+                    {wordOfTheWeek?.chinese || t.wordFallback}
                   </p>
                   <p className="text-slate-600 font-bold text-lg mb-1">
                     {wordOfTheWeek?.pinyin || "Nǐ hǎo"}
                   </p>
                   <p className="text-slate-400 text-sm">
-                    {wordOfTheWeek?.english || "Hello"}
+                    {wordOfTheWeek?.english || t.wordEnglishFallback}
                   </p>
                 </div>
 
@@ -361,9 +475,9 @@ export default function Page() {
                 }}
                 className="h-10 px-4 bg-[#35AB4E] hover:bg-[#2f9c46] text-white text-sm font-bold rounded-lg border-b-2 border-[#20672F] flex items-center gap-2 transition active:translate-y-[2px] active:border-b-0"
               >
-                <span>بدء التعلم</span>
+                <span>{t.startLearning}</span>
                 <div className="w-5 h-5 rounded-md flex items-center justify-center">
-                  <Play className="w-3 h-3 text-white fill-current ml-0.5 transform rotate-180" />
+                  <Play className={`w-3 h-3 text-white fill-current ${isAr ? "ml-0.5 transform rotate-180" : "mr-0.5"}`} />
                 </div>
               </button>
             </div>
@@ -377,7 +491,7 @@ export default function Page() {
           {/* Metrics Card - Always first */}
           <div id="metrics-card" className={`flex flex-col w-full min-h-[380px] sm:h-80 md:h-96 lg:h-[400px] px-6 py-6 gap-6 rounded-[24px] border border-slate-100 bg-white shadow-sm ${is1024Width ? 'max-w-2xl mx-auto' : 'col-span-2 sm:col-span-2 lg:col-span-1'}`}>
             <div className="flex flex-col items-start w-full">
-              <h4 className="font-almarai-extrabold text-[#4B4B4B] text-base lg:text-lg mb-3">المؤشرات الرئيسة للأداء</h4>
+              <h4 className={`${isAr ? "font-almarai-extrabold" : "font-nunito"} text-[#4B4B4B] text-base lg:text-lg mb-3`}>{t.metricsTitle}</h4>
               <div className="flex gap-1 sm:gap-2 flex-wrap justify-start w-full">
                 {tabs.filter(t => t.key !== 'daily').map((tab) => (
                   <button
@@ -401,21 +515,21 @@ export default function Page() {
 
               const chartData = [
                 {
-                  name: 'مهارة النطق',
+                  name: t.pronunciation,
                   value: currentMetrics?.pronunciationScore || 0,
                   color: '#F98D00',
                   labelColor: '#F98D00',
                   label: `${Math.round(currentMetrics?.pronunciationScore || 0)}%`
                 },
                 {
-                  name: 'مستوى الطلاقة',
+                  name: t.fluency,
                   value: currentMetrics?.fluencyScore || 0,
                   color: '#CA495A',
                   labelColor: '#00AEEF',
                   label: `${Math.round(currentMetrics?.fluencyScore || 0)}%`
                 },
                 {
-                  name: 'معدل الدقة',
+                  name: t.accuracy,
                   value: currentMetrics?.accuracyScore || 0,
                   color: '#8BD9B7',
                   labelColor: '#35AB4E',
@@ -430,42 +544,45 @@ export default function Page() {
           {!is1024Width && (
             <>
               {/* Pink Card (Middle): Longest Streak */}
-          <div id="longest-streak-card" className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[6px] w-full sm:w-[262.5px] h-[180px] sm:h-[291px] bg-[#FBD4D3] border-b-[4px] border-[#F9BEBE] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
-            <div className="flex flex-col justify-center items-center gap-1 sm:gap-3">
-              <span className="font-nunito font-semibold text-[14px] sm:text-[16px] leading-tight sm:leading-[22px] text-[#2F0807]">
-                أطول خط
-              </span>
-              <span className="font-nunito font-extrabold text-[40px] sm:text-[56px] leading-tight sm:leading-[76px] text-[#2F0807]">
-                {longestStreak}
-              </span>
-              <span className="font-nunito font-semibold text-[14px] sm:text-[16px] leading-tight sm:leading-[22px] text-[#2F0807]">
-                أيام
-              </span>
-            </div>
-            {/* Red Star SVG */}
-            <div className="absolute -left-[10px] top-1/2 -translate-y-1/2 w-[60px] sm:w-[85px] h-auto z-10 pointer-events-none">
-              <Image src={RedStarSVG} alt="Red Star" />
-            </div>
-          </div>
+              <div id="longest-streak-card" className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[6px] w-full sm:w-[262.5px] h-[180px] sm:h-[291px] bg-[#FBD4D3] border-b-[4px] border-[#F9BEBE] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
+                <div className="flex flex-col justify-center items-center gap-1 sm:gap-3">
+                  <span className="font-nunito font-semibold text-[14px] sm:text-[16px] leading-tight sm:leading-[22px] text-[#2F0807]">
+                    {t.longestStreak}
+                  </span>
+                  <span className="font-nunito font-extrabold text-[40px] sm:text-[56px] leading-tight sm:leading-[76px] text-[#2F0807]">
+                    {longestStreak}
+                  </span>
+                  <span className="font-nunito font-semibold text-[14px] sm:text-[16px] leading-tight sm:leading-[22px] text-[#2F0807]">
+                    {t.days}
+                  </span>
+                </div>
+                {/* Red Star SVG */}
+                <div className="absolute -left-[10px] top-1/2 -translate-y-1/2 w-[60px] sm:w-[85px] h-auto z-10 pointer-events-none">
+                  <Image src={RedStarSVG} alt="Red Star" />
+                </div>
+              </div>
 
               {/* Skin Card (Left): Current Streak */}
-          <div id="current-streak-card" className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[17px] w-full sm:w-[262.5px] h-[180px] sm:h-[291px] bg-[#FFF5CE] border-b-[4px] border-[#FFEFB5] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
-            <div className="flex flex-col justify-center items-center gap-1 sm:gap-3">
-              <span className="font-nunito font-semibold text-[14px] sm:text-[16px] leading-tight sm:leading-[22px] text-[#332902]">
-                الخط الحالي
-              </span>
-              <span className="font-nunito font-extrabold text-[40px] sm:text-[56px] leading-tight sm:leading-[76px] text-[#332902]">
-                {currentStreak}
-              </span>
-              <span className="font-nunito font-semibold text-[14px] sm:text-[16px] leading-tight sm:leading-[22px] text-[#332902]">
-                أيام
-              </span>
-            </div>
-            {/* Fire Icon Placeholder */}
-            <div className="absolute -left-[30px] sm:-left-[50px] top-1/2 -translate-y-1/2 w-[70px] sm:w-[103px] h-auto z-10 -scale-x-200">
-              <Image src={FireSVG} alt="Fire" />
-            </div>
-          </div>
+              <div id="current-streak-card" className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[17px] w-full sm:w-[262.5px] h-[180px] sm:h-[291px] bg-[#FFF5CE] border-b-[4px] border-[#FFEFB5] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
+                <div className="flex flex-col justify-center items-center gap-1 sm:gap-3">
+                  <span className="font-nunito font-semibold text-[14px] sm:text-[16px] leading-tight sm:leading-[22px] text-[#332902]">
+                    {t.currentStreak}
+                  </span>
+                  <span className="font-nunito font-extrabold text-[40px] sm:text-[56px] leading-tight sm:leading-[76px] text-[#332902]">
+                    {currentStreak}
+                  </span>
+                  <span className="font-nunito font-semibold text-[14px] sm:text-[16px] leading-tight sm:leading-[22px] text-[#332902]">
+                    {t.days}
+                  </span>
+                </div>
+                {/* Fire Icon Placeholder */}
+                <div
+                  className="absolute left-0 top-1/2 w-[70px] sm:w-[103px] h-auto z-10"
+                  style={{ transform: `translate(${fireOffsetPx}px, -50%)` }}
+                >
+                  <Image src={FireSVG} alt="Fire" className="object-contain" />
+                </div>
+              </div>
             </>
           )}
 
@@ -473,55 +590,58 @@ export default function Page() {
           {is1024Width && (
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {/* Pink Card (Middle): Longest Streak */}
-          <div id="longest-streak-card" className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[6px] w-full sm:w-[262.5px] h-[180px] sm:h-[291px] bg-[#FBD4D3] border-b-[4px] border-[#F9BEBE] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
-            <div className="flex flex-col justify-center items-center gap-1 sm:gap-3">
-              <span className="font-nunito font-semibold text-[14px] sm:text-[16px] leading-tight sm:leading-[22px] text-[#2F0807]">
-                أطول خط
-              </span>
-              <span className="font-nunito font-extrabold text-[40px] sm:text-[56px] leading-tight sm:leading-[76px] text-[#2F0807]">
-                {longestStreak} 
-              </span>
-              <span className="font-nunito font-semibold text-[14px] sm:text-[16px] leading-tight sm:leading-[22px] text-[#2F0807]">
-                أيام
-              </span>
-            </div>
-            {/* Red Star SVG */}
-            <div className="absolute -left-[10px] top-1/2 -translate-y-1/2 w-[60px] sm:w-[85px] h-auto z-10 pointer-events-none">
-              <Image src={RedStarSVG} alt="Red Star" />
-            </div>
-          </div>
+              <div id="longest-streak-card" className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[6px] w-full sm:w-[262.5px] h-[180px] sm:h-[291px] bg-[#FBD4D3] border-b-[4px] border-[#F9BEBE] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
+                <div className="flex flex-col justify-center items-center gap-1 sm:gap-3">
+                  <span className="font-nunito font-semibold text-[14px] sm:text-[16px] leading-tight sm:leading-[22px] text-[#2F0807]">
+                    {t.longestStreak}
+                  </span>
+                  <span className="font-nunito font-extrabold text-[40px] sm:text-[56px] leading-tight sm:leading-[76px] text-[#2F0807]">
+                    {longestStreak} 
+                  </span>
+                  <span className="font-nunito font-semibold text-[14px] sm:text-[16px] leading-tight sm:leading-[22px] text-[#2F0807]">
+                    {t.days}
+                  </span>
+                </div>
+                {/* Red Star SVG */}
+                <div className="absolute -left-[10px] top-1/2 -translate-y-1/2 w-[60px] sm:w-[85px] h-auto z-10 pointer-events-none">
+                  <Image src={RedStarSVG} alt="Red Star" />
+                </div>
+              </div>
 
               {/* Skin Card (Left): Current Streak */}
-          <div id="current-streak-card" className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[17px] w-full sm:w-[262.5px] h-[180px] sm:h-[291px] bg-[#FFF5CE] border-b-[4px] border-[#FFEFB5] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
-            <div className="flex flex-col justify-center items-center gap-1 sm:gap-3">
-              <span className="font-nunito font-semibold text-[14px] sm:text-[16px] leading-tight sm:leading-[22px] text-[#332902]">
-                الخط الحالي
-              </span>
-              <span className="font-nunito font-extrabold text-[40px] sm:text-[56px] leading-tight sm:leading-[76px] text-[#332902]">
-                {currentStreak}
-              </span>
-              <span className="font-nunito font-semibold text-[14px] sm:text-[16px] leading-tight sm:leading-[22px] text-[#332902]">
-                أيام
-              </span>
-            </div>
-            {/* Fire Icon */}
-            <div className="absolute -left-[30px] sm:-left-[50px] top-1/2 -translate-y-1/2 w-[70px] sm:w-[103px] h-auto z-10 -scale-x-200">
-              <Image src={FireSVG} alt="Fire" />
-            </div>
-          </div>
+              <div id="current-streak-card" className="box-border flex flex-row justify-center items-center p-[16px_0px] gap-[17px] w-full sm:w-[262.5px] h-[180px] sm:h-[291px] bg-[#FFF5CE] border-b-[4px] border-[#FFEFB5] rounded-[16px] shadow-[0px_2px_8px_rgba(0,0,0,0.1)] relative overflow-hidden">
+                <div className="flex flex-col justify-center items-center gap-1 sm:gap-3">
+                  <span className="font-nunito font-semibold text-[14px] sm:text-[16px] leading-tight sm:leading-[22px] text-[#332902]">
+                    {t.currentStreak}
+                  </span>
+                  <span className="font-nunito font-extrabold text-[40px] sm:text-[56px] leading-tight sm:leading-[76px] text-[#332902]">
+                    {currentStreak}
+                  </span>
+                  <span className="font-nunito font-semibold text-[14px] sm:text-[16px] leading-tight sm:leading-[22px] text-[#332902]">
+                    {t.days}
+                  </span>
+                </div>
+                {/* Fire Icon */}
+                <div
+                  className="absolute left-0 top-1/2 w-[70px] sm:w-[103px] h-auto z-10"
+                  style={{ transform: `translate(${fireOffsetPx}px, -50%)` }}
+                >
+                  <Image src={FireSVG} alt="Fire" className="object-contain" />
+                </div>
+              </div>
             </div>
           )}
         </div>
 
         <div id="topic-progress-container" className="bg-transparent sm:bg-white sm:shadow-sm h-auto py-[10px] px-0 sm:px-[16px] gap-[12px] rounded-[13px] overflow-y-auto sm:border-2 sm:border-[#E5E5E5] flex flex-col justify-start">
-          <h2 className="text-right text-xl sm:text-2xl font-bold text-slate-900 mb-6 px-2">
-            مدى التقدم في المحاضرات
+          <h2 className={`${isAr ? "text-right" : "text-left"} text-xl sm:text-2xl font-bold text-slate-900 mb-6 px-2`}>
+            {t.progressTitle}
           </h2>
 
           <div className="space-y-4">
             {topicProgress.length === 0 ? (
               <div className="text-center py-8 text-slate-500">
-                لا توجد مواضيع متاحة حاليًا
+                {t.noTopics}
               </div>
             ) : (
               topicProgress.slice(0, 10).map((topic) => (
@@ -530,18 +650,14 @@ export default function Page() {
                   className="bg-white shadow-sm h-auto py-5 px-4 rounded-[13px] border-2 border-[#E5E5E5] flex flex-col gap-4"
                 >
                   <div className="flex flex-row items-center justify-between">
-                    <div className="text-right">
+                    <div className={`${isAr ? "text-right" : "text-left"}`}>
                       <p className="text-lg font-bold text-[#4B4B4B]">
-                        {topic.name === "الدرس 1 – التحيات"
-                          ? "الوحدة 1: مهارات الترحيب"
-                          : topic.name === "الدرس 10 – الشكر"
-                            ? "الوحدة 10: مهارات التعبير عن الشكر"
-                            : topic.name}
+                        {topic.name}
                       </p>
                       <p className="text-sm text-slate-500 flex items-center gap-1">
                         <span>
-                          {topic.completedScenarios} من {topic.totalScenarios}{" "}
-                          درس
+                          {topic.completedScenarios} {t.of} {topic.totalScenarios}{" "}
+                          {t.lessons}
                         </span>
                         <Image
                           src="/images/Frame.svg"
@@ -584,12 +700,16 @@ export default function Page() {
                     <button
                       onClick={() => handleContinue(topic.id)}
                       disabled={startingSession === topic.id}
-                      className={`h-10 px-4 bg-[#35AB4E] hover:bg-[#2f9c46] text-white text-sm font-bold rounded-lg border-b-2 border-[#20672F] flex items-center gap-2 transition active:translate-y-[1px] active:border-b-0 disabled:opacity-70 disabled:cursor-not-allowed`}
+                      className={`h-10 px-4 bg-[#35AB4E] hover:bg-[#2f9c46] text-white text-sm font-bold rounded-lg border-b-2 border-[#20672F] flex items-center gap-2 transition active:translate-y-[1px] active:border-b-0 disabled:opacity-70 disabled:cursor-not-allowed ${isAr ? "flex-row" : "flex-row-reverse"}`}
                     >
                       {startingSession === topic.id
-                        ? "جاري التحميل..."
-                        : "متابعة التقدم"}
-                      <ChevronLeft className="w-4 h-4 mr-[-4px]" />
+                        ? t.loadingMore
+                        : t.continueProgress}
+                      {isAr ? (
+                        <ChevronLeft className="w-4 h-4 mr-[-4px]" />
+                      ) : (
+                        <ChevronRight className="w-4 h-4 ml-[-4px]" />
+                      )}
                     </button>
                   </div>
                 </div>

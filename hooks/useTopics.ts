@@ -1,21 +1,5 @@
 import { useState, useEffect } from 'react';
-import { chaptersApi } from '@/lib/api';
-
-interface Topic {
-  id: number;
-  name: string;
-  subtitle: string;
-  difficulty: string;
-  orderIndex: number;
-}
-
-interface TopicUI extends Topic {
-  title: string;
-  subtitle: string;
-  color: string;
-  status: "active" | "locked";
-  progress?: number;
-}
+import { chaptersApi, Topic, TopicUI } from '@/lib/api';
 
 interface UseTopicsReturn {
   topics: TopicUI[];
@@ -47,14 +31,16 @@ export const useTopics = (chapterId: number | null): UseTopicsReturn => {
       const topicsData = await chaptersApi.getTopics(chapterId);
       
       // Transform the data to match our UI expectations
-      const transformedTopics = topicsData.map((topic: Topic, index: number) => ({
-        ...topic,
-        title: topic.name,
-        subtitle: topic.subtitle, // Use subtitle from API response
-        color: getTopicColor(index),
-        status: index === 0 ? "active" as const : "active" as const,
-        progress: index === 0 ? 80 : undefined,
-      }));
+      const transformedTopics = (topicsData as Topic[]).map((topic: Topic, index: number) => {
+        return {
+          ...topic,
+          title: topic.name,
+          subtitle: topic.subtitle,
+          color: getTopicColor(index),
+          status: "active" as const,
+          progress: index === 0 ? 80 : undefined,
+        };
+      });
       
       setTopics(transformedTopics);
     } catch (err) {

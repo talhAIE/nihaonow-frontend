@@ -10,11 +10,11 @@ import { userApi } from '@/lib/services/user';
 import { useToast } from '@/hooks/use-toast';
 
 const navItems = [
-  { href: '/student/dashboard', label: 'لوحة التحكم', Icon: LayoutDashboard },
-  { href: '/student/units', label: 'الوحدات التدريبية', Icon: BookCheck },
-  { href: '/student/leaderboard', label: 'قائمة المتفوقين', Icon: Trophy },
-  { href: '/student/achievements', label: 'الشارات التعليمية', Icon: Medal },
-  { href: '/student/account', label: 'حساب المستخدم', Icon: User },
+  { href: '/student/dashboard', label: { ar: 'لوحة التحكم', en: 'Dashboard' }, Icon: LayoutDashboard },
+  { href: '/student/units', label: { ar: 'الوحدات التدريبية', en: 'Chapters' }, Icon: BookCheck },
+  { href: '/student/leaderboard', label: { ar: 'قائمة المتفوقين', en: 'Leaderboard' }, Icon: Trophy },
+  { href: '/student/achievements', label: { ar: 'الشارات التعليمية', en: 'Achievements' }, Icon: Medal },
+  { href: '/student/account', label: { ar: 'حساب المستخدم', en: 'Account' }, Icon: User },
 ];
 
 export default function Sidebar() {
@@ -54,23 +54,45 @@ export default function Sidebar() {
       if (url) {
         window.location.href = url;
         toast({
-          title: "تم التحميل",
-          description: "يتم الآن عرض التقرير",
+          title: t.reportLoadingTitle,
+          description: t.reportLoadingDesc,
         });
       }
     } catch (error) {
       console.error("Failed to fetch report URL", error);
       toast({
-        title: "خطأ في التحميل",
-        description: "تعذر فتح التقرير حالياً",
+        title: t.reportErrorTitle,
+        description: t.reportErrorDesc,
         variant: "destructive",
       });
     } finally {
       setIsReportLoading(false);
     }
   };
-  const displayName = state?.user || state?.authUser?.username || 'جون دو';
   const isRtl = dir === 'rtl';
+  const displayName = state?.user || state?.authUser?.username || (isRtl ? 'جون دو' : 'John Doe');
+
+  const copy = {
+    ar: {
+      openMenu: 'فتح القائمة',
+      closeMenu: 'إغلاق القائمة',
+      reportLoadingTitle: 'تم التحميل',
+      reportLoadingDesc: 'يتم الآن عرض التقرير',
+      reportErrorTitle: 'خطأ في التحميل',
+      reportErrorDesc: 'تعذر فتح التقرير حالياً',
+      logout: 'تسجيل الخروج',
+    },
+    en: {
+      openMenu: 'Open menu',
+      closeMenu: 'Close menu',
+      reportLoadingTitle: 'Loading',
+      reportLoadingDesc: 'Opening your report',
+      reportErrorTitle: 'Loading error',
+      reportErrorDesc: 'Unable to open the report right now',
+      logout: 'Log out',
+    },
+  } as const;
+  const t = isRtl ? copy.ar : copy.en;
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -97,7 +119,7 @@ export default function Sidebar() {
   return (
     <>
 
-      <div className={`lg:hidden border border-[blue] fixed top-4 ${isRtl ? 'right-4' : 'left-4'} z-60 ${mobileMenuOpen ? 'hidden' : ''}`}>
+      <div className={`lg:hidden border border-[blue] fixed top-4 ${isRtl ? 'right-4' : 'left-4'} z-60 ${mobileMenuOpen ? 'hidden' : ''} ${isRtl ? 'font-almarai' : 'font-nunito'}`}>
         <button
           onClick={() => {
             const open = !mobileMenuOpen;
@@ -106,7 +128,7 @@ export default function Sidebar() {
           }}
           className="flex items-center gap-3 bg-[#35AB4E] text-white rounded-[14px] shadow-md"
           aria-expanded={mobileMenuOpen}
-          aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+          aria-label={mobileMenuOpen ? t.closeMenu : t.openMenu}
         >
           <span className="w-8 flex items-center justify-center">
             <Menu size={18} />
@@ -127,7 +149,7 @@ export default function Sidebar() {
 
       <aside
         id="sidebar-container"
-        className={`fixed top-0 bottom-0 z-50 transform transition-transform duration-300 ease-in-out ${offscreenClass} ${posClasses} md:translate-x-0 w-[260px] md:w-[260px] lg:w-[280px] bg-[#35AB4E] shadow-lg overflow-hidden flex flex-col lg:h-fit lg:max-h-[calc(100vh-2rem)] lg:top-4 lg:rounded-[2.5rem]`}
+        className={`fixed top-0 bottom-0 z-50 transform transition-transform duration-300 ease-in-out ${offscreenClass} ${posClasses} md:translate-x-0 w-[260px] md:w-[260px] lg:w-[280px] bg-[#35AB4E] shadow-lg overflow-hidden flex flex-col lg:h-fit lg:max-h-[calc(100vh-2rem)] lg:top-4 lg:rounded-[2.5rem] ${isRtl ? 'font-almarai' : 'font-nunito'}`}
       >
         <div className="flex flex-col items-center pt-8 pb-4 px-4 shrink-0">
           <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mb-4 shadow-md">
@@ -157,7 +179,7 @@ export default function Sidebar() {
                       ? 'bg-white text-[#30a849] shadow-md scale-[1.02]'
                       : 'text-white/80 hover:bg-white/5 hover:text-white'}`}
                     onClick={(e) => {
-                      if (item.label === 'إصدار التقرير') {
+                      if (item.label.ar === 'إصدار التقرير') {
                         handleReportClick(e);
                       }
                       if (typeof window !== 'undefined' && window.innerWidth < 1024) {
@@ -166,10 +188,10 @@ export default function Sidebar() {
                     }}
                   >
                     <span className={`${isRtl ? 'text-right' : 'text-left'} text-lg font-medium truncate flex-1`}>
-                      {item.label}
+                      {isRtl ? item.label.ar : item.label.en}
                     </span>
                     <span className="w-8 h-8 flex items-center justify-center shrink-0">
-                      {item.label === 'إصدار التقرير' && isReportLoading ? (
+                      {item.label.ar === 'إصدار التقرير' && isReportLoading ? (
                         <Loader2 size={24} className="animate-spin text-white/80" />
                       ) : (
                         <item.Icon size={24} className={isActive ? 'text-[#30a849]' : 'text-white/80'} />
@@ -187,11 +209,11 @@ export default function Sidebar() {
             id="sidebar-logout"
             onClick={() => handleLogout()}
             aria-label="Logout"
-            className={`w-full mx-auto min-h-[56px] flex items-center ${isRtl ? 'flex-row' : 'flex-row-reverse'} px-4 py-2 rounded-[16px] bg-white hover:bg-white/90 transition-colors text-[#eb2625] shadow-sm group mb-2 font-bold`}
+            className={`w-full mx-auto min-h-[56px] flex items-center ${isRtl ? 'flex-row-reverse' : 'flex-row'} px-4 py-2 rounded-[16px] bg-white hover:bg-white/90 transition-colors text-[#eb2625] shadow-sm group mb-2 font-bold`}
           >
-            <span className="text-[18px] font-bold leading-normal tracking-[0%] flex-1 text-ellipsis overflow-hidden">تسجيل الخروج</span>
+            <span className="text-[18px] font-bold leading-normal tracking-[0%] flex-1 text-ellipsis overflow-hidden">{t.logout}</span>
             <span className="w-[28px] flex items-center justify-center shrink-0 whitespace-nowrap">
-              <LogOut size={20} className="text-[#eb2625] group-hover:translate-x-1 transition-transform" />
+              <LogOut size={20} className={`text-[#eb2625] transition-transform ${isRtl ? "group-hover:-translate-x-1" : "group-hover:translate-x-1"}`} />
             </span>
           </button>
         </div>

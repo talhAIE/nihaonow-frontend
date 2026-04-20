@@ -7,12 +7,18 @@ import { useSession } from "@/hooks/useSession";
 import { useSearchParams } from 'next/navigation';
 import { useNavigation } from '@/lib/navigation';
 import { useAuthProtection } from "@/hooks/useAuthProtection";
+import { useAppContext } from "@/context/AppContext";
+import AuthLanguageToggle from "@/components/auth/AuthLanguageToggle";
+import { useMemo } from "react";
+import { localizeTopic } from "@/lib/db-localization";
 
 export default function TopicsPage() {
   useAuthProtection();
 
   const searchParams = useSearchParams();
   const { goToStudentScenario } = useNavigation();
+  const { dir } = useAppContext();
+  const isAr = dir === "rtl";
   const chapterId = searchParams.get("chapterId")
     ? parseInt(searchParams.get("chapterId")!)
     : null;
@@ -22,6 +28,34 @@ export default function TopicsPage() {
     loading: sessionLoading,
     error: sessionError,
   } = useSession();
+
+  const copy = {
+    ar: {
+      loadingTopics: "جاري تحميل الدروس...",
+      loadingSession: "جاري بدء الجلسة...",
+      retry: "إعادة المحاولة",
+      empty: "لا توجد دروس متاحة لهذه الوحدة",
+    },
+    en: {
+      loadingTopics: "Loading lessons...",
+      loadingSession: "Starting session...",
+      retry: "Try again",
+      empty: "No lessons available for this unit",
+    },
+  } as const;
+
+  const t = isAr ? copy.ar : copy.en;
+
+  const localizedTopics = useMemo(() => {
+    return topics.map(topic => {
+      const loc = localizeTopic(topic, isAr ? 'ar' : 'en');
+      return {
+        ...loc,
+        title: loc.name, // Topics page expects 'title'
+        subtitle: loc.subtitle, // and 'subtitle'
+      };
+    });
+  }, [topics, isAr]);
 
   const handleTopicClick = async (topic: any) => {
     if (topic.status === "active") {
@@ -47,15 +81,19 @@ export default function TopicsPage() {
     return luminance > 0.7;
   };
 
+
   return (
-    <div className="min-h-screen w-[90%] mx-auto" dir="rtl">
+    <div className={`min-h-screen w-[90%] mx-auto ${isAr ? "font-almarai" : "font-nunito"}`} dir={dir} lang={isAr ? "ar" : "en"}>
       {/* Content Section */}
       <div className="px-4 py-6 space-y-4">
+        <div className={`flex ${isAr ? "justify-start" : "justify-end"} mb-2`}>
+          <AuthLanguageToggle />
+        </div>
         {(loading || sessionLoading) && (
           <div className="flex flex-col items-center justify-center py-20">
             <Loader2 className="h-12 w-12 animate-spin text-brand mb-4" />
             <span className="text-gray-600 font-bold">
-              {loading ? "جاري تحميل الدروس..." : "جاري بدء الجلسة..."}
+              {loading ? t.loadingTopics : t.loadingSession}
             </span>
           </div>
         )}
@@ -69,7 +107,7 @@ export default function TopicsPage() {
                 onClick={refetch}
                 className="px-8 py-3 bg-brand text-white rounded-xl font-bold hover:bg-brand/90 transition-colors shadow-lg"
               >
-                إعادة المحاولة
+                {t.retry}
               </button>
             </div>
           </div>
@@ -77,13 +115,13 @@ export default function TopicsPage() {
 
         {!loading && !error && !sessionLoading && topics.length === 0 && (
           <div className="text-center py-20">
-            <p className="text-gray-600 font-bold text-lg">لا توجد دروس متاحة لهذه الوحدة</p>
+            <p className="text-gray-600 font-bold text-lg">{t.empty}</p>
           </div>
         )}
 
         {/* Dynamic Topics as Cards */}
-        {!loading && !error && !sessionLoading && topics.length > 0 && (
-          topics.map((topic, idx) => {
+        {!loading && !error && !sessionLoading && localizedTopics.length > 0 && (
+          localizedTopics.map((topic, idx) => {
             const color = colors[idx % colors.length];
             const light = isLight(color);
             return (
@@ -99,7 +137,7 @@ export default function TopicsPage() {
                 <CardContent className="p-0">
                   <div className="h-auto md:h-auto md:py-4 px-3 flex items-center justify-between">
                     {/* Content */}
-                    <div className="flex-1 text-right">
+                    <div className={`flex-1 ${isAr ? "text-right" : "text-left"}`}>
                       <h3 className={`text-xl font-bold mb-1 ${light ? 'text-gray-900' : 'text-white'}`}>
                         {topic.title}
                       </h3>
@@ -108,7 +146,7 @@ export default function TopicsPage() {
                       </p>
                     </div>
                     {/* Status Icon */}
-                    <div className="mr-4">
+                    <div className={isAr ? "mr-4" : "ml-4"}>
                       {topic.status === "active" ? (
                         <CheckCircle className={`h-6 w-6 ${light ? 'text-gray-700' : 'text-white'}`} />
                       ) : (
@@ -125,4 +163,3 @@ export default function TopicsPage() {
     </div>
   );
 }
-
